@@ -1,0 +1,713 @@
+"""
+Builds prism_data.json for the India-only MVP: real NSE-listed securities,
+8 India portfolios (no US, no crypto), each with a named manager persona,
+and a computed risk block per portfolio.
+
+Run:
+  python build_dataset.py
+"""
+
+import json
+import os
+
+OUT_PATH = os.path.join(os.path.dirname(__file__), "prism_data.json")
+
+# ---------------------------------------------------------------------------
+# Desks
+# ---------------------------------------------------------------------------
+DESKS = [
+    {"desk_id": "desk_equity", "tenant_id": "tnt_001", "name": "Equity Desk"},
+    {"desk_id": "desk_income", "tenant_id": "tnt_001", "name": "Fixed Income & Treasury Desk"},
+    {"desk_id": "desk_real", "tenant_id": "tnt_001", "name": "Real Assets & Alternatives Desk"},
+    {"desk_id": "desk_benchmark", "tenant_id": "tnt_001", "name": "Benchmark (non-desk, reference only)"},
+]
+
+# ---------------------------------------------------------------------------
+# Securities master — all India-domiciled (country "IN"), no crypto.
+# fields match the existing schema exactly so insight_lens.py needs no changes.
+# ---------------------------------------------------------------------------
+def sec(security_id, ticker, name, aliases, sector, industry, asset_class, instrument_type,
+        vol, beta, cap_tier=None, credit_quality=None, parent_id=None, adr_of=None,
+        country="IN", isin_suffix=None, factor_sensitivities=None):
+    return {
+        "security_id": security_id,
+        "primary_ticker": ticker,
+        "name": name,
+        "aliases": aliases,
+        "isin": f"ZZ{country}0000{isin_suffix or ticker}1",
+        "parent_id": parent_id,
+        "adr_of": adr_of,
+        "sector": sector,
+        "industry": industry,
+        "country": country,
+        "asset_class": asset_class,
+        "instrument_type": instrument_type,
+        # Minimal stand-in for the LLD's full sensitivity matrix (§7): explicit,
+        # hand-tagged factor -> sign mapping per security, so a macro/commodity
+        # event that never names this security by ticker can still be matched
+        # to it and given a direction. "same_direction" means the holding's
+        # value moves the same way as the reported factor move (e.g. a gold
+        # ETF when gold itself moves); "positive"/"negative" means the factor
+        # moving up is good/bad for this holding.
+        "factor_sensitivities": factor_sensitivities or {},
+        "vol": vol,
+        "beta": beta,
+        "cap_tier": cap_tier,
+        "credit_quality": credit_quality,
+    }
+
+SECURITIES = [
+    # Cash & short-term debt
+    # Ticker/aliases deliberately avoid the bare word "cash" — it's a common
+    # English word (e.g. "cash burn" in unrelated articles) and produced a
+    # real false-positive link via plain word-boundary matching.
+    sec("sec_cash_inr", "INRCASH", "INR Cash & Equivalents", ["Money Market Cash"],
+        "Cash", "Cash & Equivalents", "Cash", "Cash", 0.3, 0.0, credit_quality="Govt"),
+    sec("sec_tbill_91d", "TBILL91", "GoI 91-Day Treasury Bill", ["T-Bill", "Treasury Bill", "91-day T-bill"],
+        "Fixed Income", "Treasury Bill", "Fixed Income", "T-Bill", 0.5, 0.0, credit_quality="Govt"),
+    sec("sec_liquid_fund", "ICICILIQ", "ICICI Prudential Liquid Fund", ["ICICI Liquid Fund", "Liquid Fund"],
+        "Fixed Income", "Liquid Fund", "Fixed Income", "Mutual Fund", 0.6, 0.0, credit_quality="AAA"),
+    sec("sec_gsec_10y", "GSEC10Y", "GoI 10-Year Government Security", ["10-Year G-Sec", "GoI 10Y", "G-Sec"],
+        "Fixed Income", "Government Bond", "Fixed Income", "Government Bond", 4.5, 0.0, credit_quality="Govt",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_gsec_5y", "GSEC5Y", "GoI 5-Year Government Security", ["5-Year G-Sec", "GoI 5Y"],
+        "Fixed Income", "Government Bond", "Fixed Income", "Government Bond", 3.0, 0.0, credit_quality="Govt",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_corp_bond_aaa", "HDFCAAA", "HDFC AAA Corporate Bond Fund", ["HDFC Corporate Bond Fund", "AAA Bond Fund"],
+        "Fixed Income", "Corporate Bond Fund", "Fixed Income", "Mutual Fund", 3.8, 0.0, credit_quality="AAA",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_psu_bond", "SBIPSU", "SBI PSU Bond Fund", ["PSU Bond Fund", "SBI PSU"],
+        "Fixed Income", "PSU Bond Fund", "Fixed Income", "Mutual Fund", 4.2, 0.0, credit_quality="AA+",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+
+    # Large-cap equity
+    sec("sec_reliance", "RELIANCE", "Reliance Industries Ltd", ["Reliance", "RIL", "Reliance Industries"],
+        "Energy", "Refining, Petrochemicals, Retail & Telecom", "Equity", "Single Stock", 22.0, 1.0, cap_tier="large",
+        factor_sensitivities={"oil": "positive"}),
+    sec("sec_hdfcbank", "HDFCBANK", "HDFC Bank Ltd", ["HDFC Bank"],
+        "Financials", "Private Sector Bank", "Equity", "Single Stock", 20.0, 1.05, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_icicibank", "ICICIBANK", "ICICI Bank Ltd", ["ICICI Bank"],
+        "Financials", "Private Sector Bank", "Equity", "Single Stock", 21.0, 1.1, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_kotakbank", "KOTAKBANK", "Kotak Mahindra Bank Ltd", ["Kotak Mahindra Bank", "Kotak Bank"],
+        "Financials", "Private Sector Bank", "Equity", "Single Stock", 20.0, 1.0, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_sbin", "SBIN", "State Bank of India", ["State Bank of India", "SBI"],
+        "Financials", "Public Sector Bank", "Equity", "Single Stock", 24.0, 1.2, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_bajfinance", "BAJFINANCE", "Bajaj Finance Ltd", ["Bajaj Finance"],
+        "Financials", "NBFC", "Equity", "Single Stock", 28.0, 1.3, cap_tier="large"),
+    sec("sec_jiofin", "JIOFIN", "Jio Financial Services Ltd", ["Jio Financial Services", "Jio Financial"],
+        "Financials", "NBFC", "Equity", "Single Stock", 26.0, 1.15, cap_tier="large", parent_id="sec_reliance"),
+    sec("sec_infosys", "INFY", "Infosys Ltd", ["Infosys"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 19.0, 0.9, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_infosys_adr", "INFY", "Infosys Ltd (ADR)", ["Infosys ADR"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 19.0, 0.9, cap_tier="large",
+        adr_of="sec_infosys", isin_suffix="INFYADR", factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_tcs", "TCS", "Tata Consultancy Services Ltd", ["TCS", "Tata Consultancy Services"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 17.0, 0.85, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_wipro", "WIPRO", "Wipro Ltd", ["Wipro"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 20.0, 0.95, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_hcltech", "HCLTECH", "HCL Technologies Ltd", ["HCL Technologies", "HCLTech", "HCL Tech"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 19.0, 0.9, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_techm", "TECHM", "Tech Mahindra Ltd", ["Tech Mahindra"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 22.0, 1.0, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_ltim", "LTIM", "LTIMindtree Ltd", ["LTIMindtree"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 23.0, 1.05, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_lt", "LT", "Larsen & Toubro Ltd", ["Larsen & Toubro", "L&T"],
+        "Industrials", "Engineering & Construction", "Equity", "Single Stock", 24.0, 1.15, cap_tier="large"),
+    sec("sec_bhartiartl", "BHARTIARTL", "Bharti Airtel Ltd", ["Bharti Airtel", "Airtel"],
+        "Communication Services", "Telecom", "Equity", "Single Stock", 20.0, 0.9, cap_tier="large"),
+    sec("sec_itc", "ITC", "ITC Ltd", ["ITC"],
+        "Consumer Staples", "FMCG & Tobacco", "Equity", "Single Stock", 15.0, 0.6, cap_tier="large"),
+    sec("sec_asianpaint", "ASIANPAINT", "Asian Paints Ltd", ["Asian Paints"],
+        "Materials", "Paints", "Equity", "Single Stock", 18.0, 0.8, cap_tier="large"),
+    sec("sec_titan", "TITAN", "Titan Company Ltd", ["Titan Company", "Titan"],
+        "Consumer Discretionary", "Jewellery & Watches", "Equity", "Single Stock", 21.0, 1.0, cap_tier="large"),
+    sec("sec_sunpharma", "SUNPHARMA", "Sun Pharmaceutical Industries Ltd", ["Sun Pharma", "Sun Pharmaceutical"],
+        "Health Care", "Pharmaceuticals", "Equity", "Single Stock", 17.0, 0.7, cap_tier="large"),
+
+    # Small / midcap equity
+    sec("sec_persistent", "PERSISTENT", "Persistent Systems Ltd", ["Persistent Systems"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 32.0, 1.2, cap_tier="mid",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_coforge", "COFORGE", "Coforge Ltd", ["Coforge"],
+        "Information Technology", "IT Services", "Equity", "Single Stock", 34.0, 1.25, cap_tier="mid",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_kpit", "KPITTECH", "KPIT Technologies Ltd", ["KPIT Technologies", "KPIT"],
+        "Information Technology", "Auto-tech / Engineering R&D", "Equity", "Single Stock", 35.0, 1.3, cap_tier="mid",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_dixon", "DIXON", "Dixon Technologies Ltd", ["Dixon Technologies", "Dixon"],
+        "Industrials", "Electronics Manufacturing Services", "Equity", "Single Stock", 40.0, 1.4, cap_tier="mid"),
+    sec("sec_cumminsind", "CUMMINSIND", "Cummins India Ltd", ["Cummins India"],
+        "Industrials", "Industrial Engines & Equipment", "Equity", "Single Stock", 26.0, 1.1, cap_tier="mid"),
+    sec("sec_voltas", "VOLTAS", "Voltas Ltd", ["Voltas"],
+        "Consumer Discretionary", "Air Conditioning & Engineering", "Equity", "Single Stock", 28.0, 1.2, cap_tier="mid"),
+
+    # Gold
+    sec("sec_gold_etf", "GOLDBEES", "Nippon India Gold ETF", ["Gold ETF", "Gold BeES", "GoldBeES"],
+        "Commodity", "Gold ETF", "Commodity", "ETF", 13.0, 0.0,
+        factor_sensitivities={"gold": "same_direction"}),
+    sec("sec_sgb", "SGB", "Sovereign Gold Bond (RBI)", ["Sovereign Gold Bond", "SGB"],
+        "Commodity", "Gold-linked Government Bond", "Commodity", "Government Bond", 12.5, 0.0, credit_quality="Govt",
+        factor_sensitivities={"gold": "same_direction"}),
+
+    # REITs
+    sec("sec_embassy_reit", "EMBASSY", "Embassy Office Parks REIT", ["Embassy REIT", "Embassy Office Parks"],
+        "Real Estate", "Office REIT", "Real Estate", "REIT", 16.0, 0.6),
+    sec("sec_mindspace_reit", "MINDSPACE", "Mindspace Business Parks REIT", ["Mindspace REIT", "Mindspace Business Parks"],
+        "Real Estate", "Office REIT", "Real Estate", "REIT", 15.0, 0.55),
+]
+
+SEC_BY_ID = {s["security_id"]: s for s in SECURITIES}
+
+# ---------------------------------------------------------------------------
+# Portfolios — 8 India-only funds, each with a named manager persona.
+# ---------------------------------------------------------------------------
+PORTFOLIOS = [
+    {
+        "portfolio_id": "pf_cap_preservation", "desk_id": "desk_income",
+        "name": "Capital Preservation Fund", "base_ccy": "INR",
+        "risk_driver": "Cash & short-term rates",
+        "mandate": "Park capital with near-zero drawdown in T-bills, liquid funds, and cash. Return of capital before return on capital.",
+        "manager_name": "Kavita Iyer",
+        "manager_bio": "18 years managing liquid and ultra-short debt funds. Prioritizes capital safety over yield, even at the cost of underperforming in rallies.",
+        "nav": 8_000_000_000,
+        "holdings": {"sec_tbill_91d": 0.55, "sec_liquid_fund": 0.35, "sec_cash_inr": 0.10},
+        "client": {
+            "name": "Meena Iyer", "age": 68, "occupation": "Retired schoolteacher",
+            "persona": "Retired, living off savings and a small pension. Capital safety is non-negotiable — this money has to cover medical expenses, not chase returns. Checks her balance once a month, gets anxious about anything volatile.",
+            "email": "meena.iyer68@gmail.com", "phone": "+91 98200 11234", "city": "Pune",
+            "relationship_since": "2019-03-14", "aum_fee_pct": 0.5, "risk_mandate": "Conservative",
+        },
+    },
+    {
+        "portfolio_id": "pf_bond_ladder", "desk_id": "desk_income",
+        "name": "Government & Corporate Bond Ladder", "base_ccy": "INR",
+        "risk_driver": "Interest rate & credit duration",
+        "mandate": "Laddered exposure across GoI securities and high-grade corporate bonds for steady income with controlled duration risk.",
+        "manager_name": "Rohan Deshpande",
+        "manager_bio": "Fixed-income specialist who watches RBI policy meetings closely. Wary of duration risk if rates stay higher for longer.",
+        "nav": 12_000_000_000,
+        "holdings": {"sec_gsec_10y": 0.30, "sec_gsec_5y": 0.25, "sec_corp_bond_aaa": 0.25,
+                     "sec_psu_bond": 0.15, "sec_cash_inr": 0.05},
+        "client": {
+            "name": "Suresh Nair", "age": 45, "occupation": "Branch manager, private sector bank",
+            "persona": "Salaried, steady 9-to-5, no time or appetite to track markets daily. Investing specifically to fund his daughter's wedding in ~3 years — wants predictable income, not surprises. Reviews his statement quarterly.",
+            "email": "suresh.nair45@yahoo.in", "phone": "+91 98450 22987", "city": "Kochi",
+            "relationship_since": "2021-06-02", "aum_fee_pct": 0.75, "risk_mandate": "Conservative-Moderate",
+        },
+    },
+    {
+        "portfolio_id": "pf_largecap_growth", "desk_id": "desk_equity",
+        "name": "Large-Cap Equity Growth Fund", "base_ccy": "INR",
+        "risk_driver": "Broad market beta, large-cap concentration",
+        "mandate": "Core Nifty-heavyweight exposure across financials, energy, IT, and consumer names for long-term capital growth.",
+        "manager_name": "Aarav Mehta",
+        "manager_bio": "Bullish on capex-led industrials and financials, cautious on IT services margins given global client budget pressure.",
+        "nav": 30_000_000_000,
+        "holdings": {"sec_reliance": 0.14, "sec_hdfcbank": 0.13, "sec_icicibank": 0.11,
+                     "sec_infosys": 0.10, "sec_tcs": 0.10, "sec_lt": 0.09,
+                     "sec_bhartiartl": 0.08, "sec_itc": 0.08, "sec_asianpaint": 0.09, "sec_titan": 0.08},
+        "client": {
+            "name": "Priya Sharma", "age": 34, "occupation": "Senior product manager, tech company",
+            "persona": "Full-time job with a demanding schedule — investing is entirely hands-off by design. Wants a diversified, long-term core holding she can forget about for years, not something she has to actively manage alongside her career.",
+            "email": "priya.sharma34@outlook.com", "phone": "+91 99870 45611", "city": "Bengaluru",
+            "relationship_since": "2020-11-20", "aum_fee_pct": 1.0, "risk_mandate": "Moderate-Growth",
+        },
+    },
+    {
+        "portfolio_id": "pf_banking_financials", "desk_id": "desk_equity",
+        "name": "Banking & Financials Concentrated Fund", "base_ccy": "INR",
+        "risk_driver": "Financial-sector concentration, credit cycle & NIM sensitivity",
+        "mandate": "High-conviction, concentrated bets on India's private and public banks plus leading NBFCs.",
+        "manager_name": "Meera Nair",
+        "manager_bio": "Former credit analyst, deliberately concentrated. Believes India's private banks are underappreciated versus global peers.",
+        "nav": 15_000_000_000,
+        "holdings": {"sec_hdfcbank": 0.22, "sec_icicibank": 0.20, "sec_kotakbank": 0.16,
+                     "sec_sbin": 0.16, "sec_bajfinance": 0.14, "sec_jiofin": 0.12},
+        "client": {
+            "name": "Vikram Oberoi", "age": 52, "occupation": "Ex-banker, now angel investor",
+            "persona": "Spent 20 years in banking before retiring to angel-invest full time. Has strong, informed conviction that Indian private banks are underpriced and explicitly wants concentrated exposure, not a diversified index-hugger. Pushes back if the book gets too diluted.",
+            "email": "v.oberoi.investments@gmail.com", "phone": "+91 98200 77341", "city": "Mumbai",
+            "relationship_since": "2018-01-09", "aum_fee_pct": 1.25, "risk_mandate": "Aggressive-Concentrated",
+        },
+    },
+    {
+        "portfolio_id": "pf_it_services", "desk_id": "desk_equity",
+        "name": "IT & Technology Services Fund", "base_ccy": "INR",
+        "risk_driver": "Export/currency sensitivity, US & EU client discretionary IT spend",
+        "mandate": "Concentrated exposure to India's IT services exporters; returns depend heavily on US/EU enterprise tech budgets and INR/USD movement.",
+        "manager_name": "Vikram Rao",
+        "manager_bio": "Ex-IT-sector research analyst. Watches US mega-cap tech earnings closely, since client-budget commentary from firms like Microsoft foreshadows Indian IT services demand.",
+        "nav": 18_000_000_000,
+        "holdings": {"sec_tcs": 0.20, "sec_infosys": 0.18, "sec_infosys_adr": 0.05,
+                     "sec_wipro": 0.15, "sec_hcltech": 0.15, "sec_techm": 0.14, "sec_ltim": 0.13},
+        "client": {
+            "name": "Rohan Mehta", "age": 29, "occupation": "Software engineer, US-based MNC (Bengaluru office)",
+            "persona": "Deliberately invests only in what he understands — IT services — because he lives it day to day and reads every earnings call transcript for fun. Confident, opinionated, wants a research partner who can keep up, not simplify things for him.",
+            "email": "rohan.mehta.dev@gmail.com", "phone": "+91 90080 33456", "city": "Bengaluru",
+            "relationship_since": "2022-08-15", "aum_fee_pct": 1.0, "risk_mandate": "Growth-Concentrated",
+        },
+    },
+    {
+        "portfolio_id": "pf_gold_hedge", "desk_id": "desk_real",
+        "name": "Gold & Inflation Hedge Fund", "base_ccy": "INR",
+        "risk_driver": "Real rates, inflation, INR depreciation",
+        "mandate": "Physical-gold-linked exposure via ETFs and Sovereign Gold Bonds, held as a portfolio-level inflation and currency hedge.",
+        "manager_name": "Ananya Krishnan",
+        "manager_bio": "Manages the firm's only non-equity, non-debt sleeve. Treats the gold allocation as insurance, not a return driver.",
+        "nav": 6_000_000_000,
+        "holdings": {"sec_gold_etf": 0.55, "sec_sgb": 0.35, "sec_cash_inr": 0.10},
+        "client": {
+            "name": "Kamala Devi", "age": 58, "occupation": "Homemaker",
+            "persona": "Manages the family's wealth the way her mother did — gold has always been the trusted store of value, not an asset class to be argued about. Came to this account through her son, still prefers a phone call over an app. Deeply inflation-conscious from having lived through past rupee depreciation.",
+            "email": "kamala.devi.family@gmail.com", "phone": "+91 98450 66120", "city": "Chennai",
+            "relationship_since": "2017-05-30", "aum_fee_pct": 0.6, "risk_mandate": "Conservative",
+        },
+    },
+    {
+        "portfolio_id": "pf_smallcap_value", "desk_id": "desk_equity",
+        "name": "Small & Midcap Value Fund", "base_ccy": "INR",
+        "risk_driver": "Small/midcap liquidity & earnings volatility",
+        "mandate": "Higher-risk, higher-reward bets on midcap IT, industrials, and engineering names below the large-cap universe.",
+        "manager_name": "Devika Menon",
+        "manager_bio": "Youngest PM on the desk, explicitly mandated to take more risk than the rest of the book for higher return potential.",
+        "nav": 9_000_000_000,
+        "holdings": {"sec_persistent": 0.18, "sec_coforge": 0.17, "sec_kpit": 0.16,
+                     "sec_dixon": 0.17, "sec_cumminsind": 0.16, "sec_voltas": 0.16},
+        "client": {
+            "name": "Arjun Verma", "age": 22, "occupation": "Full-time trader (college dropout)",
+            "persona": "Dropped out of college to trade markets full time, against his family's wishes — this account is effectively his career, not a side hobby. High risk appetite by choice, checks prices multiple times a day, wants a portfolio that can compound aggressively while he's young enough to absorb the swings.",
+            "email": "arjunv.trades@gmail.com", "phone": "+91 89390 12873", "city": "Indore",
+            "relationship_since": "2023-02-11", "aum_fee_pct": 1.5, "risk_mandate": "Aggressive",
+        },
+    },
+    {
+        "portfolio_id": "pf_reit_income", "desk_id": "desk_real",
+        "name": "Real Estate & REIT Income Fund", "base_ccy": "INR",
+        "risk_driver": "Office real estate demand, rate sensitivity via yield competition",
+        "mandate": "Income-focused exposure to listed Indian REITs (office/commercial real estate) for stable distributions.",
+        "manager_name": "Sanjay Bhatt",
+        "manager_bio": "Real-assets specialist. Watches commercial office leasing and vacancy trends closely, since REIT yields compete directly with bond yields.",
+        "nav": 5_000_000_000,
+        "holdings": {"sec_embassy_reit": 0.60, "sec_mindspace_reit": 0.40},
+        "client": {
+            "name": "Deepak & Ritu Kapoor", "age": 41, "occupation": "Dual-income couple (marketing exec + doctor)",
+            "persona": "Two demanding careers, no time to be landlords. Always liked the idea of rental income from commercial property but didn't want the hassle of actually owning and managing real estate — REITs were pitched to them as exactly that, minus the tenants and repairs.",
+            "email": "kapoor.household@gmail.com", "phone": "+91 97690 55210", "city": "Gurugram",
+            "relationship_since": "2022-04-03", "aum_fee_pct": 0.9, "risk_mandate": "Moderate-Income",
+        },
+    },
+    {
+        "portfolio_id": "pf_nifty_index", "desk_id": "desk_equity",
+        "name": "Nifty 50 Index Fund", "base_ccy": "INR",
+        "risk_driver": "Broad market beta, no active stock selection",
+        "mandate": "Passive, broadly diversified exposure across large-cap India equity at index-like weights. No concentrated bets, no active selection — designed to track the market, not beat it.",
+        "manager_name": "Ishaan Kapoor",
+        "manager_bio": "Runs the passive sleeve. Believes most active managers don't beat the index after fees, and built this fund to prove it.",
+        "nav": 25_000_000_000,
+        "holdings": {"sec_reliance": 0.12, "sec_hdfcbank": 0.11, "sec_icicibank": 0.09,
+                     "sec_infosys": 0.08, "sec_tcs": 0.08, "sec_lt": 0.07, "sec_bhartiartl": 0.07,
+                     "sec_kotakbank": 0.06, "sec_sbin": 0.06, "sec_itc": 0.06,
+                     "sec_asianpaint": 0.05, "sec_titan": 0.05, "sec_sunpharma": 0.05, "sec_hcltech": 0.05},
+        "client": {
+            "name": "Kabir Anand", "age": 31, "occupation": "Data scientist",
+            "persona": "Read enough about index investing to become mildly evangelical about it. Explicitly does not want to pay for active stock-picking he doesn't believe beats the market after fees — wants the broad India growth story, nothing more, nothing less. The most hands-off, lowest-maintenance client on the book.",
+            "email": "kabir.anand.ds@gmail.com", "phone": "+91 91234 55667", "city": "Hyderabad",
+            "relationship_since": "2023-09-01", "aum_fee_pct": 0.3, "risk_mandate": "Moderate-Passive",
+        },
+    },
+    {
+        "portfolio_id": "pf_balanced_hybrid", "desk_id": "desk_equity",
+        "name": "Balanced Advantage Hybrid Fund", "base_ccy": "INR",
+        "risk_driver": "Blended equity/debt allocation, moderate volatility by design",
+        "mandate": "A single all-weather blend of large-cap equity and high-grade debt, roughly 65/35, designed so the client never has to think about rebalancing between asset classes themselves.",
+        "manager_name": "Farah Sheikh",
+        "manager_bio": "Manages the firm's all-weather blended fund. Rebalances mechanically on a schedule, not on emotion or market calls.",
+        "nav": 14_000_000_000,
+        "holdings": {"sec_hdfcbank": 0.15, "sec_reliance": 0.15, "sec_infosys": 0.12,
+                     "sec_tcs": 0.11, "sec_lt": 0.12, "sec_gsec_10y": 0.15, "sec_corp_bond_aaa": 0.20},
+        "client": {
+            "name": "Neha Kulkarni", "age": 38, "occupation": "Small business owner (boutique retail)",
+            "persona": "Runs her own store and already has enough decisions to make in a day. Explicitly asked for 'one fund that just handles the equity/debt split for me' — doesn't want to be called every time the market moves, wants moderate, steady growth she can mostly ignore.",
+            "email": "neha.kulkarni.retail@gmail.com", "phone": "+91 90210 44982", "city": "Nagpur",
+            "relationship_since": "2021-02-18", "aum_fee_pct": 1.1, "risk_mandate": "Moderate",
+        },
+    },
+    {
+        "portfolio_id": "pf_nri_growth", "desk_id": "desk_equity",
+        "name": "NRI Growth Portfolio", "base_ccy": "INR",
+        "risk_driver": "Blue-chip compounding, long time horizon, low turnover",
+        "mandate": "Long-horizon, blue-chip-only exposure for an overseas client planning an eventual return to India; prioritizes liquidity and stability over short-term alpha, mindful of eventual repatriation needs.",
+        "manager_name": "Rajesh Iyer",
+        "manager_bio": "Specializes in NRI-focused mandates. Prioritizes liquidity and blue-chip stability given clients' long-distance, lower-touch relationship with the market.",
+        "nav": 11_000_000_000,
+        "holdings": {"sec_hdfcbank": 0.18, "sec_reliance": 0.16, "sec_tcs": 0.14,
+                     "sec_asianpaint": 0.12, "sec_itc": 0.12, "sec_titan": 0.10,
+                     "sec_icicibank": 0.10, "sec_sunpharma": 0.08},
+        "client": {
+            "name": "Arvind & Sunita Rao", "age": 53, "occupation": "NRI couple, engineers based in Dubai",
+            "persona": "Both work in the Gulf and have been sending money home to invest for over a decade, with an eye on eventually returning to India. Communicates mostly over WhatsApp and the occasional call across time zones. Cares more about not losing money on something exotic than beating the market — wants names they'd recognize from back home.",
+            "email": "arvind.rao.dxb@gmail.com", "phone": "+971 50 445 8821", "city": "Dubai (NRI)",
+            "relationship_since": "2016-11-05", "aum_fee_pct": 0.85, "risk_mandate": "Growth-Stable",
+        },
+    },
+    {
+        "portfolio_id": "pf_retirement_income", "desk_id": "desk_income",
+        "name": "Retirement Income (SWP) Fund", "base_ccy": "INR",
+        "risk_driver": "Dividend/income stability, sequence-of-return risk in retirement",
+        "mandate": "Income-first allocation blending dividend-paying equity, high-grade debt, and REIT distributions to support a monthly systematic withdrawal without eroding capital in a downturn.",
+        "manager_name": "Sunita Ramesh",
+        "manager_bio": "Manages income-focused retirement mandates. Obsessive about downside protection since these clients can't simply wait out a bad year.",
+        "nav": 10_000_000_000,
+        "holdings": {"sec_itc": 0.15, "sec_hdfcbank": 0.10, "sec_corp_bond_aaa": 0.25,
+                     "sec_gsec_10y": 0.20, "sec_psu_bond": 0.15, "sec_embassy_reit": 0.15},
+        "client": {
+            "name": "Prakash Iyer", "age": 66, "occupation": "Retired PSU engineer",
+            "persona": "Spent 35 years at a public-sector company and retired on a pension plus provident fund payout, previously kept everything in fixed deposits. Cautiously agreed to diversify a portion into this account on his relationship manager's advice, but still needs a predictable monthly withdrawal to feel comfortable — capital loss is his single biggest fear.",
+            "email": "prakash.iyer.retd@gmail.com", "phone": "+91 98200 33119", "city": "Thiruvananthapuram",
+            "relationship_since": "2019-10-22", "aum_fee_pct": 0.7, "risk_mandate": "Conservative-Income",
+        },
+    },
+    {
+        "portfolio_id": "pf_reference_balanced", "desk_id": "desk_benchmark",
+        "name": "Reference Balanced 60/40 Fund", "base_ccy": "INR",
+        "risk_driver": "N/A — fixed benchmark, not actively managed",
+        "mandate": "A fixed, broadly diversified 60% equity / 40% debt reference book computed by the exact same engine as every other fund. Exists only so any signal's impact on a real fund can be compared against what a normal, unconcentrated book would show — the 'you vs. a normal book' lens (LLD §12). Not a real desk; no active manager.",
+        "manager_name": None,
+        "manager_bio": "N/A — fixed benchmark, not actively managed by anyone.",
+        "is_reference": True,
+        "nav": 20_000_000_000,
+        "holdings": {"sec_reliance": 0.10, "sec_hdfcbank": 0.09, "sec_icicibank": 0.08,
+                     "sec_infosys": 0.07, "sec_tcs": 0.07, "sec_lt": 0.05, "sec_bhartiartl": 0.05,
+                     "sec_itc": 0.04, "sec_sbin": 0.03, "sec_asianpaint": 0.02,
+                     "sec_gsec_10y": 0.15, "sec_corp_bond_aaa": 0.15, "sec_gsec_5y": 0.10},
+    },
+]
+
+# ---------------------------------------------------------------------------
+# Assemble holdings list + risk block
+# ---------------------------------------------------------------------------
+def build_holdings_and_risk():
+    holdings = []
+    risk = {}
+    hid = 1
+    for p in PORTFOLIOS:
+        asset_mix = {}
+        sum_beta = 0.0
+        sum_vol = 0.0
+        sum_sq_weight = 0.0
+        top = (None, 0.0)
+        for sec_id, weight in p["holdings"].items():
+            s = SEC_BY_ID[sec_id]
+            holdings.append({
+                "holding_id": f"hld_{hid:04d}",
+                "portfolio_id": p["portfolio_id"],
+                "security_id": sec_id,
+                "weight": weight,
+                "market_value": round(p["nav"] * weight, 2),
+                "as_of_date": "2026-07-23",
+            })
+            hid += 1
+            asset_mix[s["asset_class"]] = asset_mix.get(s["asset_class"], 0.0) + weight * 100
+            sum_beta += s["beta"] * weight
+            sum_vol += s["vol"] * weight
+            sum_sq_weight += weight ** 2
+            if weight > top[1]:
+                top = (s["name"], weight)
+
+        largest_class = max(asset_mix, key=asset_mix.get)
+        est_vol = round(sum_vol, 1)
+        eq_hhi = round(sum_sq_weight * 10000, 0)
+        # Concentration bump: 1.0x (perfectly diversified) up to 1.5x (single holding).
+        concentration_factor = 1 + (eq_hhi / 10000) * 0.5
+        risk_score = round(est_vol * concentration_factor, 1)
+        # Thresholds tuned to spread the 12 books across the full risk ladder
+        # rather than bunching most into one tier.
+        if risk_score < 8:
+            tier = "Low"
+        elif risk_score < 15:
+            tier = "Moderate"
+        elif risk_score < 20:
+            tier = "Elevated"
+        elif risk_score < 24:
+            tier = "High"
+        else:
+            tier = "Very High"
+
+        risk[p["portfolio_id"]] = {
+            "risk_score": risk_score,
+            "risk_tier": tier,
+            "est_vol": est_vol,
+            "asset_mix": {k: round(v, 1) for k, v in asset_mix.items()},
+            "largest_class": largest_class,
+            "largest_class_pct": round(asset_mix[largest_class], 1),
+            "top1_pct": round(top[1] * 100, 1),
+            "top1_name": top[0],
+            "eq_hhi": eq_hhi,
+            "em_pct": 100.0,  # all-India book; India is classified an emerging market
+            "hy_credit_pct": 0.0,  # no sub-investment-grade credit held
+            "wtd_beta": round(sum_beta, 2),
+            "num_holdings": len(p["holdings"]),
+        }
+    return holdings, risk
+
+
+# Behavioral / psychographic profile per client, keyed by portfolio_id. Kept
+# separate from the inline persona so it is easy to audit and extend. These
+# describe how the client thinks and behaves, which drives how the manager
+# should communicate, not just what they hold.
+PSYCHOGRAPHICS = {
+    "pf_cap_preservation": {
+        "decision_style": "Delegates fully, defers to advisor",
+        "loss_aversion": "Very high", "financial_literacy": "Basic",
+        "engagement": "Checks monthly", "comms_pref": "Phone call",
+        "primary_goal": "Preserve capital for medical and living costs",
+        "time_horizon": "Short, under 3 years", "life_stage": "Retired",
+    },
+    "pf_bond_ladder": {
+        "decision_style": "Deliberate, asks questions before acting",
+        "loss_aversion": "Moderate to high", "financial_literacy": "Intermediate",
+        "engagement": "Reviews quarterly", "comms_pref": "Email",
+        "primary_goal": "Fund daughter's wedding in about 3 years",
+        "time_horizon": "Medium, 3 to 5 years", "life_stage": "Mid-career",
+    },
+    "pf_largecap_growth": {
+        "decision_style": "Hands-off by design, wants set-and-forget",
+        "loss_aversion": "Moderate", "financial_literacy": "Intermediate",
+        "engagement": "Reviews quarterly", "comms_pref": "WhatsApp",
+        "primary_goal": "Long-term wealth building",
+        "time_horizon": "Long, 10 years plus", "life_stage": "Early to mid career",
+    },
+    "pf_banking_financials": {
+        "decision_style": "Self-directed, high conviction, pushes back",
+        "loss_aversion": "Low", "financial_literacy": "Expert",
+        "engagement": "Tracks weekly", "comms_pref": "In-person or call",
+        "primary_goal": "Concentrated conviction growth",
+        "time_horizon": "Medium to long, 5 to 10 years", "life_stage": "Pre-retirement",
+    },
+    "pf_it_services": {
+        "decision_style": "Opinionated, reads every earnings call",
+        "loss_aversion": "Low to moderate", "financial_literacy": "Advanced",
+        "engagement": "Checks daily", "comms_pref": "Detailed email",
+        "primary_goal": "Sector-conviction growth in what he knows",
+        "time_horizon": "Long, 10 years plus", "life_stage": "Early career",
+    },
+    "pf_gold_hedge": {
+        "decision_style": "Traditional, decides through her son",
+        "loss_aversion": "High", "financial_literacy": "Basic",
+        "engagement": "Rarely checks directly", "comms_pref": "Phone call",
+        "primary_goal": "Inflation protection and preserving family wealth",
+        "time_horizon": "Medium to long", "life_stage": "Pre-retirement",
+    },
+    "pf_smallcap_value": {
+        "decision_style": "Aggressive, hands-on, high urgency",
+        "loss_aversion": "Very low", "financial_literacy": "Advanced",
+        "engagement": "Checks several times a day", "comms_pref": "WhatsApp and app",
+        "primary_goal": "Aggressive compounding while young",
+        "time_horizon": "Long, but trades actively", "life_stage": "Early career",
+    },
+    "pf_reit_income": {
+        "decision_style": "Delegates, values convenience",
+        "loss_aversion": "Moderate", "financial_literacy": "Intermediate",
+        "engagement": "Reviews quarterly", "comms_pref": "Email",
+        "primary_goal": "Passive property-style rental income",
+        "time_horizon": "Medium to long", "life_stage": "Mid-career",
+    },
+    "pf_nifty_index": {
+        "decision_style": "Rational, evidence-driven, cost-conscious",
+        "loss_aversion": "Moderate", "financial_literacy": "Advanced",
+        "engagement": "Reviews quarterly", "comms_pref": "Email",
+        "primary_goal": "Low-cost market returns",
+        "time_horizon": "Long, 10 years plus", "life_stage": "Early to mid career",
+    },
+    "pf_balanced_hybrid": {
+        "decision_style": "Pragmatic, time-poor, wants balance",
+        "loss_aversion": "Moderate", "financial_literacy": "Intermediate",
+        "engagement": "Reviews a few times a year", "comms_pref": "WhatsApp",
+        "primary_goal": "Steady growth with a smoother ride",
+        "time_horizon": "Medium to long", "life_stage": "Mid-career",
+    },
+    "pf_nri_growth": {
+        "decision_style": "Diligent, remote, currency-aware",
+        "loss_aversion": "Moderate", "financial_literacy": "Advanced",
+        "engagement": "Reviews monthly", "comms_pref": "Email and video call",
+        "primary_goal": "Build India-based wealth for eventual return",
+        "time_horizon": "Medium to long", "life_stage": "Pre-retirement",
+    },
+    "pf_retirement_income": {
+        "decision_style": "Careful, income-focused, methodical",
+        "loss_aversion": "High", "financial_literacy": "Intermediate",
+        "engagement": "Reviews monthly", "comms_pref": "Phone call",
+        "primary_goal": "Regular retirement income through withdrawals",
+        "time_horizon": "Short to medium", "life_stage": "Retired",
+    },
+}
+
+
+# Demo relationship data: past PM-to-client interactions, the next action due,
+# and a few extra relationship insights. Dates are fixed (today in the demo is
+# 2026-07-24). This is synthetic, for showing the workflow, not real records.
+def _c(date, channel, direction, summary):
+    return {"date": date, "channel": channel, "direction": direction, "summary": summary}
+
+
+COMMUNICATIONS = {
+    "pf_cap_preservation": {
+        "relationship": {"referral_source": "Walk-in branch referral", "dependents": "Widow, one son abroad",
+                         "satisfaction": "High", "manager_note": "Values reassurance over returns. Never lead with market volatility."},
+        "history": [
+            _c("2026-07-08", "Phone", "outbound", "Monthly reassurance call, walked her through why the balance is stable despite market noise."),
+            _c("2026-06-30", "Phone", "inbound", "Called worried about a headline on markets falling, reassured, no action taken."),
+            _c("2026-06-10", "Email", "outbound", "Sent a simple one-page monthly statement summary."),
+        ],
+        "next_action": {"due": "2026-08-08", "action": "Monthly reassurance call", "priority": "Normal"},
+    },
+    "pf_bond_ladder": {
+        "relationship": {"referral_source": "Colleague referral", "dependents": "Wife, one daughter (wedding upcoming)",
+                         "satisfaction": "High", "manager_note": "Goal-anchored to the wedding. Keep duration short as the date nears."},
+        "history": [
+            _c("2026-07-15", "Email", "outbound", "Quarterly review email with the laddered maturity schedule ahead of the wedding."),
+            _c("2026-07-02", "Email", "inbound", "Asked whether to lock a longer maturity, explained the duration tradeoff."),
+            _c("2026-04-14", "Video call", "outbound", "Q4 review, confirmed wedding timeline unchanged at about 3 years."),
+        ],
+        "next_action": {"due": "2026-10-15", "action": "Next quarterly review", "priority": "Normal"},
+    },
+    "pf_largecap_growth": {
+        "relationship": {"referral_source": "Digital sign-up", "dependents": "Single, no dependents",
+                         "satisfaction": "Medium", "manager_note": "Hands-off. A short WhatsApp line each quarter is enough, do not over-contact."},
+        "history": [
+            _c("2026-07-20", "WhatsApp", "outbound", "Sent the quarterly one-liner, book is up, nothing to do."),
+            _c("2026-05-05", "WhatsApp", "inbound", "Quick thumbs-up, no questions."),
+        ],
+        "next_action": {"due": "2026-10-20", "action": "Quarterly check-in", "priority": "Low"},
+    },
+    "pf_banking_financials": {
+        "relationship": {"referral_source": "Ex-colleague from banking", "dependents": "Married, two adult children",
+                         "satisfaction": "High", "manager_note": "Expert and opinionated. Engage on the thesis, do not simplify."},
+        "history": [
+            _c("2026-07-22", "Phone", "inbound", "Debated HDFC Bank Q1 margins, wants to stay concentrated."),
+            _c("2026-07-15", "In-person", "both", "Coffee meeting, reviewed the banking thesis, agreed to hold conviction."),
+            _c("2026-07-08", "Email", "outbound", "Shared a broker note on NBFC asset quality."),
+        ],
+        "next_action": {"due": "2026-07-29", "action": "Weekly banking-sector catch-up call", "priority": "High"},
+    },
+    "pf_it_services": {
+        "relationship": {"referral_source": "Digital sign-up", "dependents": "Single, supports parents",
+                         "satisfaction": "High", "manager_note": "Reads every earnings call. Send primary-source detail, he will spot fluff."},
+        "history": [
+            _c("2026-07-23", "Email", "inbound", "Long email dissecting the Infosys guidance cut, wants a deep-dive on the read-through."),
+            _c("2026-07-18", "Email", "outbound", "Sent TCS earnings-call transcript highlights."),
+        ],
+        "next_action": {"due": "2026-07-25", "action": "Reply with Infosys guidance deep-dive", "priority": "High"},
+    },
+    "pf_gold_hedge": {
+        "relationship": {"referral_source": "Family (son is also a client)", "dependents": "Homemaker, decisions via son",
+                         "satisfaction": "High", "manager_note": "Route substantive discussions through her son. Prefers phone, not app."},
+        "history": [
+            _c("2026-07-05", "Phone", "outbound", "Spoke with her son, explained gold's role as an inflation hedge."),
+            _c("2026-06-01", "Phone", "inbound", "Son asked about adding to gold after the price rise, discussed."),
+        ],
+        "next_action": {"due": "2026-08-05", "action": "Monthly call via son", "priority": "Normal"},
+    },
+    "pf_smallcap_value": {
+        "relationship": {"referral_source": "Social media / self-directed", "dependents": "Single, no dependents",
+                         "satisfaction": "Medium", "manager_note": "High energy, impulsive. Reinforce position-sizing discipline every contact."},
+        "history": [
+            _c("2026-07-23", "WhatsApp", "inbound", "Asking about adding a new midcap IT name, reminded him of concentration limits."),
+            _c("2026-07-21", "WhatsApp", "inbound", "Excited about Dixon's run, wants to increase exposure."),
+            _c("2026-07-19", "App note", "outbound", "Flagged that smallcap volatility is elevated."),
+        ],
+        "next_action": {"due": "2026-07-24", "action": "Discuss position-sizing discipline", "priority": "High"},
+    },
+    "pf_reit_income": {
+        "relationship": {"referral_source": "Wealth seminar", "dependents": "Married couple, one young child",
+                         "satisfaction": "High", "manager_note": "Want convenience and income. Lead with distributions, not price moves."},
+        "history": [
+            _c("2026-07-12", "Email", "outbound", "Quarterly distribution summary from Embassy and Mindspace REITs."),
+            _c("2026-04-10", "Email", "inbound", "Asked about office vacancy trends, shared leasing data."),
+        ],
+        "next_action": {"due": "2026-10-12", "action": "Quarterly distribution review", "priority": "Normal"},
+    },
+    "pf_nifty_index": {
+        "relationship": {"referral_source": "Digital sign-up", "dependents": "Single",
+                         "satisfaction": "High", "manager_note": "Cost-obsessed and rational. Always have expense ratio and tracking error ready."},
+        "history": [
+            _c("2026-07-16", "Email", "outbound", "Quarterly tracking-error and expense-ratio note."),
+            _c("2026-07-10", "Email", "inbound", "Asked to confirm the fund's expense ratio versus a competitor."),
+        ],
+        "next_action": {"due": "2026-10-16", "action": "Quarterly index review", "priority": "Low"},
+    },
+    "pf_balanced_hybrid": {
+        "relationship": {"referral_source": "Existing-client referral", "dependents": "Married, runs a family business",
+                         "satisfaction": "Medium", "manager_note": "Time-poor business owner. Watch her seasonal cash needs around festivals."},
+        "history": [
+            _c("2026-07-19", "WhatsApp", "outbound", "Mid-year check-in, the balanced mix cushioned the IT drag."),
+            _c("2026-03-22", "Phone", "inbound", "Discussed cash needs for her retail business seasonality."),
+        ],
+        "next_action": {"due": "2026-09-19", "action": "Pre-festival-season liquidity check", "priority": "Normal"},
+    },
+    "pf_nri_growth": {
+        "relationship": {"referral_source": "NRI wealth webinar", "dependents": "Married couple, children studying abroad",
+                         "satisfaction": "High", "manager_note": "Currency and repatriation-aware. Always pair reviews with an FX view."},
+        "history": [
+            _c("2026-07-17", "Video call", "both", "Monthly review, discussed rupee levels and repatriation timing."),
+            _c("2026-07-03", "Email", "inbound", "Asked about tax implications of an eventual return to India."),
+        ],
+        "next_action": {"due": "2026-08-17", "action": "Monthly NRI review and FX update", "priority": "Normal"},
+    },
+    "pf_retirement_income": {
+        "relationship": {"referral_source": "PSU retiree network", "dependents": "Wife, financially independent children",
+                         "satisfaction": "High", "manager_note": "Income certainty is everything. Confirm each payout, avoid surprises."},
+        "history": [
+            _c("2026-07-14", "Phone", "outbound", "Confirmed the monthly SWP payout processed, income steady."),
+            _c("2026-07-01", "Phone", "inbound", "Asked whether the payout can rise with inflation, explained the annual reset."),
+        ],
+        "next_action": {"due": "2026-08-14", "action": "Monthly SWP payout confirmation", "priority": "Normal"},
+    },
+}
+
+
+def main():
+    holdings, risk = build_holdings_and_risk()
+    portfolios_out = []
+    for p in PORTFOLIOS:
+        entry = {k: v for k, v in p.items() if k not in ("holdings", "nav")}
+        if entry.get("client"):
+            client = dict(entry["client"])
+            # strip em dashes from the free-text persona (house style: no em dashes)
+            if client.get("persona"):
+                client["persona"] = client["persona"].replace(" — ", ", ").replace("—", ", ")
+            psy = PSYCHOGRAPHICS.get(p["portfolio_id"])
+            if psy:
+                client["psychographics"] = psy
+            comm = COMMUNICATIONS.get(p["portfolio_id"])
+            if comm:
+                client["relationship"] = comm.get("relationship", {})
+                client["communications"] = comm.get("history", [])
+                client["next_action"] = comm.get("next_action")
+            entry["client"] = client
+        portfolios_out.append(entry)
+    data = {
+        "desks": DESKS,
+        "portfolios": portfolios_out,
+        "securities": SECURITIES,
+        "holdings": holdings,
+        "risk": risk,
+    }
+    with open(OUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    print(f"Wrote {len(SECURITIES)} securities, {len(portfolios_out)} portfolios, "
+          f"{len(holdings)} holdings to {OUT_PATH}")
+
+
+if __name__ == "__main__":
+    main()

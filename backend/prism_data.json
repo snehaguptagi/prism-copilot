@@ -1,0 +1,2545 @@
+{
+  "desks": [
+    {
+      "desk_id": "desk_equity",
+      "tenant_id": "tnt_001",
+      "name": "Equity Desk"
+    },
+    {
+      "desk_id": "desk_income",
+      "tenant_id": "tnt_001",
+      "name": "Fixed Income & Treasury Desk"
+    },
+    {
+      "desk_id": "desk_real",
+      "tenant_id": "tnt_001",
+      "name": "Real Assets & Alternatives Desk"
+    },
+    {
+      "desk_id": "desk_benchmark",
+      "tenant_id": "tnt_001",
+      "name": "Benchmark (non-desk, reference only)"
+    }
+  ],
+  "portfolios": [
+    {
+      "portfolio_id": "pf_cap_preservation",
+      "desk_id": "desk_income",
+      "name": "Capital Preservation Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Cash & short-term rates",
+      "mandate": "Park capital with near-zero drawdown in T-bills, liquid funds, and cash. Return of capital before return on capital.",
+      "manager_name": "Kavita Iyer",
+      "manager_bio": "18 years managing liquid and ultra-short debt funds. Prioritizes capital safety over yield, even at the cost of underperforming in rallies.",
+      "client": {
+        "name": "Meena Iyer",
+        "age": 68,
+        "occupation": "Retired schoolteacher",
+        "persona": "Retired, living off savings and a small pension. Capital safety is non-negotiable, this money has to cover medical expenses, not chase returns. Checks her balance once a month, gets anxious about anything volatile.",
+        "email": "meena.iyer68@gmail.com",
+        "phone": "+91 98200 11234",
+        "city": "Pune",
+        "relationship_since": "2019-03-14",
+        "aum_fee_pct": 0.5,
+        "risk_mandate": "Conservative",
+        "psychographics": {
+          "decision_style": "Delegates fully, defers to advisor",
+          "loss_aversion": "Very high",
+          "financial_literacy": "Basic",
+          "engagement": "Checks monthly",
+          "comms_pref": "Phone call",
+          "primary_goal": "Preserve capital for medical and living costs",
+          "time_horizon": "Short, under 3 years",
+          "life_stage": "Retired"
+        },
+        "relationship": {
+          "referral_source": "Walk-in branch referral",
+          "dependents": "Widow, one son abroad",
+          "satisfaction": "High",
+          "manager_note": "Values reassurance over returns. Never lead with market volatility."
+        },
+        "communications": [
+          {
+            "date": "2026-07-08",
+            "channel": "Phone",
+            "direction": "outbound",
+            "summary": "Monthly reassurance call, walked her through why the balance is stable despite market noise."
+          },
+          {
+            "date": "2026-06-30",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Called worried about a headline on markets falling, reassured, no action taken."
+          },
+          {
+            "date": "2026-06-10",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Sent a simple one-page monthly statement summary."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-08",
+          "action": "Monthly reassurance call",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_bond_ladder",
+      "desk_id": "desk_income",
+      "name": "Government & Corporate Bond Ladder",
+      "base_ccy": "INR",
+      "risk_driver": "Interest rate & credit duration",
+      "mandate": "Laddered exposure across GoI securities and high-grade corporate bonds for steady income with controlled duration risk.",
+      "manager_name": "Rohan Deshpande",
+      "manager_bio": "Fixed-income specialist who watches RBI policy meetings closely. Wary of duration risk if rates stay higher for longer.",
+      "client": {
+        "name": "Suresh Nair",
+        "age": 45,
+        "occupation": "Branch manager, private sector bank",
+        "persona": "Salaried, steady 9-to-5, no time or appetite to track markets daily. Investing specifically to fund his daughter's wedding in ~3 years, wants predictable income, not surprises. Reviews his statement quarterly.",
+        "email": "suresh.nair45@yahoo.in",
+        "phone": "+91 98450 22987",
+        "city": "Kochi",
+        "relationship_since": "2021-06-02",
+        "aum_fee_pct": 0.75,
+        "risk_mandate": "Conservative-Moderate",
+        "psychographics": {
+          "decision_style": "Deliberate, asks questions before acting",
+          "loss_aversion": "Moderate to high",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews quarterly",
+          "comms_pref": "Email",
+          "primary_goal": "Fund daughter's wedding in about 3 years",
+          "time_horizon": "Medium, 3 to 5 years",
+          "life_stage": "Mid-career"
+        },
+        "relationship": {
+          "referral_source": "Colleague referral",
+          "dependents": "Wife, one daughter (wedding upcoming)",
+          "satisfaction": "High",
+          "manager_note": "Goal-anchored to the wedding. Keep duration short as the date nears."
+        },
+        "communications": [
+          {
+            "date": "2026-07-15",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Quarterly review email with the laddered maturity schedule ahead of the wedding."
+          },
+          {
+            "date": "2026-07-02",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Asked whether to lock a longer maturity, explained the duration tradeoff."
+          },
+          {
+            "date": "2026-04-14",
+            "channel": "Video call",
+            "direction": "outbound",
+            "summary": "Q4 review, confirmed wedding timeline unchanged at about 3 years."
+          }
+        ],
+        "next_action": {
+          "due": "2026-10-15",
+          "action": "Next quarterly review",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_largecap_growth",
+      "desk_id": "desk_equity",
+      "name": "Large-Cap Equity Growth Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Broad market beta, large-cap concentration",
+      "mandate": "Core Nifty-heavyweight exposure across financials, energy, IT, and consumer names for long-term capital growth.",
+      "manager_name": "Aarav Mehta",
+      "manager_bio": "Bullish on capex-led industrials and financials, cautious on IT services margins given global client budget pressure.",
+      "client": {
+        "name": "Priya Sharma",
+        "age": 34,
+        "occupation": "Senior product manager, tech company",
+        "persona": "Full-time job with a demanding schedule, investing is entirely hands-off by design. Wants a diversified, long-term core holding she can forget about for years, not something she has to actively manage alongside her career.",
+        "email": "priya.sharma34@outlook.com",
+        "phone": "+91 99870 45611",
+        "city": "Bengaluru",
+        "relationship_since": "2020-11-20",
+        "aum_fee_pct": 1.0,
+        "risk_mandate": "Moderate-Growth",
+        "psychographics": {
+          "decision_style": "Hands-off by design, wants set-and-forget",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews quarterly",
+          "comms_pref": "WhatsApp",
+          "primary_goal": "Long-term wealth building",
+          "time_horizon": "Long, 10 years plus",
+          "life_stage": "Early to mid career"
+        },
+        "relationship": {
+          "referral_source": "Digital sign-up",
+          "dependents": "Single, no dependents",
+          "satisfaction": "Medium",
+          "manager_note": "Hands-off. A short WhatsApp line each quarter is enough, do not over-contact."
+        },
+        "communications": [
+          {
+            "date": "2026-07-20",
+            "channel": "WhatsApp",
+            "direction": "outbound",
+            "summary": "Sent the quarterly one-liner, book is up, nothing to do."
+          },
+          {
+            "date": "2026-05-05",
+            "channel": "WhatsApp",
+            "direction": "inbound",
+            "summary": "Quick thumbs-up, no questions."
+          }
+        ],
+        "next_action": {
+          "due": "2026-10-20",
+          "action": "Quarterly check-in",
+          "priority": "Low"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_banking_financials",
+      "desk_id": "desk_equity",
+      "name": "Banking & Financials Concentrated Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Financial-sector concentration, credit cycle & NIM sensitivity",
+      "mandate": "High-conviction, concentrated bets on India's private and public banks plus leading NBFCs.",
+      "manager_name": "Meera Nair",
+      "manager_bio": "Former credit analyst, deliberately concentrated. Believes India's private banks are underappreciated versus global peers.",
+      "client": {
+        "name": "Vikram Oberoi",
+        "age": 52,
+        "occupation": "Ex-banker, now angel investor",
+        "persona": "Spent 20 years in banking before retiring to angel-invest full time. Has strong, informed conviction that Indian private banks are underpriced and explicitly wants concentrated exposure, not a diversified index-hugger. Pushes back if the book gets too diluted.",
+        "email": "v.oberoi.investments@gmail.com",
+        "phone": "+91 98200 77341",
+        "city": "Mumbai",
+        "relationship_since": "2018-01-09",
+        "aum_fee_pct": 1.25,
+        "risk_mandate": "Aggressive-Concentrated",
+        "psychographics": {
+          "decision_style": "Self-directed, high conviction, pushes back",
+          "loss_aversion": "Low",
+          "financial_literacy": "Expert",
+          "engagement": "Tracks weekly",
+          "comms_pref": "In-person or call",
+          "primary_goal": "Concentrated conviction growth",
+          "time_horizon": "Medium to long, 5 to 10 years",
+          "life_stage": "Pre-retirement"
+        },
+        "relationship": {
+          "referral_source": "Ex-colleague from banking",
+          "dependents": "Married, two adult children",
+          "satisfaction": "High",
+          "manager_note": "Expert and opinionated. Engage on the thesis, do not simplify."
+        },
+        "communications": [
+          {
+            "date": "2026-07-22",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Debated HDFC Bank Q1 margins, wants to stay concentrated."
+          },
+          {
+            "date": "2026-07-15",
+            "channel": "In-person",
+            "direction": "both",
+            "summary": "Coffee meeting, reviewed the banking thesis, agreed to hold conviction."
+          },
+          {
+            "date": "2026-07-08",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Shared a broker note on NBFC asset quality."
+          }
+        ],
+        "next_action": {
+          "due": "2026-07-29",
+          "action": "Weekly banking-sector catch-up call",
+          "priority": "High"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_it_services",
+      "desk_id": "desk_equity",
+      "name": "IT & Technology Services Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Export/currency sensitivity, US & EU client discretionary IT spend",
+      "mandate": "Concentrated exposure to India's IT services exporters; returns depend heavily on US/EU enterprise tech budgets and INR/USD movement.",
+      "manager_name": "Vikram Rao",
+      "manager_bio": "Ex-IT-sector research analyst. Watches US mega-cap tech earnings closely, since client-budget commentary from firms like Microsoft foreshadows Indian IT services demand.",
+      "client": {
+        "name": "Rohan Mehta",
+        "age": 29,
+        "occupation": "Software engineer, US-based MNC (Bengaluru office)",
+        "persona": "Deliberately invests only in what he understands, IT services, because he lives it day to day and reads every earnings call transcript for fun. Confident, opinionated, wants a research partner who can keep up, not simplify things for him.",
+        "email": "rohan.mehta.dev@gmail.com",
+        "phone": "+91 90080 33456",
+        "city": "Bengaluru",
+        "relationship_since": "2022-08-15",
+        "aum_fee_pct": 1.0,
+        "risk_mandate": "Growth-Concentrated",
+        "psychographics": {
+          "decision_style": "Opinionated, reads every earnings call",
+          "loss_aversion": "Low to moderate",
+          "financial_literacy": "Advanced",
+          "engagement": "Checks daily",
+          "comms_pref": "Detailed email",
+          "primary_goal": "Sector-conviction growth in what he knows",
+          "time_horizon": "Long, 10 years plus",
+          "life_stage": "Early career"
+        },
+        "relationship": {
+          "referral_source": "Digital sign-up",
+          "dependents": "Single, supports parents",
+          "satisfaction": "High",
+          "manager_note": "Reads every earnings call. Send primary-source detail, he will spot fluff."
+        },
+        "communications": [
+          {
+            "date": "2026-07-23",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Long email dissecting the Infosys guidance cut, wants a deep-dive on the read-through."
+          },
+          {
+            "date": "2026-07-18",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Sent TCS earnings-call transcript highlights."
+          }
+        ],
+        "next_action": {
+          "due": "2026-07-25",
+          "action": "Reply with Infosys guidance deep-dive",
+          "priority": "High"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_gold_hedge",
+      "desk_id": "desk_real",
+      "name": "Gold & Inflation Hedge Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Real rates, inflation, INR depreciation",
+      "mandate": "Physical-gold-linked exposure via ETFs and Sovereign Gold Bonds, held as a portfolio-level inflation and currency hedge.",
+      "manager_name": "Ananya Krishnan",
+      "manager_bio": "Manages the firm's only non-equity, non-debt sleeve. Treats the gold allocation as insurance, not a return driver.",
+      "client": {
+        "name": "Kamala Devi",
+        "age": 58,
+        "occupation": "Homemaker",
+        "persona": "Manages the family's wealth the way her mother did, gold has always been the trusted store of value, not an asset class to be argued about. Came to this account through her son, still prefers a phone call over an app. Deeply inflation-conscious from having lived through past rupee depreciation.",
+        "email": "kamala.devi.family@gmail.com",
+        "phone": "+91 98450 66120",
+        "city": "Chennai",
+        "relationship_since": "2017-05-30",
+        "aum_fee_pct": 0.6,
+        "risk_mandate": "Conservative",
+        "psychographics": {
+          "decision_style": "Traditional, decides through her son",
+          "loss_aversion": "High",
+          "financial_literacy": "Basic",
+          "engagement": "Rarely checks directly",
+          "comms_pref": "Phone call",
+          "primary_goal": "Inflation protection and preserving family wealth",
+          "time_horizon": "Medium to long",
+          "life_stage": "Pre-retirement"
+        },
+        "relationship": {
+          "referral_source": "Family (son is also a client)",
+          "dependents": "Homemaker, decisions via son",
+          "satisfaction": "High",
+          "manager_note": "Route substantive discussions through her son. Prefers phone, not app."
+        },
+        "communications": [
+          {
+            "date": "2026-07-05",
+            "channel": "Phone",
+            "direction": "outbound",
+            "summary": "Spoke with her son, explained gold's role as an inflation hedge."
+          },
+          {
+            "date": "2026-06-01",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Son asked about adding to gold after the price rise, discussed."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-05",
+          "action": "Monthly call via son",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_smallcap_value",
+      "desk_id": "desk_equity",
+      "name": "Small & Midcap Value Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Small/midcap liquidity & earnings volatility",
+      "mandate": "Higher-risk, higher-reward bets on midcap IT, industrials, and engineering names below the large-cap universe.",
+      "manager_name": "Devika Menon",
+      "manager_bio": "Youngest PM on the desk, explicitly mandated to take more risk than the rest of the book for higher return potential.",
+      "client": {
+        "name": "Arjun Verma",
+        "age": 22,
+        "occupation": "Full-time trader (college dropout)",
+        "persona": "Dropped out of college to trade markets full time, against his family's wishes, this account is effectively his career, not a side hobby. High risk appetite by choice, checks prices multiple times a day, wants a portfolio that can compound aggressively while he's young enough to absorb the swings.",
+        "email": "arjunv.trades@gmail.com",
+        "phone": "+91 89390 12873",
+        "city": "Indore",
+        "relationship_since": "2023-02-11",
+        "aum_fee_pct": 1.5,
+        "risk_mandate": "Aggressive",
+        "psychographics": {
+          "decision_style": "Aggressive, hands-on, high urgency",
+          "loss_aversion": "Very low",
+          "financial_literacy": "Advanced",
+          "engagement": "Checks several times a day",
+          "comms_pref": "WhatsApp and app",
+          "primary_goal": "Aggressive compounding while young",
+          "time_horizon": "Long, but trades actively",
+          "life_stage": "Early career"
+        },
+        "relationship": {
+          "referral_source": "Social media / self-directed",
+          "dependents": "Single, no dependents",
+          "satisfaction": "Medium",
+          "manager_note": "High energy, impulsive. Reinforce position-sizing discipline every contact."
+        },
+        "communications": [
+          {
+            "date": "2026-07-23",
+            "channel": "WhatsApp",
+            "direction": "inbound",
+            "summary": "Asking about adding a new midcap IT name, reminded him of concentration limits."
+          },
+          {
+            "date": "2026-07-21",
+            "channel": "WhatsApp",
+            "direction": "inbound",
+            "summary": "Excited about Dixon's run, wants to increase exposure."
+          },
+          {
+            "date": "2026-07-19",
+            "channel": "App note",
+            "direction": "outbound",
+            "summary": "Flagged that smallcap volatility is elevated."
+          }
+        ],
+        "next_action": {
+          "due": "2026-07-24",
+          "action": "Discuss position-sizing discipline",
+          "priority": "High"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_reit_income",
+      "desk_id": "desk_real",
+      "name": "Real Estate & REIT Income Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Office real estate demand, rate sensitivity via yield competition",
+      "mandate": "Income-focused exposure to listed Indian REITs (office/commercial real estate) for stable distributions.",
+      "manager_name": "Sanjay Bhatt",
+      "manager_bio": "Real-assets specialist. Watches commercial office leasing and vacancy trends closely, since REIT yields compete directly with bond yields.",
+      "client": {
+        "name": "Deepak & Ritu Kapoor",
+        "age": 41,
+        "occupation": "Dual-income couple (marketing exec + doctor)",
+        "persona": "Two demanding careers, no time to be landlords. Always liked the idea of rental income from commercial property but didn't want the hassle of actually owning and managing real estate, REITs were pitched to them as exactly that, minus the tenants and repairs.",
+        "email": "kapoor.household@gmail.com",
+        "phone": "+91 97690 55210",
+        "city": "Gurugram",
+        "relationship_since": "2022-04-03",
+        "aum_fee_pct": 0.9,
+        "risk_mandate": "Moderate-Income",
+        "psychographics": {
+          "decision_style": "Delegates, values convenience",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews quarterly",
+          "comms_pref": "Email",
+          "primary_goal": "Passive property-style rental income",
+          "time_horizon": "Medium to long",
+          "life_stage": "Mid-career"
+        },
+        "relationship": {
+          "referral_source": "Wealth seminar",
+          "dependents": "Married couple, one young child",
+          "satisfaction": "High",
+          "manager_note": "Want convenience and income. Lead with distributions, not price moves."
+        },
+        "communications": [
+          {
+            "date": "2026-07-12",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Quarterly distribution summary from Embassy and Mindspace REITs."
+          },
+          {
+            "date": "2026-04-10",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Asked about office vacancy trends, shared leasing data."
+          }
+        ],
+        "next_action": {
+          "due": "2026-10-12",
+          "action": "Quarterly distribution review",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_nifty_index",
+      "desk_id": "desk_equity",
+      "name": "Nifty 50 Index Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Broad market beta, no active stock selection",
+      "mandate": "Passive, broadly diversified exposure across large-cap India equity at index-like weights. No concentrated bets, no active selection \u2014 designed to track the market, not beat it.",
+      "manager_name": "Ishaan Kapoor",
+      "manager_bio": "Runs the passive sleeve. Believes most active managers don't beat the index after fees, and built this fund to prove it.",
+      "client": {
+        "name": "Kabir Anand",
+        "age": 31,
+        "occupation": "Data scientist",
+        "persona": "Read enough about index investing to become mildly evangelical about it. Explicitly does not want to pay for active stock-picking he doesn't believe beats the market after fees, wants the broad India growth story, nothing more, nothing less. The most hands-off, lowest-maintenance client on the book.",
+        "email": "kabir.anand.ds@gmail.com",
+        "phone": "+91 91234 55667",
+        "city": "Hyderabad",
+        "relationship_since": "2023-09-01",
+        "aum_fee_pct": 0.3,
+        "risk_mandate": "Moderate-Passive",
+        "psychographics": {
+          "decision_style": "Rational, evidence-driven, cost-conscious",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Advanced",
+          "engagement": "Reviews quarterly",
+          "comms_pref": "Email",
+          "primary_goal": "Low-cost market returns",
+          "time_horizon": "Long, 10 years plus",
+          "life_stage": "Early to mid career"
+        },
+        "relationship": {
+          "referral_source": "Digital sign-up",
+          "dependents": "Single",
+          "satisfaction": "High",
+          "manager_note": "Cost-obsessed and rational. Always have expense ratio and tracking error ready."
+        },
+        "communications": [
+          {
+            "date": "2026-07-16",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Quarterly tracking-error and expense-ratio note."
+          },
+          {
+            "date": "2026-07-10",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Asked to confirm the fund's expense ratio versus a competitor."
+          }
+        ],
+        "next_action": {
+          "due": "2026-10-16",
+          "action": "Quarterly index review",
+          "priority": "Low"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_balanced_hybrid",
+      "desk_id": "desk_equity",
+      "name": "Balanced Advantage Hybrid Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Blended equity/debt allocation, moderate volatility by design",
+      "mandate": "A single all-weather blend of large-cap equity and high-grade debt, roughly 65/35, designed so the client never has to think about rebalancing between asset classes themselves.",
+      "manager_name": "Farah Sheikh",
+      "manager_bio": "Manages the firm's all-weather blended fund. Rebalances mechanically on a schedule, not on emotion or market calls.",
+      "client": {
+        "name": "Neha Kulkarni",
+        "age": 38,
+        "occupation": "Small business owner (boutique retail)",
+        "persona": "Runs her own store and already has enough decisions to make in a day. Explicitly asked for 'one fund that just handles the equity/debt split for me', doesn't want to be called every time the market moves, wants moderate, steady growth she can mostly ignore.",
+        "email": "neha.kulkarni.retail@gmail.com",
+        "phone": "+91 90210 44982",
+        "city": "Nagpur",
+        "relationship_since": "2021-02-18",
+        "aum_fee_pct": 1.1,
+        "risk_mandate": "Moderate",
+        "psychographics": {
+          "decision_style": "Pragmatic, time-poor, wants balance",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews a few times a year",
+          "comms_pref": "WhatsApp",
+          "primary_goal": "Steady growth with a smoother ride",
+          "time_horizon": "Medium to long",
+          "life_stage": "Mid-career"
+        },
+        "relationship": {
+          "referral_source": "Existing-client referral",
+          "dependents": "Married, runs a family business",
+          "satisfaction": "Medium",
+          "manager_note": "Time-poor business owner. Watch her seasonal cash needs around festivals."
+        },
+        "communications": [
+          {
+            "date": "2026-07-19",
+            "channel": "WhatsApp",
+            "direction": "outbound",
+            "summary": "Mid-year check-in, the balanced mix cushioned the IT drag."
+          },
+          {
+            "date": "2026-03-22",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Discussed cash needs for her retail business seasonality."
+          }
+        ],
+        "next_action": {
+          "due": "2026-09-19",
+          "action": "Pre-festival-season liquidity check",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_nri_growth",
+      "desk_id": "desk_equity",
+      "name": "NRI Growth Portfolio",
+      "base_ccy": "INR",
+      "risk_driver": "Blue-chip compounding, long time horizon, low turnover",
+      "mandate": "Long-horizon, blue-chip-only exposure for an overseas client planning an eventual return to India; prioritizes liquidity and stability over short-term alpha, mindful of eventual repatriation needs.",
+      "manager_name": "Rajesh Iyer",
+      "manager_bio": "Specializes in NRI-focused mandates. Prioritizes liquidity and blue-chip stability given clients' long-distance, lower-touch relationship with the market.",
+      "client": {
+        "name": "Arvind & Sunita Rao",
+        "age": 53,
+        "occupation": "NRI couple, engineers based in Dubai",
+        "persona": "Both work in the Gulf and have been sending money home to invest for over a decade, with an eye on eventually returning to India. Communicates mostly over WhatsApp and the occasional call across time zones. Cares more about not losing money on something exotic than beating the market, wants names they'd recognize from back home.",
+        "email": "arvind.rao.dxb@gmail.com",
+        "phone": "+971 50 445 8821",
+        "city": "Dubai (NRI)",
+        "relationship_since": "2016-11-05",
+        "aum_fee_pct": 0.85,
+        "risk_mandate": "Growth-Stable",
+        "psychographics": {
+          "decision_style": "Diligent, remote, currency-aware",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Advanced",
+          "engagement": "Reviews monthly",
+          "comms_pref": "Email and video call",
+          "primary_goal": "Build India-based wealth for eventual return",
+          "time_horizon": "Medium to long",
+          "life_stage": "Pre-retirement"
+        },
+        "relationship": {
+          "referral_source": "NRI wealth webinar",
+          "dependents": "Married couple, children studying abroad",
+          "satisfaction": "High",
+          "manager_note": "Currency and repatriation-aware. Always pair reviews with an FX view."
+        },
+        "communications": [
+          {
+            "date": "2026-07-17",
+            "channel": "Video call",
+            "direction": "both",
+            "summary": "Monthly review, discussed rupee levels and repatriation timing."
+          },
+          {
+            "date": "2026-07-03",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Asked about tax implications of an eventual return to India."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-17",
+          "action": "Monthly NRI review and FX update",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_retirement_income",
+      "desk_id": "desk_income",
+      "name": "Retirement Income (SWP) Fund",
+      "base_ccy": "INR",
+      "risk_driver": "Dividend/income stability, sequence-of-return risk in retirement",
+      "mandate": "Income-first allocation blending dividend-paying equity, high-grade debt, and REIT distributions to support a monthly systematic withdrawal without eroding capital in a downturn.",
+      "manager_name": "Sunita Ramesh",
+      "manager_bio": "Manages income-focused retirement mandates. Obsessive about downside protection since these clients can't simply wait out a bad year.",
+      "client": {
+        "name": "Prakash Iyer",
+        "age": 66,
+        "occupation": "Retired PSU engineer",
+        "persona": "Spent 35 years at a public-sector company and retired on a pension plus provident fund payout, previously kept everything in fixed deposits. Cautiously agreed to diversify a portion into this account on his relationship manager's advice, but still needs a predictable monthly withdrawal to feel comfortable, capital loss is his single biggest fear.",
+        "email": "prakash.iyer.retd@gmail.com",
+        "phone": "+91 98200 33119",
+        "city": "Thiruvananthapuram",
+        "relationship_since": "2019-10-22",
+        "aum_fee_pct": 0.7,
+        "risk_mandate": "Conservative-Income",
+        "psychographics": {
+          "decision_style": "Careful, income-focused, methodical",
+          "loss_aversion": "High",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews monthly",
+          "comms_pref": "Phone call",
+          "primary_goal": "Regular retirement income through withdrawals",
+          "time_horizon": "Short to medium",
+          "life_stage": "Retired"
+        },
+        "relationship": {
+          "referral_source": "PSU retiree network",
+          "dependents": "Wife, financially independent children",
+          "satisfaction": "High",
+          "manager_note": "Income certainty is everything. Confirm each payout, avoid surprises."
+        },
+        "communications": [
+          {
+            "date": "2026-07-14",
+            "channel": "Phone",
+            "direction": "outbound",
+            "summary": "Confirmed the monthly SWP payout processed, income steady."
+          },
+          {
+            "date": "2026-07-01",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Asked whether the payout can rise with inflation, explained the annual reset."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-14",
+          "action": "Monthly SWP payout confirmation",
+          "priority": "Normal"
+        }
+      }
+    },
+    {
+      "portfolio_id": "pf_reference_balanced",
+      "desk_id": "desk_benchmark",
+      "name": "Reference Balanced 60/40 Fund",
+      "base_ccy": "INR",
+      "risk_driver": "N/A \u2014 fixed benchmark, not actively managed",
+      "mandate": "A fixed, broadly diversified 60% equity / 40% debt reference book computed by the exact same engine as every other fund. Exists only so any signal's impact on a real fund can be compared against what a normal, unconcentrated book would show \u2014 the 'you vs. a normal book' lens (LLD \u00a712). Not a real desk; no active manager.",
+      "manager_name": null,
+      "manager_bio": "N/A \u2014 fixed benchmark, not actively managed by anyone.",
+      "is_reference": true
+    }
+  ],
+  "securities": [
+    {
+      "security_id": "sec_cash_inr",
+      "primary_ticker": "INRCASH",
+      "name": "INR Cash & Equivalents",
+      "aliases": [
+        "Money Market Cash"
+      ],
+      "isin": "ZZIN0000INRCASH1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Cash",
+      "industry": "Cash & Equivalents",
+      "country": "IN",
+      "asset_class": "Cash",
+      "instrument_type": "Cash",
+      "factor_sensitivities": {},
+      "vol": 0.3,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_tbill_91d",
+      "primary_ticker": "TBILL91",
+      "name": "GoI 91-Day Treasury Bill",
+      "aliases": [
+        "T-Bill",
+        "Treasury Bill",
+        "91-day T-bill"
+      ],
+      "isin": "ZZIN0000TBILL911",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Treasury Bill",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "T-Bill",
+      "factor_sensitivities": {},
+      "vol": 0.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_liquid_fund",
+      "primary_ticker": "ICICILIQ",
+      "name": "ICICI Prudential Liquid Fund",
+      "aliases": [
+        "ICICI Liquid Fund",
+        "Liquid Fund"
+      ],
+      "isin": "ZZIN0000ICICILIQ1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Liquid Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 0.6,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AAA"
+    },
+    {
+      "security_id": "sec_gsec_10y",
+      "primary_ticker": "GSEC10Y",
+      "name": "GoI 10-Year Government Security",
+      "aliases": [
+        "10-Year G-Sec",
+        "GoI 10Y",
+        "G-Sec"
+      ],
+      "isin": "ZZIN0000GSEC10Y1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Government Bond",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Government Bond",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 4.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_gsec_5y",
+      "primary_ticker": "GSEC5Y",
+      "name": "GoI 5-Year Government Security",
+      "aliases": [
+        "5-Year G-Sec",
+        "GoI 5Y"
+      ],
+      "isin": "ZZIN0000GSEC5Y1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Government Bond",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Government Bond",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 3.0,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_corp_bond_aaa",
+      "primary_ticker": "HDFCAAA",
+      "name": "HDFC AAA Corporate Bond Fund",
+      "aliases": [
+        "HDFC Corporate Bond Fund",
+        "AAA Bond Fund"
+      ],
+      "isin": "ZZIN0000HDFCAAA1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Corporate Bond Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 3.8,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AAA"
+    },
+    {
+      "security_id": "sec_psu_bond",
+      "primary_ticker": "SBIPSU",
+      "name": "SBI PSU Bond Fund",
+      "aliases": [
+        "PSU Bond Fund",
+        "SBI PSU"
+      ],
+      "isin": "ZZIN0000SBIPSU1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "PSU Bond Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 4.2,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AA+"
+    },
+    {
+      "security_id": "sec_reliance",
+      "primary_ticker": "RELIANCE",
+      "name": "Reliance Industries Ltd",
+      "aliases": [
+        "Reliance",
+        "RIL",
+        "Reliance Industries"
+      ],
+      "isin": "ZZIN0000RELIANCE1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Energy",
+      "industry": "Refining, Petrochemicals, Retail & Telecom",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "oil": "positive"
+      },
+      "vol": 22.0,
+      "beta": 1.0,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_hdfcbank",
+      "primary_ticker": "HDFCBANK",
+      "name": "HDFC Bank Ltd",
+      "aliases": [
+        "HDFC Bank"
+      ],
+      "isin": "ZZIN0000HDFCBANK1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "Private Sector Bank",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "interest_rates_india": "positive"
+      },
+      "vol": 20.0,
+      "beta": 1.05,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_icicibank",
+      "primary_ticker": "ICICIBANK",
+      "name": "ICICI Bank Ltd",
+      "aliases": [
+        "ICICI Bank"
+      ],
+      "isin": "ZZIN0000ICICIBANK1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "Private Sector Bank",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "interest_rates_india": "positive"
+      },
+      "vol": 21.0,
+      "beta": 1.1,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_kotakbank",
+      "primary_ticker": "KOTAKBANK",
+      "name": "Kotak Mahindra Bank Ltd",
+      "aliases": [
+        "Kotak Mahindra Bank",
+        "Kotak Bank"
+      ],
+      "isin": "ZZIN0000KOTAKBANK1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "Private Sector Bank",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "interest_rates_india": "positive"
+      },
+      "vol": 20.0,
+      "beta": 1.0,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_sbin",
+      "primary_ticker": "SBIN",
+      "name": "State Bank of India",
+      "aliases": [
+        "State Bank of India",
+        "SBI"
+      ],
+      "isin": "ZZIN0000SBIN1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "Public Sector Bank",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "interest_rates_india": "positive"
+      },
+      "vol": 24.0,
+      "beta": 1.2,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_bajfinance",
+      "primary_ticker": "BAJFINANCE",
+      "name": "Bajaj Finance Ltd",
+      "aliases": [
+        "Bajaj Finance"
+      ],
+      "isin": "ZZIN0000BAJFINANCE1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "NBFC",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 28.0,
+      "beta": 1.3,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_jiofin",
+      "primary_ticker": "JIOFIN",
+      "name": "Jio Financial Services Ltd",
+      "aliases": [
+        "Jio Financial Services",
+        "Jio Financial"
+      ],
+      "isin": "ZZIN0000JIOFIN1",
+      "parent_id": "sec_reliance",
+      "adr_of": null,
+      "sector": "Financials",
+      "industry": "NBFC",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 26.0,
+      "beta": 1.15,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_infosys",
+      "primary_ticker": "INFY",
+      "name": "Infosys Ltd",
+      "aliases": [
+        "Infosys"
+      ],
+      "isin": "ZZIN0000INFY1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 19.0,
+      "beta": 0.9,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_infosys_adr",
+      "primary_ticker": "INFY",
+      "name": "Infosys Ltd (ADR)",
+      "aliases": [
+        "Infosys ADR"
+      ],
+      "isin": "ZZIN0000INFYADR1",
+      "parent_id": null,
+      "adr_of": "sec_infosys",
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 19.0,
+      "beta": 0.9,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_tcs",
+      "primary_ticker": "TCS",
+      "name": "Tata Consultancy Services Ltd",
+      "aliases": [
+        "TCS",
+        "Tata Consultancy Services"
+      ],
+      "isin": "ZZIN0000TCS1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 17.0,
+      "beta": 0.85,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_wipro",
+      "primary_ticker": "WIPRO",
+      "name": "Wipro Ltd",
+      "aliases": [
+        "Wipro"
+      ],
+      "isin": "ZZIN0000WIPRO1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 20.0,
+      "beta": 0.95,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_hcltech",
+      "primary_ticker": "HCLTECH",
+      "name": "HCL Technologies Ltd",
+      "aliases": [
+        "HCL Technologies",
+        "HCLTech",
+        "HCL Tech"
+      ],
+      "isin": "ZZIN0000HCLTECH1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 19.0,
+      "beta": 0.9,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_techm",
+      "primary_ticker": "TECHM",
+      "name": "Tech Mahindra Ltd",
+      "aliases": [
+        "Tech Mahindra"
+      ],
+      "isin": "ZZIN0000TECHM1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 22.0,
+      "beta": 1.0,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_ltim",
+      "primary_ticker": "LTIM",
+      "name": "LTIMindtree Ltd",
+      "aliases": [
+        "LTIMindtree"
+      ],
+      "isin": "ZZIN0000LTIM1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 23.0,
+      "beta": 1.05,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_lt",
+      "primary_ticker": "LT",
+      "name": "Larsen & Toubro Ltd",
+      "aliases": [
+        "Larsen & Toubro",
+        "L&T"
+      ],
+      "isin": "ZZIN0000LT1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Industrials",
+      "industry": "Engineering & Construction",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 24.0,
+      "beta": 1.15,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_bhartiartl",
+      "primary_ticker": "BHARTIARTL",
+      "name": "Bharti Airtel Ltd",
+      "aliases": [
+        "Bharti Airtel",
+        "Airtel"
+      ],
+      "isin": "ZZIN0000BHARTIARTL1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Communication Services",
+      "industry": "Telecom",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 20.0,
+      "beta": 0.9,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_itc",
+      "primary_ticker": "ITC",
+      "name": "ITC Ltd",
+      "aliases": [
+        "ITC"
+      ],
+      "isin": "ZZIN0000ITC1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Consumer Staples",
+      "industry": "FMCG & Tobacco",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 15.0,
+      "beta": 0.6,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_asianpaint",
+      "primary_ticker": "ASIANPAINT",
+      "name": "Asian Paints Ltd",
+      "aliases": [
+        "Asian Paints"
+      ],
+      "isin": "ZZIN0000ASIANPAINT1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Materials",
+      "industry": "Paints",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 18.0,
+      "beta": 0.8,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_titan",
+      "primary_ticker": "TITAN",
+      "name": "Titan Company Ltd",
+      "aliases": [
+        "Titan Company",
+        "Titan"
+      ],
+      "isin": "ZZIN0000TITAN1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Consumer Discretionary",
+      "industry": "Jewellery & Watches",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 21.0,
+      "beta": 1.0,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_sunpharma",
+      "primary_ticker": "SUNPHARMA",
+      "name": "Sun Pharmaceutical Industries Ltd",
+      "aliases": [
+        "Sun Pharma",
+        "Sun Pharmaceutical"
+      ],
+      "isin": "ZZIN0000SUNPHARMA1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Health Care",
+      "industry": "Pharmaceuticals",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 17.0,
+      "beta": 0.7,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_persistent",
+      "primary_ticker": "PERSISTENT",
+      "name": "Persistent Systems Ltd",
+      "aliases": [
+        "Persistent Systems"
+      ],
+      "isin": "ZZIN0000PERSISTENT1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 32.0,
+      "beta": 1.2,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_coforge",
+      "primary_ticker": "COFORGE",
+      "name": "Coforge Ltd",
+      "aliases": [
+        "Coforge"
+      ],
+      "isin": "ZZIN0000COFORGE1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "IT Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 34.0,
+      "beta": 1.25,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_kpit",
+      "primary_ticker": "KPITTECH",
+      "name": "KPIT Technologies Ltd",
+      "aliases": [
+        "KPIT Technologies",
+        "KPIT"
+      ],
+      "isin": "ZZIN0000KPITTECH1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Information Technology",
+      "industry": "Auto-tech / Engineering R&D",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {
+        "usd_inr": "positive"
+      },
+      "vol": 35.0,
+      "beta": 1.3,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_dixon",
+      "primary_ticker": "DIXON",
+      "name": "Dixon Technologies Ltd",
+      "aliases": [
+        "Dixon Technologies",
+        "Dixon"
+      ],
+      "isin": "ZZIN0000DIXON1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Industrials",
+      "industry": "Electronics Manufacturing Services",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 40.0,
+      "beta": 1.4,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_cumminsind",
+      "primary_ticker": "CUMMINSIND",
+      "name": "Cummins India Ltd",
+      "aliases": [
+        "Cummins India"
+      ],
+      "isin": "ZZIN0000CUMMINSIND1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Industrials",
+      "industry": "Industrial Engines & Equipment",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 26.0,
+      "beta": 1.1,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_voltas",
+      "primary_ticker": "VOLTAS",
+      "name": "Voltas Ltd",
+      "aliases": [
+        "Voltas"
+      ],
+      "isin": "ZZIN0000VOLTAS1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Consumer Discretionary",
+      "industry": "Air Conditioning & Engineering",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Single Stock",
+      "factor_sensitivities": {},
+      "vol": 28.0,
+      "beta": 1.2,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_gold_etf",
+      "primary_ticker": "GOLDBEES",
+      "name": "Nippon India Gold ETF",
+      "aliases": [
+        "Gold ETF",
+        "Gold BeES",
+        "GoldBeES"
+      ],
+      "isin": "ZZIN0000GOLDBEES1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Commodity",
+      "industry": "Gold ETF",
+      "country": "IN",
+      "asset_class": "Commodity",
+      "instrument_type": "ETF",
+      "factor_sensitivities": {
+        "gold": "same_direction"
+      },
+      "vol": 13.0,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_sgb",
+      "primary_ticker": "SGB",
+      "name": "Sovereign Gold Bond (RBI)",
+      "aliases": [
+        "Sovereign Gold Bond",
+        "SGB"
+      ],
+      "isin": "ZZIN0000SGB1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Commodity",
+      "industry": "Gold-linked Government Bond",
+      "country": "IN",
+      "asset_class": "Commodity",
+      "instrument_type": "Government Bond",
+      "factor_sensitivities": {
+        "gold": "same_direction"
+      },
+      "vol": 12.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_embassy_reit",
+      "primary_ticker": "EMBASSY",
+      "name": "Embassy Office Parks REIT",
+      "aliases": [
+        "Embassy REIT",
+        "Embassy Office Parks"
+      ],
+      "isin": "ZZIN0000EMBASSY1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Real Estate",
+      "industry": "Office REIT",
+      "country": "IN",
+      "asset_class": "Real Estate",
+      "instrument_type": "REIT",
+      "factor_sensitivities": {},
+      "vol": 16.0,
+      "beta": 0.6,
+      "cap_tier": null,
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mindspace_reit",
+      "primary_ticker": "MINDSPACE",
+      "name": "Mindspace Business Parks REIT",
+      "aliases": [
+        "Mindspace REIT",
+        "Mindspace Business Parks"
+      ],
+      "isin": "ZZIN0000MINDSPACE1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Real Estate",
+      "industry": "Office REIT",
+      "country": "IN",
+      "asset_class": "Real Estate",
+      "instrument_type": "REIT",
+      "factor_sensitivities": {},
+      "vol": 15.0,
+      "beta": 0.55,
+      "cap_tier": null,
+      "credit_quality": null
+    }
+  ],
+  "holdings": [
+    {
+      "holding_id": "hld_0001",
+      "portfolio_id": "pf_cap_preservation",
+      "security_id": "sec_tbill_91d",
+      "weight": 0.55,
+      "market_value": 4400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0002",
+      "portfolio_id": "pf_cap_preservation",
+      "security_id": "sec_liquid_fund",
+      "weight": 0.35,
+      "market_value": 2800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0003",
+      "portfolio_id": "pf_cap_preservation",
+      "security_id": "sec_cash_inr",
+      "weight": 0.1,
+      "market_value": 800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0004",
+      "portfolio_id": "pf_bond_ladder",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.3,
+      "market_value": 3600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0005",
+      "portfolio_id": "pf_bond_ladder",
+      "security_id": "sec_gsec_5y",
+      "weight": 0.25,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0006",
+      "portfolio_id": "pf_bond_ladder",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.25,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0007",
+      "portfolio_id": "pf_bond_ladder",
+      "security_id": "sec_psu_bond",
+      "weight": 0.15,
+      "market_value": 1800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0008",
+      "portfolio_id": "pf_bond_ladder",
+      "security_id": "sec_cash_inr",
+      "weight": 0.05,
+      "market_value": 600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0009",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_reliance",
+      "weight": 0.14,
+      "market_value": 4200000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0010",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.13,
+      "market_value": 3900000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0011",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_icicibank",
+      "weight": 0.11,
+      "market_value": 3300000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0012",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_infosys",
+      "weight": 0.1,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0013",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_tcs",
+      "weight": 0.1,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0014",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_lt",
+      "weight": 0.09,
+      "market_value": 2700000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0015",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.08,
+      "market_value": 2400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0016",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_itc",
+      "weight": 0.08,
+      "market_value": 2400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0017",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_asianpaint",
+      "weight": 0.09,
+      "market_value": 2700000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0018",
+      "portfolio_id": "pf_largecap_growth",
+      "security_id": "sec_titan",
+      "weight": 0.08,
+      "market_value": 2400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0019",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.22,
+      "market_value": 3300000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0020",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_icicibank",
+      "weight": 0.2,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0021",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_kotakbank",
+      "weight": 0.16,
+      "market_value": 2400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0022",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_sbin",
+      "weight": 0.16,
+      "market_value": 2400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0023",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_bajfinance",
+      "weight": 0.14,
+      "market_value": 2100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0024",
+      "portfolio_id": "pf_banking_financials",
+      "security_id": "sec_jiofin",
+      "weight": 0.12,
+      "market_value": 1800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0025",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_tcs",
+      "weight": 0.2,
+      "market_value": 3600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0026",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_infosys",
+      "weight": 0.18,
+      "market_value": 3240000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0027",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_infosys_adr",
+      "weight": 0.05,
+      "market_value": 900000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0028",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_wipro",
+      "weight": 0.15,
+      "market_value": 2700000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0029",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_hcltech",
+      "weight": 0.15,
+      "market_value": 2700000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0030",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_techm",
+      "weight": 0.14,
+      "market_value": 2520000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0031",
+      "portfolio_id": "pf_it_services",
+      "security_id": "sec_ltim",
+      "weight": 0.13,
+      "market_value": 2340000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0032",
+      "portfolio_id": "pf_gold_hedge",
+      "security_id": "sec_gold_etf",
+      "weight": 0.55,
+      "market_value": 3300000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0033",
+      "portfolio_id": "pf_gold_hedge",
+      "security_id": "sec_sgb",
+      "weight": 0.35,
+      "market_value": 2100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0034",
+      "portfolio_id": "pf_gold_hedge",
+      "security_id": "sec_cash_inr",
+      "weight": 0.1,
+      "market_value": 600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0035",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_persistent",
+      "weight": 0.18,
+      "market_value": 1620000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0036",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_coforge",
+      "weight": 0.17,
+      "market_value": 1530000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0037",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_kpit",
+      "weight": 0.16,
+      "market_value": 1440000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0038",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_dixon",
+      "weight": 0.17,
+      "market_value": 1530000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0039",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_cumminsind",
+      "weight": 0.16,
+      "market_value": 1440000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0040",
+      "portfolio_id": "pf_smallcap_value",
+      "security_id": "sec_voltas",
+      "weight": 0.16,
+      "market_value": 1440000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0041",
+      "portfolio_id": "pf_reit_income",
+      "security_id": "sec_embassy_reit",
+      "weight": 0.6,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0042",
+      "portfolio_id": "pf_reit_income",
+      "security_id": "sec_mindspace_reit",
+      "weight": 0.4,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0043",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_reliance",
+      "weight": 0.12,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0044",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.11,
+      "market_value": 2750000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0045",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_icicibank",
+      "weight": 0.09,
+      "market_value": 2250000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0046",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_infosys",
+      "weight": 0.08,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0047",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_tcs",
+      "weight": 0.08,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0048",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_lt",
+      "weight": 0.07,
+      "market_value": 1750000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0049",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.07,
+      "market_value": 1750000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0050",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_kotakbank",
+      "weight": 0.06,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0051",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_sbin",
+      "weight": 0.06,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0052",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_itc",
+      "weight": 0.06,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0053",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_asianpaint",
+      "weight": 0.05,
+      "market_value": 1250000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0054",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_titan",
+      "weight": 0.05,
+      "market_value": 1250000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0055",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_sunpharma",
+      "weight": 0.05,
+      "market_value": 1250000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0056",
+      "portfolio_id": "pf_nifty_index",
+      "security_id": "sec_hcltech",
+      "weight": 0.05,
+      "market_value": 1250000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0057",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.15,
+      "market_value": 2100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0058",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_reliance",
+      "weight": 0.15,
+      "market_value": 2100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0059",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_infosys",
+      "weight": 0.12,
+      "market_value": 1680000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0060",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_tcs",
+      "weight": 0.11,
+      "market_value": 1540000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0061",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_lt",
+      "weight": 0.12,
+      "market_value": 1680000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0062",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.15,
+      "market_value": 2100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0063",
+      "portfolio_id": "pf_balanced_hybrid",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.2,
+      "market_value": 2800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0064",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.18,
+      "market_value": 1980000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0065",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_reliance",
+      "weight": 0.16,
+      "market_value": 1760000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0066",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_tcs",
+      "weight": 0.14,
+      "market_value": 1540000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0067",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_asianpaint",
+      "weight": 0.12,
+      "market_value": 1320000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0068",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_itc",
+      "weight": 0.12,
+      "market_value": 1320000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0069",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_titan",
+      "weight": 0.1,
+      "market_value": 1100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0070",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_icicibank",
+      "weight": 0.1,
+      "market_value": 1100000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0071",
+      "portfolio_id": "pf_nri_growth",
+      "security_id": "sec_sunpharma",
+      "weight": 0.08,
+      "market_value": 880000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0072",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_itc",
+      "weight": 0.15,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0073",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.1,
+      "market_value": 1000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0074",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.25,
+      "market_value": 2500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0075",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.2,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0076",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_psu_bond",
+      "weight": 0.15,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0077",
+      "portfolio_id": "pf_retirement_income",
+      "security_id": "sec_embassy_reit",
+      "weight": 0.15,
+      "market_value": 1500000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0078",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_reliance",
+      "weight": 0.1,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0079",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.09,
+      "market_value": 1800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0080",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_icicibank",
+      "weight": 0.08,
+      "market_value": 1600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0081",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_infosys",
+      "weight": 0.07,
+      "market_value": 1400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0082",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_tcs",
+      "weight": 0.07,
+      "market_value": 1400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0083",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_lt",
+      "weight": 0.05,
+      "market_value": 1000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0084",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.05,
+      "market_value": 1000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0085",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_itc",
+      "weight": 0.04,
+      "market_value": 800000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0086",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_sbin",
+      "weight": 0.03,
+      "market_value": 600000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0087",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_asianpaint",
+      "weight": 0.02,
+      "market_value": 400000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0088",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.15,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0089",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.15,
+      "market_value": 3000000000.0,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0090",
+      "portfolio_id": "pf_reference_balanced",
+      "security_id": "sec_gsec_5y",
+      "weight": 0.1,
+      "market_value": 2000000000.0,
+      "as_of_date": "2026-07-23"
+    }
+  ],
+  "risk": {
+    "pf_cap_preservation": {
+      "risk_score": 0.6,
+      "risk_tier": "Low",
+      "est_vol": 0.5,
+      "asset_mix": {
+        "Fixed Income": 90.0,
+        "Cash": 10.0
+      },
+      "largest_class": "Fixed Income",
+      "largest_class_pct": 90.0,
+      "top1_pct": 55.0,
+      "top1_name": "GoI 91-Day Treasury Bill",
+      "eq_hhi": 4350.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.0,
+      "num_holdings": 3
+    },
+    "pf_bond_ladder": {
+      "risk_score": 4.1,
+      "risk_tier": "Low",
+      "est_vol": 3.7,
+      "asset_mix": {
+        "Fixed Income": 95.0,
+        "Cash": 5.0
+      },
+      "largest_class": "Fixed Income",
+      "largest_class_pct": 95.0,
+      "top1_pct": 30.0,
+      "top1_name": "GoI 10-Year Government Security",
+      "eq_hhi": 2400.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.0,
+      "num_holdings": 5
+    },
+    "pf_largecap_growth": {
+      "risk_score": 20.9,
+      "risk_tier": "High",
+      "est_vol": 19.9,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 14.0,
+      "top1_name": "Reliance Industries Ltd",
+      "eq_hhi": 1040.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.95,
+      "num_holdings": 10
+    },
+    "pf_banking_financials": {
+      "risk_score": 24.7,
+      "risk_tier": "Very High",
+      "est_vol": 22.7,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 22.0,
+      "top1_name": "HDFC Bank Ltd",
+      "eq_hhi": 1736.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 1.12,
+      "num_holdings": 6
+    },
+    "pf_it_services": {
+      "risk_score": 21.2,
+      "risk_tier": "High",
+      "est_vol": 19.7,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 20.0,
+      "top1_name": "Tata Consultancy Services Ltd",
+      "eq_hhi": 1564.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.93,
+      "num_holdings": 7
+    },
+    "pf_gold_hedge": {
+      "risk_score": 14.1,
+      "risk_tier": "Moderate",
+      "est_vol": 11.6,
+      "asset_mix": {
+        "Commodity": 90.0,
+        "Cash": 10.0
+      },
+      "largest_class": "Commodity",
+      "largest_class_pct": 90.0,
+      "top1_pct": 55.0,
+      "top1_name": "Nippon India Gold ETF",
+      "eq_hhi": 4350.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.0,
+      "num_holdings": 3
+    },
+    "pf_smallcap_value": {
+      "risk_score": 35.3,
+      "risk_tier": "Very High",
+      "est_vol": 32.6,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 18.0,
+      "top1_name": "Persistent Systems Ltd",
+      "eq_hhi": 1670.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 1.24,
+      "num_holdings": 6
+    },
+    "pf_reit_income": {
+      "risk_score": 19.7,
+      "risk_tier": "Elevated",
+      "est_vol": 15.6,
+      "asset_mix": {
+        "Real Estate": 100.0
+      },
+      "largest_class": "Real Estate",
+      "largest_class_pct": 100.0,
+      "top1_pct": 60.0,
+      "top1_name": "Embassy Office Parks REIT",
+      "eq_hhi": 5200.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.58,
+      "num_holdings": 2
+    },
+    "pf_nifty_index": {
+      "risk_score": 20.8,
+      "risk_tier": "High",
+      "est_vol": 20.0,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 12.0,
+      "top1_name": "Reliance Industries Ltd",
+      "eq_hhi": 780.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.96,
+      "num_holdings": 14
+    },
+    "pf_balanced_hybrid": {
+      "risk_score": 15.9,
+      "risk_tier": "Elevated",
+      "est_vol": 14.8,
+      "asset_mix": {
+        "Equity": 65.0,
+        "Fixed Income": 35.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 65.0,
+      "top1_pct": 20.0,
+      "top1_name": "HDFC AAA Corporate Bond Fund",
+      "eq_hhi": 1484.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.65,
+      "num_holdings": 7
+    },
+    "pf_nri_growth": {
+      "risk_score": 20.3,
+      "risk_tier": "High",
+      "est_vol": 19.0,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 18.0,
+      "top1_name": "HDFC Bank Ltd",
+      "eq_hhi": 1328.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.9,
+      "num_holdings": 8
+    },
+    "pf_retirement_income": {
+      "risk_score": 9.9,
+      "risk_tier": "Moderate",
+      "est_vol": 9.1,
+      "asset_mix": {
+        "Equity": 25.0,
+        "Fixed Income": 60.0,
+        "Real Estate": 15.0
+      },
+      "largest_class": "Fixed Income",
+      "largest_class_pct": 60.0,
+      "top1_pct": 25.0,
+      "top1_name": "HDFC AAA Corporate Bond Fund",
+      "eq_hhi": 1800.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.29,
+      "num_holdings": 6
+    },
+    "pf_reference_balanced": {
+      "risk_score": 14.3,
+      "risk_tier": "Moderate",
+      "est_vol": 13.6,
+      "asset_mix": {
+        "Equity": 60.0,
+        "Fixed Income": 40.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 60.0,
+      "top1_pct": 15.0,
+      "top1_name": "GoI 10-Year Government Security",
+      "eq_hhi": 972.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.58,
+      "num_holdings": 13
+    }
+  }
+}
