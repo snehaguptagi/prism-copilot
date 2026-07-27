@@ -134,6 +134,80 @@ SECURITIES = [
     sec("sec_sunpharma", "SUNPHARMA", "Sun Pharmaceutical Industries Ltd", ["Sun Pharma", "Sun Pharmaceutical"],
         "Health Care", "Pharmaceuticals", "Equity", "Single Stock", 17.0, 0.7, cap_tier="large"),
 
+    # Additional Nifty 50 constituents (breadth for the index / large-cap books)
+    sec("sec_axisbank", "AXISBANK", "Axis Bank Ltd", ["Axis Bank"],
+        "Financials", "Private Sector Bank", "Equity", "Single Stock", 23.0, 1.15, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_bajajfinsv", "BAJAJFINSV", "Bajaj Finserv Ltd", ["Bajaj Finserv"],
+        "Financials", "Financial Services", "Equity", "Single Stock", 26.0, 1.2, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "positive"}),
+    sec("sec_hdfclife", "HDFCLIFE", "HDFC Life Insurance Co Ltd", ["HDFC Life"],
+        "Financials", "Life Insurance", "Equity", "Single Stock", 21.0, 0.85, cap_tier="large"),
+    sec("sec_sbilife", "SBILIFE", "SBI Life Insurance Co Ltd", ["SBI Life"],
+        "Financials", "Life Insurance", "Equity", "Single Stock", 21.0, 0.85, cap_tier="large"),
+    sec("sec_shriramfin", "SHRIRAMFIN", "Shriram Finance Ltd", ["Shriram Finance"],
+        "Financials", "NBFC", "Equity", "Single Stock", 27.0, 1.25, cap_tier="large"),
+    sec("sec_maruti", "MARUTI", "Maruti Suzuki India Ltd", ["Maruti", "Maruti Suzuki"],
+        "Consumer Discretionary", "Automobiles", "Equity", "Single Stock", 22.0, 0.95, cap_tier="large"),
+    sec("sec_mm", "M&M", "Mahindra & Mahindra Ltd", ["Mahindra & Mahindra", "M and M"],
+        "Consumer Discretionary", "Automobiles", "Equity", "Single Stock", 24.0, 1.1, cap_tier="large"),
+    sec("sec_tatamotors", "TATAMOTORS", "Tata Motors Ltd", ["Tata Motors"],
+        "Consumer Discretionary", "Automobiles", "Equity", "Single Stock", 30.0, 1.35, cap_tier="large"),
+    sec("sec_eichermot", "EICHERMOT", "Eicher Motors Ltd", ["Eicher Motors", "Eicher"],
+        "Consumer Discretionary", "Automobiles", "Equity", "Single Stock", 25.0, 1.05, cap_tier="large"),
+    sec("sec_herohonda", "HEROMOTOCO", "Hero MotoCorp Ltd", ["Hero MotoCorp", "Hero Honda"],
+        "Consumer Discretionary", "Two-Wheelers", "Equity", "Single Stock", 24.0, 0.95, cap_tier="large"),
+    sec("sec_bajajauto", "BAJAJ-AUTO", "Bajaj Auto Ltd", ["Bajaj Auto"],
+        "Consumer Discretionary", "Two-Wheelers", "Equity", "Single Stock", 23.0, 0.9, cap_tier="large"),
+    sec("sec_hindunilvr", "HINDUNILVR", "Hindustan Unilever Ltd", ["Hindustan Unilever", "HUL"],
+        "Consumer Staples", "FMCG", "Equity", "Single Stock", 15.0, 0.5, cap_tier="large"),
+    sec("sec_nestle", "NESTLEIND", "Nestle India Ltd", ["Nestle India", "Nestle"],
+        "Consumer Staples", "FMCG", "Equity", "Single Stock", 15.0, 0.5, cap_tier="large"),
+    sec("sec_britannia", "BRITANNIA", "Britannia Industries Ltd", ["Britannia"],
+        "Consumer Staples", "FMCG", "Equity", "Single Stock", 17.0, 0.6, cap_tier="large"),
+    sec("sec_tataconsum", "TATACONSUM", "Tata Consumer Products Ltd", ["Tata Consumer"],
+        "Consumer Staples", "FMCG", "Equity", "Single Stock", 19.0, 0.7, cap_tier="large"),
+    sec("sec_ntpc", "NTPC", "NTPC Ltd", ["NTPC"],
+        "Utilities", "Power Generation", "Equity", "Single Stock", 20.0, 0.9, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_powergrid", "POWERGRID", "Power Grid Corp of India Ltd", ["Power Grid", "PowerGrid"],
+        "Utilities", "Power Transmission", "Equity", "Single Stock", 18.0, 0.75, cap_tier="large",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_ongc", "ONGC", "Oil & Natural Gas Corp Ltd", ["ONGC", "Oil and Natural Gas"],
+        "Energy", "Oil & Gas Exploration", "Equity", "Single Stock", 26.0, 1.1, cap_tier="large",
+        factor_sensitivities={"oil": "positive"}),
+    sec("sec_bpcl", "BPCL", "Bharat Petroleum Corp Ltd", ["BPCL", "Bharat Petroleum"],
+        "Energy", "Oil Refining & Marketing", "Equity", "Single Stock", 27.0, 1.05, cap_tier="large",
+        factor_sensitivities={"oil": "negative"}),
+    sec("sec_coalindia", "COALINDIA", "Coal India Ltd", ["Coal India"],
+        "Energy", "Coal Mining", "Equity", "Single Stock", 25.0, 0.95, cap_tier="large"),
+    sec("sec_tatasteel", "TATASTEEL", "Tata Steel Ltd", ["Tata Steel"],
+        "Materials", "Steel", "Equity", "Single Stock", 32.0, 1.4, cap_tier="large"),
+    sec("sec_jswsteel", "JSWSTEEL", "JSW Steel Ltd", ["JSW Steel"],
+        "Materials", "Steel", "Equity", "Single Stock", 30.0, 1.3, cap_tier="large"),
+    sec("sec_hindalco", "HINDALCO", "Hindalco Industries Ltd", ["Hindalco"],
+        "Materials", "Aluminium & Metals", "Equity", "Single Stock", 31.0, 1.35, cap_tier="large"),
+    sec("sec_ultracemco", "ULTRACEMCO", "UltraTech Cement Ltd", ["UltraTech Cement", "UltraTech"],
+        "Materials", "Cement", "Equity", "Single Stock", 22.0, 1.0, cap_tier="large"),
+    sec("sec_grasim", "GRASIM", "Grasim Industries Ltd", ["Grasim"],
+        "Materials", "Cement & Diversified", "Equity", "Single Stock", 23.0, 1.05, cap_tier="large"),
+    sec("sec_drreddy", "DRREDDY", "Dr Reddy's Laboratories Ltd", ["Dr Reddy's", "Dr Reddy", "DRL"],
+        "Health Care", "Pharmaceuticals", "Equity", "Single Stock", 20.0, 0.7, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_cipla", "CIPLA", "Cipla Ltd", ["Cipla"],
+        "Health Care", "Pharmaceuticals", "Equity", "Single Stock", 19.0, 0.7, cap_tier="large",
+        factor_sensitivities={"usd_inr": "positive"}),
+    sec("sec_apollohosp", "APOLLOHOSP", "Apollo Hospitals Enterprise Ltd", ["Apollo Hospitals", "Apollo"],
+        "Health Care", "Healthcare Services", "Equity", "Single Stock", 25.0, 1.0, cap_tier="large"),
+    sec("sec_adanient", "ADANIENT", "Adani Enterprises Ltd", ["Adani Enterprises"],
+        "Industrials", "Diversified / Incubator", "Equity", "Single Stock", 38.0, 1.5, cap_tier="large"),
+    sec("sec_adaniports", "ADANIPORTS", "Adani Ports & SEZ Ltd", ["Adani Ports", "APSEZ"],
+        "Industrials", "Ports & Logistics", "Equity", "Single Stock", 30.0, 1.3, cap_tier="large"),
+    sec("sec_trent", "TRENT", "Trent Ltd", ["Trent"],
+        "Consumer Discretionary", "Retail", "Equity", "Single Stock", 33.0, 1.25, cap_tier="large"),
+    sec("sec_bel", "BEL", "Bharat Electronics Ltd", ["Bharat Electronics", "BEL"],
+        "Industrials", "Defence Electronics", "Equity", "Single Stock", 30.0, 1.15, cap_tier="large"),
+
     # Small / midcap equity
     sec("sec_persistent", "PERSISTENT", "Persistent Systems Ltd", ["Persistent Systems"],
         "Information Technology", "IT Services", "Equity", "Single Stock", 32.0, 1.2, cap_tier="mid",
@@ -213,9 +287,15 @@ PORTFOLIOS = [
         "manager_name": "Aarav Mehta",
         "manager_bio": "Bullish on capex-led industrials and financials, cautious on IT services margins given global client budget pressure.",
         "nav": 30_000_000_000,
-        "holdings": {"sec_reliance": 0.14, "sec_hdfcbank": 0.13, "sec_icicibank": 0.11,
-                     "sec_infosys": 0.10, "sec_tcs": 0.10, "sec_lt": 0.09,
-                     "sec_bhartiartl": 0.08, "sec_itc": 0.08, "sec_asianpaint": 0.09, "sec_titan": 0.08},
+        # Active large-cap fund: ~22 names, overweight financials and capex vs
+        # the index, underweight IT, with conviction-sized but non-round weights.
+        "holdings": {
+            "sec_hdfcbank": 9.4, "sec_icicibank": 8.1, "sec_reliance": 7.2, "sec_lt": 6.3, "sec_axisbank": 5.1,
+            "sec_infosys": 4.8, "sec_bhartiartl": 4.6, "sec_sbin": 4.4, "sec_tcs": 4.1, "sec_mm": 3.9,
+            "sec_bajfinance": 3.7, "sec_ultracemco": 3.4, "sec_maruti": 3.2, "sec_ntpc": 3.1, "sec_titan": 2.9,
+            "sec_sunpharma": 2.8, "sec_hindunilvr": 2.7, "sec_bel": 2.6, "sec_adaniports": 2.4, "sec_trent": 2.3,
+            "sec_hcltech": 2.1, "sec_asianpaint": 1.9,
+        },
         "client": {
             "name": "Priya Sharma", "age": 34, "occupation": "Senior product manager, tech company",
             "persona": "Full-time job with a demanding schedule — investing is entirely hands-off by design. Wants a diversified, long-term core holding she can forget about for years, not something she has to actively manage alongside her career.",
@@ -231,8 +311,9 @@ PORTFOLIOS = [
         "manager_name": "Meera Nair",
         "manager_bio": "Former credit analyst, deliberately concentrated. Believes India's private banks are underappreciated versus global peers.",
         "nav": 15_000_000_000,
-        "holdings": {"sec_hdfcbank": 0.22, "sec_icicibank": 0.20, "sec_kotakbank": 0.16,
-                     "sec_sbin": 0.16, "sec_bajfinance": 0.14, "sec_jiofin": 0.12},
+        "holdings": {"sec_hdfcbank": 21.4, "sec_icicibank": 19.6, "sec_axisbank": 12.8,
+                     "sec_kotakbank": 11.2, "sec_sbin": 10.7, "sec_bajfinance": 9.3,
+                     "sec_bajajfinsv": 7.6, "sec_jiofin": 4.2, "sec_shriramfin": 3.2},
         "client": {
             "name": "Vikram Oberoi", "age": 52, "occupation": "Ex-banker, now angel investor",
             "persona": "Spent 20 years in banking before retiring to angel-invest full time. Has strong, informed conviction that Indian private banks are underpriced and explicitly wants concentrated exposure, not a diversified index-hugger. Pushes back if the book gets too diluted.",
@@ -248,8 +329,8 @@ PORTFOLIOS = [
         "manager_name": "Vikram Rao",
         "manager_bio": "Ex-IT-sector research analyst. Watches US mega-cap tech earnings closely, since client-budget commentary from firms like Microsoft foreshadows Indian IT services demand.",
         "nav": 18_000_000_000,
-        "holdings": {"sec_tcs": 0.20, "sec_infosys": 0.18, "sec_infosys_adr": 0.05,
-                     "sec_wipro": 0.15, "sec_hcltech": 0.15, "sec_techm": 0.14, "sec_ltim": 0.13},
+        "holdings": {"sec_tcs": 24.3, "sec_infosys": 21.7, "sec_hcltech": 15.2,
+                     "sec_wipro": 11.4, "sec_techm": 10.6, "sec_ltim": 9.1, "sec_coforge": 7.7},
         "client": {
             "name": "Rohan Mehta", "age": 29, "occupation": "Software engineer, US-based MNC (Bengaluru office)",
             "persona": "Deliberately invests only in what he understands — IT services — because he lives it day to day and reads every earnings call transcript for fun. Confident, opinionated, wants a research partner who can keep up, not simplify things for him.",
@@ -281,8 +362,8 @@ PORTFOLIOS = [
         "manager_name": "Devika Menon",
         "manager_bio": "Youngest PM on the desk, explicitly mandated to take more risk than the rest of the book for higher return potential.",
         "nav": 9_000_000_000,
-        "holdings": {"sec_persistent": 0.18, "sec_coforge": 0.17, "sec_kpit": 0.16,
-                     "sec_dixon": 0.17, "sec_cumminsind": 0.16, "sec_voltas": 0.16},
+        "holdings": {"sec_dixon": 19.2, "sec_persistent": 17.6, "sec_kpit": 16.3,
+                     "sec_coforge": 15.1, "sec_cumminsind": 16.8, "sec_voltas": 15.0},
         "client": {
             "name": "Arjun Verma", "age": 22, "occupation": "Full-time trader (college dropout)",
             "persona": "Dropped out of college to trade markets full time, against his family's wishes — this account is effectively his career, not a side hobby. High risk appetite by choice, checks prices multiple times a day, wants a portfolio that can compound aggressively while he's young enough to absorb the swings.",
@@ -314,10 +395,21 @@ PORTFOLIOS = [
         "manager_name": "Ishaan Kapoor",
         "manager_bio": "Runs the passive sleeve. Believes most active managers don't beat the index after fees, and built this fund to prove it.",
         "nav": 25_000_000_000,
-        "holdings": {"sec_reliance": 0.12, "sec_hdfcbank": 0.11, "sec_icicibank": 0.09,
-                     "sec_infosys": 0.08, "sec_tcs": 0.08, "sec_lt": 0.07, "sec_bhartiartl": 0.07,
-                     "sec_kotakbank": 0.06, "sec_sbin": 0.06, "sec_itc": 0.06,
-                     "sec_asianpaint": 0.05, "sec_titan": 0.05, "sec_sunpharma": 0.05, "sec_hcltech": 0.05},
+        # ~49 Nifty 50 constituents at approximate real index weights (raw,
+        # normalized at build time). HDFC Bank is the largest post-merger, then
+        # Reliance and ICICI; a genuine long tail below the megacaps.
+        "holdings": {
+            "sec_hdfcbank": 13.1, "sec_reliance": 8.5, "sec_icicibank": 8.3, "sec_infosys": 5.6,
+            "sec_itc": 4.1, "sec_tcs": 4.0, "sec_lt": 3.9, "sec_bhartiartl": 3.4, "sec_axisbank": 3.1,
+            "sec_kotakbank": 2.9, "sec_sbin": 2.8, "sec_mm": 2.3, "sec_bajfinance": 2.3, "sec_hindunilvr": 2.2,
+            "sec_maruti": 2.0, "sec_tatamotors": 1.9, "sec_sunpharma": 1.8, "sec_ntpc": 1.7, "sec_hcltech": 1.6,
+            "sec_titan": 1.4, "sec_ultracemco": 1.3, "sec_powergrid": 1.3, "sec_tatasteel": 1.3, "sec_asianpaint": 1.2,
+            "sec_bajajfinsv": 1.2, "sec_nestle": 1.1, "sec_adaniports": 1.1, "sec_coalindia": 1.1, "sec_hindalco": 1.0,
+            "sec_grasim": 1.0, "sec_hdfclife": 1.0, "sec_jswsteel": 1.0, "sec_techm": 1.0, "sec_ongc": 0.9,
+            "sec_sbilife": 0.9, "sec_wipro": 0.9, "sec_trent": 0.9, "sec_bel": 0.9, "sec_adanient": 0.9,
+            "sec_bajajauto": 0.8, "sec_drreddy": 0.8, "sec_cipla": 0.8, "sec_shriramfin": 0.8, "sec_apollohosp": 0.7,
+            "sec_britannia": 0.7, "sec_eichermot": 0.7, "sec_tataconsum": 0.7, "sec_herohonda": 0.6, "sec_bpcl": 0.6,
+        },
         "client": {
             "name": "Kabir Anand", "age": 31, "occupation": "Data scientist",
             "persona": "Read enough about index investing to become mildly evangelical about it. Explicitly does not want to pay for active stock-picking he doesn't believe beats the market after fees — wants the broad India growth story, nothing more, nothing less. The most hands-off, lowest-maintenance client on the book.",
@@ -333,8 +425,9 @@ PORTFOLIOS = [
         "manager_name": "Farah Sheikh",
         "manager_bio": "Manages the firm's all-weather blended fund. Rebalances mechanically on a schedule, not on emotion or market calls.",
         "nav": 14_000_000_000,
-        "holdings": {"sec_hdfcbank": 0.15, "sec_reliance": 0.15, "sec_infosys": 0.12,
-                     "sec_tcs": 0.11, "sec_lt": 0.12, "sec_gsec_10y": 0.15, "sec_corp_bond_aaa": 0.20},
+        "holdings": {"sec_corp_bond_aaa": 19.6, "sec_gsec_10y": 15.4, "sec_hdfcbank": 12.3,
+                     "sec_reliance": 9.8, "sec_icicibank": 8.1, "sec_infosys": 7.4, "sec_lt": 6.9,
+                     "sec_tcs": 6.2, "sec_hindunilvr": 4.8, "sec_gsec_5y": 9.5},
         "client": {
             "name": "Neha Kulkarni", "age": 38, "occupation": "Small business owner (boutique retail)",
             "persona": "Runs her own store and already has enough decisions to make in a day. Explicitly asked for 'one fund that just handles the equity/debt split for me' — doesn't want to be called every time the market moves, wants moderate, steady growth she can mostly ignore.",
@@ -350,9 +443,9 @@ PORTFOLIOS = [
         "manager_name": "Rajesh Iyer",
         "manager_bio": "Specializes in NRI-focused mandates. Prioritizes liquidity and blue-chip stability given clients' long-distance, lower-touch relationship with the market.",
         "nav": 11_000_000_000,
-        "holdings": {"sec_hdfcbank": 0.18, "sec_reliance": 0.16, "sec_tcs": 0.14,
-                     "sec_asianpaint": 0.12, "sec_itc": 0.12, "sec_titan": 0.10,
-                     "sec_icicibank": 0.10, "sec_sunpharma": 0.08},
+        "holdings": {"sec_hdfcbank": 16.8, "sec_reliance": 14.2, "sec_tcs": 12.6,
+                     "sec_icicibank": 11.3, "sec_infosys": 9.7, "sec_hindunilvr": 8.4,
+                     "sec_itc": 7.9, "sec_lt": 7.1, "sec_asianpaint": 6.5, "sec_titan": 5.5},
         "client": {
             "name": "Arvind & Sunita Rao", "age": 53, "occupation": "NRI couple, engineers based in Dubai",
             "persona": "Both work in the Gulf and have been sending money home to invest for over a decade, with an eye on eventually returning to India. Communicates mostly over WhatsApp and the occasional call across time zones. Cares more about not losing money on something exotic than beating the market — wants names they'd recognize from back home.",
@@ -386,10 +479,13 @@ PORTFOLIOS = [
         "manager_bio": "N/A — fixed benchmark, not actively managed by anyone.",
         "is_reference": True,
         "nav": 20_000_000_000,
-        "holdings": {"sec_reliance": 0.10, "sec_hdfcbank": 0.09, "sec_icicibank": 0.08,
-                     "sec_infosys": 0.07, "sec_tcs": 0.07, "sec_lt": 0.05, "sec_bhartiartl": 0.05,
-                     "sec_itc": 0.04, "sec_sbin": 0.03, "sec_asianpaint": 0.02,
-                     "sec_gsec_10y": 0.15, "sec_corp_bond_aaa": 0.15, "sec_gsec_5y": 0.10},
+        # A textbook 60/40: ~60% broad large-cap equity, ~40% high-grade debt.
+        "holdings": {"sec_hdfcbank": 7.8, "sec_reliance": 5.1, "sec_icicibank": 5.0, "sec_infosys": 3.4,
+                     "sec_tcs": 2.4, "sec_lt": 2.3, "sec_bhartiartl": 2.0, "sec_itc": 2.5, "sec_sbin": 1.7,
+                     "sec_mm": 1.4, "sec_axisbank": 1.9, "sec_hindunilvr": 1.3, "sec_maruti": 1.2,
+                     "sec_sunpharma": 1.1, "sec_ntpc": 1.0, "sec_titan": 0.9, "sec_ultracemco": 0.8,
+                     "sec_asianpaint": 0.7, "sec_bajfinance": 1.4,
+                     "sec_gsec_10y": 15.0, "sec_corp_bond_aaa": 14.0, "sec_gsec_5y": 8.0, "sec_psu_bond": 3.0},
     },
 ]
 
@@ -406,7 +502,13 @@ def build_holdings_and_risk():
         sum_vol = 0.0
         sum_sq_weight = 0.0
         top = (None, 0.0)
-        for sec_id, weight in p["holdings"].items():
+        # Holdings are given as realistic raw weights (not necessarily summing
+        # to 1). Normalize per portfolio so weights sum to exactly 1.0, which
+        # keeps the numbers looking real (e.g. 9.87%, not a round 10%) while
+        # staying internally consistent.
+        raw_total = sum(p["holdings"].values())
+        norm_holdings = {sid: w / raw_total for sid, w in p["holdings"].items()}
+        for sec_id, weight in norm_holdings.items():
             s = SEC_BY_ID[sec_id]
             holdings.append({
                 "holding_id": f"hld_{hid:04d}",
