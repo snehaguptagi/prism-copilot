@@ -56,7 +56,7 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "prism_data.json")
 MODEL = "claude-sonnet-5"          # default / narration
 SEARCH_MODEL = "claude-sonnet-5"   # web-search grounded research
 CLASSIFY_MODEL = "claude-haiku-4-5-20251001"  # factor classification
-MAX_SEARCHES = 4
+MAX_SEARCHES = 5
 
 NO_ADVICE_SYSTEM_PROMPT = """You are a market-research assistant for an INDIA-ONLY portfolio
 management desk. Every client holds Indian stocks, Indian bonds, gold, and Indian REITs.
@@ -174,7 +174,7 @@ def run_news_feed(category):
     client = anthropic.Anthropic()
     response = client.messages.create(
         model=SEARCH_MODEL,
-        max_tokens=2048,
+        max_tokens=3000,  # room to gather a broader set of developments, not just the top story
         system=NO_ADVICE_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": NEWS_FEED_CATEGORIES[category]}],
         tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": MAX_SEARCHES}],
@@ -623,10 +623,12 @@ clients that today's news actually touches (each with a persona and how they are
 already computed). Produce:
 1. A single-sentence "tldr" of the most important thing in this news for the book. Plain,
    concrete, no fluff.
-2. "key_points": 4 to 6 clear, scannable bullets covering the distinct developments in the
-   news. Each bullet is ONE sentence, max 22 words, and MUST start with the single most
+2. "key_points": 6 to 9 clear, scannable bullets covering the distinct developments in the
+   news. Cover the breadth of what happened, not just the single biggest story: index moves,
+   policy, currency and rates, sector and stock specifics, flows, and commodities where
+   relevant. Each bullet is ONE sentence, max 22 words, and MUST start with the single most
    concrete fact (a number, a name, a decision). No paragraphs. These replace the raw text,
-   so they must stand on their own.
+   so they must stand on their own and give a genuinely fuller read than the tldr alone.
 3. For EACH affected client given, one short talking point the manager could say to that
    specific client, tailored to their persona and how they are affected.
 
@@ -654,8 +656,8 @@ def _news_briefing_tool(portfolio_ids):
                 "key_points": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "minItems": 3,
-                    "maxItems": 6,
+                    "minItems": 5,
+                    "maxItems": 9,
                 },
                 "client_points": {
                     "type": "array",

@@ -13,6 +13,11 @@ import Topbar from "@/components/Topbar";
 // figures capped at 100%). Bumping the key discards stale v2 caches on load.
 const NEWS_STORE_KEY = "prism_news_cache_v3";
 
+// Cached news older than this auto-refreshes in the background on open, so the
+// tab is instant but never silently shows genuinely stale news. Manual Reload
+// still forces a fresh pull at any time.
+const STALE_AFTER_MS = 12 * 60 * 60 * 1000; // 12 hours
+
 type StoredEntry = { result: NewsFeedResult; fetchedAt: number };
 
 function loadStore(): Record<string, StoredEntry> {
@@ -40,17 +45,25 @@ export default function NewsFeedPage() {
   const [cache, setCache] = useState<Record<string, NewsFeedResult>>({});
   const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
 
   async function loadCategory(cat: string, force = false) {
     setCategory(cat);
     setShowDetail(false);
-    if (!force && cache[cat]) return; // already in memory this session
-    setLoading(true);
+    // Read freshness straight from localStorage (synchronous, always current)
+    // rather than React state, which may not have hydrated yet on first mount.
+    const stored = loadStore()[cat];
+    const stale = !stored || Date.now() - stored.fetchedAt > STALE_AFTER_MS;
+    if (!force && stored && !stale) return; // fresh in cache, nothing to do
+    // Block the whole view only when there is nothing to show; when we already
+    // have (stale) content, refresh quietly in the background and keep it up.
+    if (stored) setRefreshing(true);
+    else setLoading(true);
     setError(null);
     try {
-      const result = await getNewsFeed(cat, force);
+      const result = await getNewsFeed(cat, force || stale);
       const now = Date.now();
       setCache((prev) => ({ ...prev, [cat]: result }));
       setFetchedAt((prev) => ({ ...prev, [cat]: now }));
@@ -58,9 +71,10 @@ export default function NewsFeedPage() {
       store[cat] = { result, fetchedAt: now };
       saveStore(store);
     } catch (e) {
-      setError(String(e));
+      if (!stored) setError(String(e)); // a failed background refresh keeps the cached view
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -93,8 +107,9 @@ export default function NewsFeedPage() {
         const first = cats[0];
         if (!first) return;
         setCategory(first);
-        // only fetch if we have nothing stored for the first category
-        if (!hydratedCache[first]) loadCategory(first);
+        // loadCategory fetches if the first category is missing OR stale, and
+        // no-ops if it is fresh in cache, so the tab opens instantly either way.
+        loadCategory(first);
       })
       .catch((e) => setError(String(e)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,17 +145,19 @@ export default function NewsFeedPage() {
           <button
             className="reload-btn"
             onClick={() => loadCategory(category, true)}
-            disabled={loading || !category}
+            disabled={loading || refreshing || !category}
             title="Fetch the latest news for this category"
           >
-            <span className={`refresh-icon${loading ? " spinning" : ""}`}>↻</span>
-            {loading ? "Reloading" : "Reload"}
+            <span className={`refresh-icon${loading || refreshing ? " spinning" : ""}`}>↻</span>
+            {loading || refreshing ? "Reloading" : "Reload"}
           </button>
         </div>
 
         {result && !loading && (
           <div className="news-fresh-line">
-            Last fetched {timeAgo(fetchedAt[category])}. Saved on this device, it will not reload on its own.
+            {refreshing
+              ? "Refreshing with the latest..."
+              : `Last fetched ${timeAgo(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
           </div>
         )}
 
