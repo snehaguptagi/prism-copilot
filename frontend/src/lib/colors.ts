@@ -74,7 +74,7 @@ export function sectorColor(sector: string): string {
 
 const ASSET_CLASS_COLORS: Record<string, string> = {
   Equity: "#5850ec",
-  "Fixed Income": "#0f766e",
+  "Fixed Income": "#0d9488", // validated: passes chroma floor + CVD separation on white
   "Real Estate": "#a3327d",
   Commodity: "#b5850a",
   Cash: "#64748b",

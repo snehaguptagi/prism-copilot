@@ -160,23 +160,28 @@ export default function OverviewPage() {
               {/* Asset-class allocation */}
               <div className="panel">
                 <div className="panel-title">Asset allocation across the book</div>
-                <div className="alloc-bar">
-                  {data.asset_class_allocation.map((a) => (
-                    <span
-                      key={a.asset_class}
-                      style={{ width: `${a.pct}%`, background: assetClassColor(a.asset_class) }}
-                      title={`${a.asset_class} ${a.pct}%`}
-                    />
-                  ))}
-                </div>
-                <div className="alloc-legend">
-                  {data.asset_class_allocation.map((a) => (
-                    <div key={a.asset_class} className="alloc-legend-item">
-                      <span className="dot" style={{ background: assetClassColor(a.asset_class) }} />
-                      <span className="alloc-name">{a.asset_class}</span>
-                      <span className="alloc-pct">{a.pct}%</span>
-                    </div>
-                  ))}
+                <div className="donut-wrap">
+                  <Donut
+                    segments={data.asset_class_allocation.map((a) => ({
+                      label: a.asset_class,
+                      pct: a.pct,
+                      color: assetClassColor(a.asset_class),
+                    }))}
+                    centerTop={`₹${crValue(data.kpis.total_aum)}`}
+                    centerSub="Cr AUM"
+                  />
+                  <div className="donut-legend">
+                    {[...data.asset_class_allocation]
+                      .sort((a, b) => b.pct - a.pct)
+                      .map((a) => (
+                        <div key={a.asset_class} className="donut-legend-row">
+                          <span className="donut-dot" style={{ background: assetClassColor(a.asset_class) }} />
+                          <span className="donut-legend-name">{a.asset_class}</span>
+                          <span className="donut-legend-pct">{a.pct}%</span>
+                          <span className="donut-legend-val">{inr(a.value)}</span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
 
@@ -208,15 +213,26 @@ export default function OverviewPage() {
             {/* Sector allocation */}
             <div className="panel">
               <div className="panel-title">Sector exposure across all clients</div>
-              <div className="sector-chips">
-                {data.sector_allocation.map((s) => (
-                  <div key={s.sector} className="sector-chip">
-                    <span className="sector-chip-dot" style={{ background: sectorColor(s.sector) }} />
-                    <span className="sector-chip-name">{s.sector}</span>
-                    <span className="sector-chip-pct">{s.pct}%</span>
+              {(() => {
+                const sorted = [...data.sector_allocation].sort((a, b) => b.pct - a.pct);
+                const max = Math.max(...sorted.map((s) => s.pct), 1);
+                return (
+                  <div className="sector-bars">
+                    {sorted.map((s) => (
+                      <div key={s.sector} className="sector-bar-row">
+                        <span className="sector-bar-name">{s.sector}</span>
+                        <span className="sector-bar-track">
+                          <span
+                            className="sector-bar-fill"
+                            style={{ width: `${(s.pct / max) * 100}%`, background: sectorColor(s.sector) }}
+                          />
+                        </span>
+                        <span className="sector-bar-val">{s.pct}%</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
             </div>
 
             <div className="ov-grid">
@@ -313,5 +329,57 @@ export default function OverviewPage() {
         </footer>
       </div>
     </>
+  );
+}
+
+function Donut({
+  segments,
+  centerTop,
+  centerSub,
+}: {
+  segments: { label: string; pct: number; color: string }[];
+  centerTop: string;
+  centerSub: string;
+}) {
+  const size = 168;
+  const stroke = 24;
+  const R = (size - stroke) / 2;
+  const C = 2 * Math.PI * R;
+  const cx = size / 2;
+  const cy = size / 2;
+  let acc = 0;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="donut" role="img">
+      <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} />
+      {segments.map((s) => {
+        const frac = s.pct / 100;
+        const dash = Math.max(frac * C - 2, 0); // 2px surface gap between segments
+        const offset = -acc * C;
+        acc += frac;
+        return (
+          <circle
+            key={s.label}
+            cx={cx}
+            cy={cy}
+            r={R}
+            fill="none"
+            stroke={s.color}
+            strokeWidth={stroke}
+            strokeDasharray={`${dash} ${C - dash}`}
+            strokeDashoffset={offset}
+            transform={`rotate(-90 ${cx} ${cy})`}
+            style={{ transition: "stroke-dasharray 700ms var(--ease-out)" }}
+          >
+            <title>{`${s.label}: ${s.pct}%`}</title>
+          </circle>
+        );
+      })}
+      <text x={cx} y={cy - 3} textAnchor="middle" className="donut-center-top" fill="var(--text)">
+        {centerTop}
+      </text>
+      <text x={cx} y={cy + 15} textAnchor="middle" className="donut-center-sub" fill="var(--text-faint)">
+        {centerSub}
+      </text>
+    </svg>
   );
 }
