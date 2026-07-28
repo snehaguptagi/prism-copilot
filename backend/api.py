@@ -802,13 +802,15 @@ def get_news_feed(category: str, force: bool = False):
 
 @app.post("/lens/run")
 def run_lens(req: LensRequest):
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not set on the server.")
-
+    # Validate the request (404) before checking for the key (500), so a bad
+    # request is rejected the same way whether or not the server has a key.
     data = load_data()
     sector_secs = securities_in_sector(data, req.sector)
     if not sector_secs:
         raise HTTPException(status_code=404, detail=f"No securities found for sector '{req.sector}'.")
+
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not set on the server.")
 
     company_names = build_query_context(sector_secs)
     response = run_search(req.sector, company_names)
@@ -845,9 +847,7 @@ def talking_points(req: TalkingPointsRequest):
     already-computed numbers for ONE specific client's portfolio as natural
     talking points for a relationship-manager call. The LLM only narrates
     the numbers produced below — it never computes exposure itself."""
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not set on the server.")
-
+    # Validate the request (404) before checking for the key (500).
     data = load_data()
     portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == req.portfolio_id), None)
     if not portfolio or not portfolio.get("client"):
@@ -856,6 +856,9 @@ def talking_points(req: TalkingPointsRequest):
     sector_secs = securities_in_sector(data, req.sector)
     if not sector_secs:
         raise HTTPException(status_code=404, detail=f"No securities found for sector '{req.sector}'.")
+
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not set on the server.")
 
     company_names = build_query_context(sector_secs)
     response = run_search(req.sector, company_names)
