@@ -352,6 +352,14 @@ def compute_factor_impact(data, factor_signals):
     if not factor_signals:
         return []
 
+    # One signal per factor. Repeated mentions of the same factor in the
+    # narrative (e.g. rates cited several times) must not double-count a
+    # holding's exposure, which would push a book's factor NAV above 100%.
+    unique_signals = {}
+    for sig in factor_signals:
+        unique_signals.setdefault(sig["factor"], sig)
+    factor_signals = list(unique_signals.values())
+
     sec_by_id = {s["security_id"]: s for s in data["securities"]}
     port_by_id = {p["portfolio_id"]: p for p in data["portfolios"]}
     impact = defaultdict(lambda: {"tailwind_pct": 0.0, "headwind_pct": 0.0, "matched": []})
@@ -695,7 +703,10 @@ def generate_news_briefing(category, narrative, affected_clients):
     api_client = anthropic.Anthropic()
     response = api_client.messages.create(
         model=MODEL,
-        max_tokens=1400,
+        # Enough headroom for a tldr, up to 6 key points, AND a talking point for
+        # every affected client. Too low and the client_points array gets
+        # truncated, so the per-client talking points come back empty.
+        max_tokens=4000,
         system=NEWS_BRIEFING_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_prompt}],
         tools=[_news_briefing_tool(portfolio_ids)],

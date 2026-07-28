@@ -509,6 +509,36 @@ def get_news_categories():
 
 
 FACTOR_MATERIALITY_PCT = 15.0
+# The briefing surfaces the clients a story MOST affects, not every book with
+# some diffuse macro exposure. Cap keeps the "what to tell your clients" list
+# focused and the per-client LLM call bounded.
+NEWS_MAX_AFFECTED = 8
+
+# Human-readable names for the macro factors, for the "how affected" line.
+_FACTOR_LABEL = {
+    "gold": "gold prices",
+    "oil": "oil prices",
+    "interest_rates_india": "Indian interest rates",
+    "interest_rates_us": "US interest rates",
+    "usd_inr": "the rupee",
+}
+
+
+def _dominant_factor(factor_entry, effect):
+    """Return (label, pct) for the single macro factor with the most exposure in
+    the given direction. pct counts each holding once for that factor (distinct
+    NAV), so it can never exceed 100%, and the label is specific ('gold prices')
+    rather than a vague 'macro factors'."""
+    per_factor = {}  # factor -> {security_id: weight_pct}  (dedup within a factor)
+    for m in factor_entry.get("matched", []):
+        if m.get("effect") == effect:
+            per_factor.setdefault(m["factor"], {})[m["security_id"]] = m["weight_pct"]
+    if not per_factor:
+        return None, 0.0
+    totals = {f: sum(w.values()) for f, w in per_factor.items()}
+    top = max(totals, key=totals.get)
+    return _FACTOR_LABEL.get(top, "macro moves"), round(min(totals[top], 100.0), 1)
+
 
 _STAT_RE = re.compile(
     r"(?:[+-]?\d[\d,.]*\s?%|₹\s?[\d,.]+\s?(?:crore|cr|lakh|trillion|billion)?|"
@@ -578,21 +608,30 @@ def get_news_feed(category: str, force: bool = False):
     factor_impact = compute_factor_impact(data, factor_signals)
     factor_by_pid = {p["portfolio_id"]: p for p in factor_impact}
 
-    # union of affected client portfolios, each with a plain "how_affected" line
+    # union of affected client portfolios, each with a plain "how_affected" line.
+    # A materiality score ranks them so the tab leads with the clients a story
+    # touches MOST: a name held directly in the news weighs more than diffuse
+    # macro exposure that half the book shares.
     affected_pids = set(direct_pct) | set(factor_by_pid)
     affected = []
     for pid in affected_pids:
         if pid not in portfolio_meta:
             continue
         how = []
+        material = 0.0
         if direct_pct.get(pid, 0) > 0:
             how.append(f"{direct_pct[pid]}% of NAV in names directly in the news")
+            material += direct_pct[pid] * 2.0  # a directly-named holding is the strongest signal
         fi = factor_by_pid.get(pid)
-        if fi and (fi["tailwind_pct"] >= FACTOR_MATERIALITY_PCT or fi["headwind_pct"] >= FACTOR_MATERIALITY_PCT):
-            if fi["tailwind_pct"] >= fi["headwind_pct"]:
-                how.append(f"{fi['tailwind_pct']}% of NAV a tailwind from macro factors")
-            else:
-                how.append(f"{fi['headwind_pct']}% of NAV a headwind from macro factors")
+        if fi:
+            t_label, t_pct = _dominant_factor(fi, "tailwind")
+            h_label, h_pct = _dominant_factor(fi, "headwind")
+            if t_pct >= h_pct and t_pct >= FACTOR_MATERIALITY_PCT:
+                how.append(f"{t_pct}% of NAV is a tailwind from {t_label}")
+                material += t_pct
+            elif h_pct >= FACTOR_MATERIALITY_PCT:
+                how.append(f"{h_pct}% of NAV is a headwind from {h_label}")
+                material += h_pct
         if not how:
             continue
         meta = portfolio_meta[pid]
@@ -601,11 +640,13 @@ def get_news_feed(category: str, force: bool = False):
             "portfolio_name": meta["portfolio_name"],
             "client_name": meta["client"]["name"],
             "persona": meta["client"]["persona"],
-            "how_affected": "; ".join(how),
+            "how_affected": ", and ".join(how),
             "direct_pct": direct_pct.get(pid, 0.0),
+            "material": material,
             "factor": factor_by_pid.get(pid),
         })
-    affected.sort(key=lambda a: a["direct_pct"], reverse=True)
+    affected.sort(key=lambda a: a["material"], reverse=True)
+    affected = affected[:NEWS_MAX_AFFECTED]  # focus: the most-affected clients only
 
     briefing = generate_news_briefing(category, narrative, affected)
 

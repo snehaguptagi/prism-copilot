@@ -9,7 +9,9 @@ import { avatarColor, initials } from "@/lib/colors";
 import CategoryIcon from "@/components/CategoryIcon";
 import Topbar from "@/components/Topbar";
 
-const NEWS_STORE_KEY = "prism_news_cache_v2";
+// v3: briefing schema fixed (per-client talking points populate, NAV factor
+// figures capped at 100%). Bumping the key discards stale v2 caches on load.
+const NEWS_STORE_KEY = "prism_news_cache_v3";
 
 type StoredEntry = { result: NewsFeedResult; fetchedAt: number };
 
