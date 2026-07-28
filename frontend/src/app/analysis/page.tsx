@@ -8,14 +8,58 @@ import { inr } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import ComparisonBar from "@/components/ComparisonBar";
 
+// A run is one live research call per (client, sector), so cache each result on
+// the device and let the user Refresh on demand. Anything older than 12 hours
+// re-runs automatically. Mirrors the News Feed's caching model.
+const ANALYSIS_STORE_KEY = "prism_analysis_cache_v1";
+const STALE_AFTER_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+type StoredRun = { result: TalkingPointsResult; fetchedAt: number };
+
+function analysisKey(portfolioId: string, sector: string): string {
+  return `${portfolioId}::${sector}`;
+}
+
+function loadRunStore(): Record<string, StoredRun> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(localStorage.getItem(ANALYSIS_STORE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveRun(key: string, run: StoredRun) {
+  if (typeof window === "undefined") return;
+  try {
+    const store = loadRunStore();
+    store[key] = run;
+    localStorage.setItem(ANALYSIS_STORE_KEY, JSON.stringify(store));
+  } catch {
+    /* quota or serialization issue: in-memory result still works this session */
+  }
+}
+
+function timeAgo(ts: number | null): string {
+  if (!ts) return "";
+  const mins = Math.round((Date.now() - ts) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs} hr ago`;
+  return `${Math.round(hrs / 24)} d ago`;
+}
+
 export default function AnalysisPage() {
   const [clients, setClients] = useState<ClientAccount[]>([]);
   const [sectors, setSectors] = useState<string[]>([]);
   const [selected, setSelected] = useState<ClientAccount | null>(null);
   const [sector, setSector] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TalkingPointsResult | null>(null);
+  const [resultAt, setResultAt] = useState<number | null>(null);
 
   useEffect(() => {
     Promise.all([getClients(), getSectors()])
@@ -27,30 +71,66 @@ export default function AnalysisPage() {
         const pre = preId ? c.find((x) => x.portfolio_id === preId) : null;
         if (pre) {
           setSelected(pre);
-          setSector(pre.suggested_sector ?? pre.sector_breakdown[0]?.sector ?? s[0] ?? "");
+          const preSector = pre.suggested_sector ?? pre.sector_breakdown[0]?.sector ?? s[0] ?? "";
+          setSector(preSector);
+          showCachedFor(pre.portfolio_id, preSector);
         }
       })
       .catch((e) => setError(String(e)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Show a previously-cached run for a (client, sector) instantly if we have
+  // one, otherwise clear the result so the user can run it.
+  function showCachedFor(portfolioId: string, sec: string) {
+    const entry = loadRunStore()[analysisKey(portfolioId, sec)];
+    if (entry) {
+      setResult(entry.result);
+      setResultAt(entry.fetchedAt);
+    } else {
+      setResult(null);
+      setResultAt(null);
+    }
+  }
 
   function pickClient(c: ClientAccount) {
     setSelected(c);
-    setResult(null);
     setError(null);
-    setSector(c.suggested_sector ?? c.sector_breakdown[0]?.sector ?? sectors[0] ?? "");
+    const sec = c.suggested_sector ?? c.sector_breakdown[0]?.sector ?? sectors[0] ?? "";
+    setSector(sec);
+    showCachedFor(c.portfolio_id, sec);
   }
 
-  async function runAnalysis() {
+  function changeSector(sec: string) {
+    setSector(sec);
+    if (selected) showCachedFor(selected.portfolio_id, sec);
+  }
+
+  async function runAnalysis(force = false) {
     if (!selected || !sector) return;
-    setLoading(true);
+    const key = analysisKey(selected.portfolio_id, sector);
+    const entry = loadRunStore()[key];
+    const stale = !entry || Date.now() - entry.fetchedAt > STALE_AFTER_MS;
+    if (!force && entry && !stale) {
+      setResult(entry.result);
+      setResultAt(entry.fetchedAt);
+      return;
+    }
+    // Keep the current result visible while refreshing if we already have one.
+    if (entry) setRefreshing(true);
+    else setLoading(true);
     setError(null);
     try {
       const r = await getTalkingPoints(selected.portfolio_id, sector);
+      const now = Date.now();
       setResult(r);
+      setResultAt(now);
+      saveRun(key, { result: r, fetchedAt: now });
     } catch (e) {
-      setError(String(e));
+      if (!entry) setError(String(e)); // a failed refresh keeps the cached result
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }
 
@@ -155,7 +235,7 @@ export default function AnalysisPage() {
                 <div>
                   <div className="run-label">Analyze exposure to</div>
                   <div className="select-wrap">
-                    <select value={sector} onChange={(e) => setSector(e.target.value)}>
+                    <select value={sector} onChange={(e) => changeSector(e.target.value)}>
                       {sectors.map((s) => (
                         <option key={s} value={s}>
                           {s}
@@ -165,11 +245,30 @@ export default function AnalysisPage() {
                     </select>
                   </div>
                 </div>
-                <button className="btn" onClick={runAnalysis} disabled={loading}>
+                <button className="btn" onClick={() => runAnalysis(false)} disabled={loading || refreshing}>
                   {loading && <span className="spinner" />}
-                  {loading ? "Analyzing live market…" : "Run market analysis"}
+                  {loading ? "Analyzing live market…" : result ? "View analysis" : "Run market analysis"}
                 </button>
               </div>
+
+              {result && (
+                <div className="news-fresh-line" style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <span>
+                    {refreshing
+                      ? "Refreshing with the latest…"
+                      : `Analyzed ${timeAgo(resultAt)}. Cached on this device; Refresh to re-run live.`}
+                  </span>
+                  <button
+                    className="reload-btn"
+                    onClick={() => runAnalysis(true)}
+                    disabled={loading || refreshing}
+                    title="Re-run this analysis against the latest market news"
+                  >
+                    <span className={`refresh-icon${refreshing ? " spinning" : ""}`}>↻</span>
+                    {refreshing ? "Refreshing" : "Refresh"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && selected && (

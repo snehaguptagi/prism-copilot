@@ -170,11 +170,20 @@ the same factor) and `compute_scenario_impact` (mild/moderate/severe stress band
 
 ## 7. Caching
 
+Both LLM-backed surfaces (News Feed and Analysis) follow the same cache-then-refresh model, so a
+repeat visit is instant while a manual control always forces a fresh live pull.
+
 - **Server**: an in-process dict caches each news category for a TTL; `force=true` bypasses it.
   This keeps repeated tab opens from re-running the pipeline.
-- **Client**: the News Feed persists each fetched category to `localStorage` (keyed
-  `prism_news_cache_v3`), so opening the tab is instant and never auto-refetches. A manual Reload
-  button forces a fresh call. The key is versioned so a schema change discards stale caches.
+- **News Feed client cache**: each fetched category is persisted to `localStorage` (keyed
+  `prism_news_cache_v3`), so opening the tab is instant. Content older than 12 hours refreshes in
+  the background on open; a manual Reload button forces a fresh call at any time. The key is
+  versioned so a schema change discards stale caches.
+- **Analysis client cache**: each run is one live call per (client, sector), so results are
+  cached in `localStorage` (keyed `prism_analysis_cache_v1`) under a `<portfolio_id>::<sector>`
+  key. Re-opening or re-selecting a cached combination shows instantly; a per-result Refresh
+  button re-runs live, and results older than 12 hours re-run on demand. A failed refresh keeps
+  the cached result on screen.
 
 ## 8. Tech stack and ops
 
