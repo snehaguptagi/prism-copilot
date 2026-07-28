@@ -13,16 +13,16 @@ clients a development actually touches, by how much, and what to tell them.
 |---|---|
 | [`backend/`](./backend) | FastAPI + the market-insight pipeline (entity linking, deterministic roll-ups, direction/factor engine, news briefing, talking points). Python. |
 | [`frontend/`](./frontend) | Next.js + TypeScript app: Overview, Clients, Portfolio Analysis, News Feed, Products. |
-| [`docs/`](./docs) | Product and technical scoping: the [PRD](./docs/PRD.md) (Part A, product) and [LLD](./docs/LLD.md) (Parts B and C, design and plan). |
+| [`docs/`](./docs) | Design docs describing the project as built: the [PRD](./docs/PRD.md) (product) and [LLD](./docs/LLD.md) (technical design + the external APIs used). |
 
 ## Design docs
 
-The full scoping that this MVP is built from lives in [`docs/`](./docs):
+Both docs in [`docs/`](./docs) describe PRISM as actually built, each opening with an overall picture of the project:
 
-- **[Product Requirements Document (PRD.md)](./docs/PRD.md)** - problem, personas, goals, feature scope, user journeys, functional and non-functional requirements, compliance guardrails, and the risk register.
-- **[Low-Level Design (LLD.md)](./docs/LLD.md)** - system architecture, component design, data model, ingestion pipeline, entity linking, retrieval and RAG, LLM orchestration, the portfolio roll-up engine, API surface, evaluation harness, tech stack, roadmap, and open questions.
+- **[Product Requirements Document (PRD.md)](./docs/PRD.md)** - overall picture, problem, the RM and the 16 client personas, the five feature surfaces, functional and non-functional requirements, compliance guardrails, and success criteria.
+- **[Low-Level Design (LLD.md)](./docs/LLD.md)** - overall architecture, **the external APIs used** (the Anthropic Claude API with its hosted web-search tool, plus the free market-data APIs considered), data model, the research-to-insight pipeline, deterministic engines, the HTTP API surface, caching, tech stack, and roadmap.
 
-The docs describe the general buy-side copilot. What ships in this repo is the concrete India-only, relationship-manager instantiation of that scope: a single-tenant demo over synthetic Indian portfolios, with the entity-linking and deterministic roll-up ideas from the LLD implemented end to end.
+The running system uses a single external API: the Anthropic Claude API, including its hosted `web_search_20250305` tool for grounded, cited market research. Free market-data APIs (Finnhub, Marketaux, NewsAPI) were evaluated during scoping and are documented in the LLD as the drop-in path for real price/news feeds, but are not used in the current build.
 
 ## What it does
 

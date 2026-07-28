@@ -1,201 +1,193 @@
 # PRISM - Product Requirements Document (PRD)
 
-> Portfolio-aware investment research copilot for India buy-side relationship managers.
-> This is Part A (Product) of the original scoping document. The companion [Low-Level Design](LLD.md) covers the technical design.
+> Portfolio-aware investment research copilot for India buy-side relationship managers (RMs).
+> This document describes the product as actually built. The companion
+> [Low-Level Design](LLD.md) covers the technical design, data model, pipeline, and the
+> external APIs the system uses.
 
 ---
 
-## Executive summary
+## 1. Overall picture
 
-Investment teams spend disproportionate effort reading and re-summarising the same universe of market content, then manually translating it into portfolio implications. The reading is not the bottleneck; the **translation from event to "what it means for our book"** is. Existing summarisation tools stop at the summary. This product goes one step further and links every insight to the fund's actual holdings, sector exposures, and risk positions.
+PRISM is a decision-support tool for a relationship manager who runs a book of private-wealth
+clients in the Indian market. It answers one question that generic news and research tools do
+not: **"today's market moved, so which of MY clients does it touch, by how much, and what do I
+tell them?"**
 
-The wedge, and the moat, is **portfolio-aware grounding**. A generic tool tells you a company was downgraded. This tells you the downgrade touches 4.2% of Fund A's NAV across three held names and lifts your semiconductor factor tilt. Because it operates in a regulated context, every claim is citation-grounded and traceable to a source, and the system stays firmly in decision-support territory rather than issuing advice or executing trades.
+A generic tool tells you the rupee fell or the RBI held rates. PRISM tells you that the move is a
+headwind for 95% of Suresh Nair's bond ladder, a tailwind for Vikram Oberoi's concentrated bank
+book, and hands you a one-line, persona-aware talking point for each. Every surfaced number is
+computed deterministically from real holdings, and every market claim is grounded in a cited
+source.
 
-Everyone can summarise. Almost no one connects the summary to your book with a citation you can defend to compliance. That connection is the product.
+The shipped product is a single-tenant demo over a synthetic but realistic India-only dataset:
+one logged-in RM (Sneha Gupta) managing **16 client portfolios** worth roughly **Rs 177 crore**,
+spanning a Rs 38 lakh young trader to a Rs 46 crore business promoter. It is built entirely around
+Indian instruments (NSE/BSE equities, G-secs, corporate bonds, gold ETFs and SGBs, REITs) and
+Indian macro drivers (RBI policy, the rupee, oil, gold). There is no US-centric content and no
+crypto anywhere.
 
-## Problem & context
+### What the RM gets
 
-Buy-side research analysts and portfolio managers face a continuous, high-volume inbound stream: sell-side broker notes, earnings-call transcripts, regulatory filings, real-time news, market commentary, and their own firm's internal research. The manual workflow is expensive on three fronts:
+| Surface | What it answers |
+|---|---|
+| **Overview** | The whole book at a glance: AUM, fee revenue, risk spread, asset and sector allocation, top holdings, book return vs the Nifty, and what needs attention today. |
+| **Clients** | A roster of 16 distinct personas, each with a full profile: behavioral psychographics, relationship insights, holdings, performance vs the Nifty, a suitability check, and a communication log with the next action due. |
+| **Analysis** | Pick a client's book, run live grounded research on its dominant exposure, and get exposure vs a normal book plus tailored talking points. |
+| **News Feed** | Categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and, for each affected client, a specific "what to tell them" talking point. |
+| **Products** | The investable universe the desk can offer, grouped by asset class. |
 
-- **Volume triage.** Deciding what, out of hundreds of daily items, is even relevant to the positions they hold.
-- **Synthesis.** Compressing long documents into the few sentences that matter, repeatedly, across overlapping sources.
-- **Translation to the book.** Connecting an external event to specific holdings, sector exposures, and risk positions. This is the step that carries the real cognitive load and is the least supported by existing tooling.
+## 2. Problem and context
 
-The consequence is slower decision support, uneven coverage (well-followed names get attention; the long tail is neglected), and senior analyst time spent on low-leverage reading rather than judgement. The CIO office, meanwhile, lacks a consolidated, timely view of how unfolding events map onto the firm's aggregate exposures.
+An RM's day is a continuous inbound stream: market moves, RBI decisions, currency swings,
+earnings, sector news. The manual workflow is expensive on three fronts:
 
-#### Why now
+- **Triage.** Deciding which of dozens of daily developments is even relevant to the positions
+  their clients actually hold.
+- **Translation to the book.** Connecting an external event to specific holdings and exposures.
+  This is the step that carries the real cognitive load and is the least supported by existing
+  tooling.
+- **Client communication.** Turning "what happened" into a short, correct, persona-appropriate
+  message for each affected client, fast enough to be useful the same day.
 
-Long-context LLMs make document synthesis reliable and cheap; grounded retrieval makes citations enforceable; and firms are actively standing up research GCCs and AI functions, creating both the demand and the delivery capacity for exactly this class of tool.
+The consequence is slower client response, uneven coverage (big holdings get attention, the long
+tail is neglected), and senior time spent reading rather than advising.
 
-## Goals & non-goals
+#### Why this is tractable now
+
+Long-context LLMs make document synthesis reliable and cheap; a hosted, cited web-search tool
+makes grounding enforceable without running a scraper; and deterministic arithmetic over holdings
+makes every impact number defensible to compliance. PRISM combines the three.
+
+## 3. Goals and non-goals
 
 #### Goals
 
-- Cut time-to-insight per material event by a target of 60% or more.
-- Link surfaced insights to specific held positions with high precision.
-- Raise coverage of the held universe, especially long-tail names.
-- Give the CIO office a firm-wide event-to-exposure oversight view.
-- Make every insight defensible: cited, traceable, reproducible.
+- Cut the time from "a thing happened in the market" to "a cited, book-specific read" to under a
+  few minutes.
+- Link every surfaced insight to specific held positions with high precision.
+- Give the RM a firm-wide, one-screen view of the book (AUM, risk, allocation, performance).
+- Produce short, persona-aware client talking points on demand.
+- Make every insight defensible: cited, traceable, and reproducible.
 
-#### Non-goals (for v1)
+#### Non-goals
 
-- No trade execution, order routing, or portfolio rebalancing.
-- No personalised investment advice to end investors.
-- No price prediction, alpha signals, or quant factor models.
-- No replacement of the OMS, EMS, or system of record.
-- No fully autonomous action; a human stays in the loop.
+- **No advice.** PRISM never says what to buy, sell, or hold, and never executes trades. It is
+  observational decision support only.
+- **No real trading or custody integration.** The dataset is synthetic.
+- **Not multi-market.** India only. No US equities, no crypto or digital assets.
+- **Not multi-tenant in the demo.** One RM, no login, single book.
 
-PRISM is a research productivity and oversight tool, not an advisory or trading system. This boundary is a product decision, not just a compliance one, and it keeps the surface area shippable.
+## 4. Personas
 
-## Personas & jobs to be done
+#### The user: the relationship manager
 
-The user and the buyer are different people. Design must satisfy both or the product dies in the gap between them.
+Sneha Gupta manages a book of 16 private-wealth clients. She is time-poor, needs to respond to
+clients the same day a story breaks, and has to keep every claim defensible. She is the only
+logged-in user; there is no authentication in the demo.
 
-### Research analyst
+#### The clients (the 16 personas the book is built from)
 
-*"When a name I cover reports or moves, help me understand the read-through to our positions fast, with sources I can cite in my note."*
+The clients are deliberately diverse in wealth, sophistication, risk appetite, and communication
+style, because the whole point is that the same news lands differently on each. A sample:
 
-#### Cares about
+- **Meena Iyer**, 68, retired schoolteacher, capital-preservation book (Rs 1.35 Cr), loss-averse,
+  wants reassurance not returns.
+- **Rohan Mehta**, 29, software engineer, all-IT conviction book (Rs 1.55 Cr), reads every
+  earnings call, wants a research partner who keeps up.
+- **Arjun Verma**, 22, full-time trader, aggressive small and midcap book (Rs 38 lakh), checks
+  prices several times a day.
+- **Vikram Oberoi**, 52, ex-banker angel investor, concentrated banks book (Rs 13.5 Cr), expert,
+  pushes back if the book gets diluted.
+- **Rajiv Malhotra**, 59, business promoter post partial exit, diversified equity (Rs 46 Cr).
+- **Suhas Kamath**, 44, tech founder post exit, aggressive growth (Rs 30 Cr).
+- **Anjali Bhandari**, 46, second-generation family office, multi-asset (Rs 38 Cr).
+- **Dr. Venkat and Latha Reddy**, 61, physician couple, capital-protective blue-chip (Rs 22 Cr).
 
-- Speed and coverage
-- Trustworthy citations
-- Not missing material events
+The full roster of 16 spans retirees, salaried professionals, an NRI couple, a homemaker with
+family gold wealth, a passive index investor, a small business owner, and the UHNI anchors above.
 
-### Portfolio manager
+## 5. Feature scope
 
-*"Tell me which of my holdings are affected by what's happening today, and how much of my book is exposed."*
+All five surfaces below are built and working.
 
-#### Cares about
+#### Overview (firm-wide dashboard)
 
-- Book-level relevance
-- Risk and exposure context
-- A fast morning digest
+Total AUM, client count, annual fee revenue, blended fee rate, distinct securities, book return
+vs the Nifty 50 with best and worst performer, "what needs attention" action items sorted by due
+date, asset-class allocation, AUM by risk tier, sector exposure, largest positions, and largest
+clients. Every figure is computed from current holdings, nothing estimated.
 
-### CIO office
+#### Clients (roster + client detail)
 
-*"Give me firm-wide oversight of how events map to our aggregate exposures, and evidence the desks are covered."*
+A searchable, risk-filterable roster. Each client detail page has four tabs: **Profile** (persona,
+behavioral psychographics, goals, relationship insights, manager note), **Portfolio** (performance
+vs Nifty, suitability check, metrics, sector allocation, factor sensitivity, largest position),
+**Holdings** (every position with weight and market value), and **Communication** (the PM-to-client
+interaction log plus the next action due).
 
-#### Cares about
+#### Analysis (portfolio-first research flow)
 
-- Oversight and consistency
-- Auditability and control
-- Demonstrable productivity
+Pick a client card, and PRISM runs grounded research on that book's dominant exposure, then shows
+a verdict banner, exposure gauges, a tailwind/headwind bar, market-insight bullets, tailored
+talking points, and cited sources.
 
-### Research GCC lead
+#### News Feed (daily briefing)
 
-*"Let my offshore team support many global desks at once without re-learning each book's context by hand."*
+Seven India-relevant categories (India Markets, Global cues for India, Commodities and Energy,
+Currency and Rates, Corporate Earnings, Policy and Regulation, India Startups). Each renders a
+one-line TL;DR, key-stat callouts, scannable key-development bullets, and a "what to tell your
+clients" section: the eight most-affected clients, each with a named-factor exposure line and a
+specific talking point. Cached per category so it does not reload on its own, with a manual Reload
+button.
 
-#### Cares about
+#### Products (investable universe)
 
-- Multi-desk, multi-portfolio
-- Entitlements and access
-- Repeatable workflows
+The full security master the desk can offer, grouped by asset class, with usage counts.
 
-## Success metrics
+## 6. Functional requirements
 
-| Tier | Metric | Definition | Target (pilot) |
-| --- | --- | --- | --- |
-| North star | Time-to-insight | Median minutes from a material event to a cited, book-linked summary in front of the analyst | < 5 min |
-| Value | Held-universe coverage | % of held names with at least one fresh, linked insight per week | > 90% |
-| Quality | Linkage precision | % of holding links judged correct on audit | > 92% |
-| Trust | Citation accuracy | % of claims whose cited source actually supports them | > 98% |
-| Adoption | Weekly active analysts | Distinct users running ≥ 3 sessions/week on the pilot desk | > 70% |
-| Outcome | Self-reported time saved | Hours/week per analyst, survey-based | ≥ 5 hrs |
+- **FR1.** Research calls must be grounded: every market claim carries a citation to a source, or
+  it is suppressed.
+- **FR2.** All impact numbers (NAV touched, tailwind/headwind, exposure vs a normal book,
+  performance, suitability) are computed deterministically from holdings. The LLM only phrases
+  them; it never computes or invents numbers.
+- **FR3.** All content is India-only. Crypto and digital assets are never mentioned.
+- **FR4.** Talking points are one sentence, persona-aware, and lead with the concrete fact.
+- **FR5.** The News Feed is cached (in-process on the server and on the device) and refreshes only
+  on explicit Reload.
+- **FR6.** No buy/sell/hold guidance is generated at any stage.
 
-Raw summary quality is table stakes and hard to move a buyer with. Time-to-insight and coverage are what leadership feels. Citation accuracy is the metric that, if it slips, ends the pilot regardless of the others.
+## 7. Non-functional requirements
 
-## Feature scope (MoSCoW)
+- **Correctness and defensibility.** The deterministic core is fully unit-tested (88 tests). Any
+  number shown can be traced to holdings and reproduced.
+- **Latency.** Cached surfaces open instantly. Live research is bounded (capped web searches,
+  tiered models) to keep a research call to a small number of seconds.
+- **House style.** Concise, data-first output. No em dashes. Lead with the number.
+- **Privacy.** No real client data; the dataset is synthetic.
 
-| Priority | Capability | Notes |
-| --- | --- | --- |
-| Must | Multi-source ingestion & normalisation | Transcripts, filings, news, internal notes into one schema |
-| Must | Grounded summarisation | Per-document and per-event, every claim cited |
-| Must | Holdings linkage | Insight to specific positions. The wedge. |
-| Must | Sector / exposure roll-up | "3 held names touched, 4.2% of NAV" |
-| Must | Grounded analyst Q&A | Chat over the corpus with citations and filters |
-| Should | Personalised daily digest | Per-PM, scoped to their book |
-| Should | Material-event alerting | Push when news hits a held name above a threshold |
-| Should | Risk-position flagging | Concentration and factor-tilt shifts from an event |
-| Could | Thematic clustering | Auto-surface emerging cross-source themes |
-| Could | CIO oversight dashboard | Firm-wide event-to-exposure heatmap |
-| Won't (v1) | Trade execution / rebalancing | Explicit non-goal |
-| Won't (v1) | Alpha / price prediction | Out of scope and out of positioning |
+## 8. Compliance and guardrails
 
-## Key user journeys
+- Decision-support only: observational output, never advice, never execution.
+- Every market claim is citation-grounded and traceable.
+- A suitability check flags any book that has drifted more aggressive or more conservative than
+  the client's stated mandate, before compliance has to.
+- The model is explicitly instructed never to use words like "recommend", "should invest", or
+  "opportunity".
 
-### J1. Morning book scan (PM)
+## 9. Success criteria
 
-PM opens PRISM. Dashboard shows overnight material events touching held names, ranked by NAV impact. Each row expands to a cited summary and the affected positions. Two minutes replaces a half-hour scan.
+| Dimension | What good looks like |
+|---|---|
+| Grounding | Every market claim has a working citation. |
+| Linkage | Impact maps to the right holdings; percentages are correct and bounded. |
+| Usefulness | Talking points read like something the RM would actually say to that client. |
+| Trust | Any figure can be reproduced from the dataset. |
+| Coverage | The whole book is visible, not just the big names. |
 
-### J2. Earnings read-through (analyst)
+## 10. Data note
 
-A covered name reports. PRISM ingests the transcript, produces a cited summary, and highlights which of the firm's holdings share supply-chain, sector, or factor exposure. Analyst asks follow-ups in chat, then lifts cited lines straight into their internal note.
-
-### J3. Ad-hoc question (analyst)
-
-"What did brokers say about our semiconductor holdings this quarter, and what's the risk read-through?" PRISM retrieves across the corpus, answers with inline citations, and lists the positions in scope, filterable by fund, sector, and date.
-
-### J4. Oversight review (CIO office)
-
-CIO office views the firm-wide heatmap of events against aggregate exposures, confirms coverage of the held universe, and drills into any desk. Audit log records who saw what.
-
-## Functional requirements
-
-| ID | Requirement | Priority |
-| --- | --- | --- |
-| FR-01 | Ingest documents from transcripts, filings, news feeds, and uploaded internal notes; deduplicate near-identical items. | Must |
-| FR-02 | Resolve company and instrument mentions in text to the firm's holdings, including aliases, tickers, ADRs, and subsidiary-to-parent. | Must |
-| FR-03 | Generate document- and event-level summaries where every claim carries an inline citation to a source span. | Must |
-| FR-04 | For any event, compute affected holdings, % of NAV exposed, and sector breakdown. | Must |
-| FR-05 | Answer natural-language questions over the corpus with citations; support filters by fund, sector, entity, and date. | Must |
-| FR-06 | Enforce per-user, per-desk entitlements on both documents and portfolios. | Must |
-| FR-07 | Produce a personalised digest per PM on a schedule, scoped to their holdings. | Should |
-| FR-08 | Alert users when a material event hits a held name above a configurable threshold. | Should |
-| FR-09 | Flag concentration and factor-tilt changes implied by an event. | Should |
-| FR-10 | Maintain an immutable audit log of queries, sources shown, and outputs. | Must |
-
-## Non-functional requirements
-
-| Category | Requirement |
-| --- | --- |
-| Latency | Interactive Q&A first token < 3s; full grounded answer < 12s. New-document ingest-to-searchable < 5 min. |
-| Accuracy | Linkage precision > 92%; citation faithfulness > 98% on the eval set (see §22). |
-| Security | Encryption in transit and at rest; row-level entitlement enforcement; no training on client data; tenant isolation. |
-| Auditability | Every surfaced claim reproducible to its source span; full query and access logging retained per policy. |
-| Reliability | Graceful degradation: if linkage confidence is low, show the summary and flag the uncertainty rather than guessing. |
-| Scalability | Multi-tenant, multi-desk, multi-portfolio from day one; ingest volume scalable independent of query load. |
-| Privacy | Internal research never leaves the tenant boundary; configurable data residency. |
-
-## Data sources & licensing
-
-Data licensing, not the model, is the true commercial critical path. The MVP is deliberately built on defensible public sources; licensed sources are a parallel workstream, not a blocker.
-
-| Source | MVP status | Notes |
-| --- | --- | --- |
-| Earnings-call transcripts | Public subset | Publicly posted transcripts for the pilot; licensed feed for production |
-| Regulatory filings | Public | SEC EDGAR / exchange filings, freely usable |
-| News & market commentary | Licensed API | News API with clear redistribution terms |
-| Internal research notes | Tenant-supplied | Uploaded by the firm; never leaves the tenant |
-| Sell-side broker reports | Deferred | Paywalled/licensed. Production only, with entitlement checks. Do not use in MVP. |
-| Holdings & exposures | Tenant-supplied | From the firm's system of record; the linkage target |
-
-## Compliance & guardrails
-
-- **Human in the loop, always.** Output is decision-support; no automated action is taken on the book.
-- **No advice generation.** The system does not issue buy/sell recommendations or personalised investment advice.
-- **Grounding is mandatory.** Claims without a supporting source span are suppressed, not shown with a guess.
-- **Entitlement-aware.** Users only see documents and portfolios they are cleared for; licensed content respects its terms.
-- **Full audit trail.** Every query, source shown, and output is logged and reproducible.
-- **MNPI hygiene.** Clear handling boundary for any material non-public information; internal notes stay inside the tenant.
-
-## Risk register
-
-| ID | Risk | Sev. | Mitigation |
-| --- | --- | --- | --- |
-| R-01 | Entity linking too inaccurate to trust; wrong holdings surfaced | High | Front-load a Phase-0 spike; hybrid symbolic + LLM resolver; show confidence; fail closed |
-| R-02 | Hallucinated or unsupported implications in a regulated setting | High | Mandatory citation grounding; claim-level verification; suppress ungrounded output |
-| R-03 | Broker-report licensing blocks production value | High | MVP on public sources; licensing as a parallel commercial workstream |
-| R-04 | Buyer sees it as "just another summariser" | Med | Lead every demo with the holdings-linkage wow-moment, not the summary |
-| R-05 | Adoption stalls; analysts distrust and revert | Med | Citations on every claim; pilot with a friendly desk; measure time saved |
-| R-06 | Data residency / security objections from IT | Med | Tenant isolation, no training on client data, configurable residency |
-| R-07 | Cost per query scales badly with corpus size | Low | Tiered models: cheap for bulk summarisation, top-tier for reasoning; caching |
+All client, portfolio, and communication data is synthetic, built to demonstrate the workflow
+realistically. It does not represent real people or real accounts. Performance figures are
+illustrative of each strategy's character, not derived from live price history.

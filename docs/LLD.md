@@ -1,170 +1,222 @@
 # PRISM - Low-Level Design (LLD)
 
-> Technical design, data model, pipeline, and API surface for PRISM.
-> This is Part B (Design) and Part C (Plan) of the original scoping document. See the [Product Requirements Document](PRD.md) for product scope.
+> Technical design of PRISM as built: architecture, the external APIs used, data model, the
+> research-to-insight pipeline, the deterministic engines, the HTTP API surface, tech stack, and
+> how to run it. See the [Product Requirements Document](PRD.md) for product scope.
 
 ---
 
-## System architecture
+## 1. Overall picture
 
-A layered pipeline: sources flow through ingestion into a knowledge layer that is enriched with holdings context at index time, so "what affects my book" is a first-class filter rather than a post-hoc computation.
-
-## Component design
-
-| Component | Responsibility | Key decisions |
-| --- | --- | --- |
-| Ingestion svc | Fetch, parse, normalise, dedupe source documents | Pluggable loaders per source; idempotent; near-dup detection by minhash |
-| Entity linker | Resolve mentions to the firm's securities master | Hybrid: symbolic dictionary/gazetteer first, LLM disambiguation on ambiguity; confidence scored |
-| Indexer | Chunk, embed, and attach holding/sector metadata | Metadata written at index time so linkage is a filter, not a join at query time |
-| Retriever | Fetch relevant chunks under entitlement | Hybrid dense + keyword; entitlement + fund/date filters applied pre-rank |
-| Orchestrator | Summarise, link, answer, and verify claims | Tiered models; verifier pass rejects ungrounded claims |
-| Roll-up engine | Compute NAV impact, sector and factor exposure | Deterministic, not LLM; reads from portfolio store |
-| Digest/alert svc | Scheduled digests and threshold alerts | Per-user materiality thresholds |
-| Audit svc | Immutable log of queries, sources, outputs | Append-only; feeds compliance review |
-
-## Data model
-
-Core entities. Portfolio, desk, and entitlement are first-class from day one to support multi-desk GCC delivery.
+PRISM is a two-process web app plus a synthetic data generator:
 
 ```
-# Security master (linkage target)
-Security { security_id, primary_ticker, name, aliases[], isin,
-           parent_id?, adr_of?, sector, industry, country }
-
-# Portfolio holdings, per desk
-Holding  { holding_id, portfolio_id, security_id, weight,
-           market_value, as_of_date }
-Portfolio{ portfolio_id, desk_id, name, base_ccy, mandate }
-Desk     { desk_id, tenant_id, name }
-
-# Ingested content
-Document { doc_id, source_type, title, published_at, url,
-           tenant_scope, raw_text, checksum }
-Chunk    { chunk_id, doc_id, span, text, embedding,
-           linked_security_ids[], sectors[], link_confidence }
-
-# Derived insight
-Insight  { insight_id, event_key, summary, claims[],
-           affected_holdings[], nav_impact_pct, created_at }
-Claim    { claim_id, text, source_doc_id, source_span,
-           faithfulness_score }
-
-# Access & audit
-Entitlement{ user_id, desk_id, source_types[], portfolio_ids[] }
-AuditEvent { event_id, user_id, action, query, shown_sources[], ts }
+                         build_dataset.py
+                    (synthetic India dataset gen)
+                                 |
+                                 v
+                        backend/prism_data.json
+                                 |
+  ┌───────────────┐   HTTP   ┌───────────────────────────┐   HTTPS   ┌────────────────────────┐
+  │  Next.js UI    │ ───────> │  FastAPI backend          │ ────────> │  Anthropic Claude API   │
+  │  (browser)     │ <─────── │  api.py + insight_lens.py │ <──────── │  + hosted web_search    │
+  └───────────────┘   JSON   └───────────────────────────┘   cited   └────────────────────────┘
+       5 tabs                  deterministic engines +                 grounded research,
+                               LLM narration                           returns citations
 ```
 
-## Ingestion pipeline
+- **Frontend** (`frontend/`): a Next.js + TypeScript app with five routes (Overview, Clients,
+  Analysis, News Feed, Products). It is a thin rendering layer; all numbers come from the backend.
+- **Backend** (`backend/`): a FastAPI service. `api.py` exposes the HTTP surface and holds the
+  deterministic roll-up engines; `insight_lens.py` is the research-and-narration pipeline that
+  calls Claude.
+- **Data**: `build_dataset.py` generates `prism_data.json`, a self-contained synthetic dataset of
+  desks, portfolios, securities, holdings, risk, and a benchmark. The backend loads it at startup.
 
-1. **Fetch.** Source-specific loaders pull raw content on schedule or webhook. Idempotent by checksum.
-2. **Parse & normalise.** Convert to the common `Document` schema; strip boilerplate; extract publish date and title.
-3. **Dedupe.** Near-duplicate detection (minhash/shingling) collapses the same story across wires into one `event_key`.
-4. **Entity link.** Run the linker (§17); attach `linked_security_ids` and confidence.
-5. **Chunk & embed.** Finance-aware chunking that keeps tables and speaker turns intact; embed; write holding/sector metadata onto each chunk.
-6. **Index.** Upsert into the vector store; emit an ingest event for downstream digest/alert.
+The central design rule is a strict **division of labor**: every number is computed by
+deterministic Python from holdings; the LLM only phrases those numbers and grounds market claims
+in citations. The model never computes or invents a figure.
 
-## Entity linking (the moat)
+## 2. External APIs used
 
-This is the riskiest and most valuable component. A hybrid design balances precision and cost:
+PRISM uses exactly one external API in the running system. The originally-scoped market-data
+vendors were evaluated but not needed, because Claude's hosted web-search tool provides grounded,
+already-cited retrieval in a single call.
 
-1. **Candidate generation (symbolic).** A gazetteer built from the securities master (names, tickers, aliases, common misspellings) does a high-recall first pass. Cheap and deterministic.
-2. **Disambiguation (LLM, only when needed).** When a mention is ambiguous (shared names, ticker collisions, parent vs subsidiary), an LLM resolves it using surrounding context. Reserved for the hard cases to control cost.
-3. **Relationship expansion.** Resolve subsidiary-to-parent, ADR-to-ordinary, and supply-chain adjacency so an event on a private supplier can still flag a held customer.
-4. **Confidence + fail-closed.** Each link carries a score. Below threshold, the insight is shown without the holding link and the uncertainty is surfaced, never a confident guess.
+### Anthropic Claude API (the only live dependency)
 
-Prove this on 20 hand-labelled documents before building any UI. Target > 90% precision. If it fails here, the value proposition shifts and the roadmap must adapt.
+| Use | Model | How |
+|---|---|---|
+| Grounded market research | `claude-sonnet-5` | Messages API with the hosted **`web_search_20250305`** server tool (`max_uses = 4`). Claude runs the searches under Anthropic's terms and returns answer text plus structured citations. No scraper is run by PRISM. |
+| News briefing and talking points | `claude-sonnet-5` | Messages API with a forced structured-output tool call (`record_briefing`, `record_talking_points`) so the response is validated JSON, not free text. |
+| Factor classification | `claude-haiku-4-5-20251001` | Cheap, fast pass that reads a research narrative and tags macro factor signals (gold, oil, Indian rates, US rates, rupee) with a direction. |
 
-## Retrieval & RAG
+- **Auth**: a single `ANTHROPIC_API_KEY` environment variable (loaded from `backend/.env` via
+  `python-dotenv`). No other secret is required.
+- **Grounding**: citations come straight out of Claude's `web_search_result_location` content
+  blocks. A market claim with no supporting citation is dropped, never shown.
+- **Cost and latency control**: web searches are capped (`MAX_SEARCHES = 4`), a cheaper model does
+  the classification pass, and results are cached (see section 7).
 
-- **Hybrid retrieval.** Dense (embeddings) + sparse (keyword/BM25) to catch both semantic and exact-ticker matches.
-- **Pre-rank filtering.** Entitlement, fund, entity, and date filters applied before ranking, so results are always in-scope and permitted.
-- **Portfolio-scoped retrieval.** Because chunks carry `linked_security_ids`, "insights about my holdings" is a metadata filter, cheap and exact.
-- **Re-ranking.** Cross-encoder or LLM re-rank on the shortlist for precision on the final context window.
-- **Citation binding.** Every retrieved chunk keeps its `doc_id` + `span` so the generator can cite exactly.
+### Free market-data APIs (considered, not used)
 
-## LLM orchestration
+During scoping, three free-tier market-data APIs were candidates for the raw news/quote feed:
 
-Tiered model routing keeps cost sane without sacrificing the reasoning that matters.
+| API | Free tier | Why it was not used |
+|---|---|---|
+| **Finnhub** | Free API key, real-time quotes and company news | Would need separate entity extraction and citation handling; Claude's web_search returns cited prose directly. |
+| **Marketaux** | Free tier, news with entity tagging | Overlaps with what the hosted web search already returns, with less flexible querying. |
+| **NewsAPI** | Free developer tier, headline search | Headlines only, no grounding or citations; still needs an LLM pass to be useful. |
 
-| Task | Model tier | Why |
-| --- | --- | --- |
-| Bulk document summarisation | Fast / cheaper tier | High volume, low reasoning depth |
-| Entity disambiguation | Mid tier | Context reasoning on hard cases only |
-| Book-linked reasoning & Q&A | Top tier (Opus-class) | The judgement step users trust |
-| Claim verification | Mid / top tier | Checks each claim against its source span |
+They remain the natural drop-in if PRISM ever needs deterministic, structured price/news feeds
+(for example, real historical NAV to replace the illustrative performance figures). The pipeline
+is deliberately structured so a market-data adapter could feed the same `link_citations_to_securities`
+and roll-up stages.
 
-#### Grounding & verification loop
+## 3. Component design
 
-1. Generate answer with inline citations bound to retrieved spans.
-2. Verifier pass checks each claim is supported by its cited span; unsupported claims are dropped.
-3. If coverage drops below threshold, respond with what is supported and flag the gap rather than filling it.
+| Component | File | Responsibility |
+|---|---|---|
+| HTTP API | `backend/api.py` | Routes, request validation, the deterministic roll-up helpers (sector breakdown, performance, suitability, overview aggregation, news-feed assembly), and in-process caching. |
+| Research pipeline | `backend/insight_lens.py` | Everything that touches Claude: grounded search, citation extraction, entity linking, factor detection, and the structured narration calls. Also runs standalone as a CLI. |
+| Dataset generator | `backend/build_dataset.py` | Builds the synthetic India dataset (securities master, 16 client portfolios plus a reference benchmark, psychographics, communications, performance) and writes `prism_data.json`. |
+| Frontend | `frontend/src/` | Next.js App Router pages, a typed API client (`lib/api.ts`), shared types (`lib/types.ts`), and an adaptive currency formatter (`lib/format.ts`). |
 
-## Portfolio roll-up engine
+## 4. Data model
 
-Deliberately **deterministic, not LLM-driven**. Given an event with linked securities, it computes, from the portfolio store:
-
-- **Affected holdings** and each position's weight.
-- **NAV impact** = sum of weights of touched held names, per fund.
-- **Sector / geography breakdown** of the exposure.
-- **Risk shifts** (Should tier): concentration and factor-tilt deltas implied by the event.
-
-Keeping this arithmetic outside the LLM makes the numbers exact, reproducible, and auditable. The LLM narrates them; it does not compute them.
-
-## API surface
+`prism_data.json` has six top-level collections. The shapes below are the actual fields.
 
 ```
-POST /ingest              # queue a document or source pull
-GET  /events?fund=&since=   # material events, ranked by NAV impact
-GET  /events/{id}          # cited summary + affected holdings
-POST /ask                 # grounded Q&A; body: query + filters
-GET  /holdings/{fund}/insights  # book-scoped feed
-GET  /digest/{user_id}     # personalised digest
-POST /alerts/rules        # set materiality thresholds
-GET  /oversight/heatmap    # CIO firm-wide exposure view
-GET  /audit?user=&range=   # compliance audit trail
+Desk       { desk_id, tenant_id, name }
+
+Portfolio  { portfolio_id, desk_id, name, base_ccy, risk_driver, mandate,
+             manager_name, manager_bio,
+             client { name, age, occupation, persona, email, phone, city,
+                      relationship_since, aum_fee_pct, risk_mandate,
+                      psychographics{...}, relationship{...},
+                      communications[...], next_action{...} },
+             performance { ytd_pct, one_year_pct, three_year_cagr_pct,
+                           since_inception_cagr_pct } }
+
+Security   { security_id, primary_ticker, name, aliases[], isin,
+             parent_id?, adr_of?, sector, industry, country,
+             asset_class, instrument_type, factor_sensitivities{...},
+             vol, beta, cap_tier, credit_quality }
+
+Holding    { holding_id, portfolio_id, security_id, weight,
+             market_value, as_of_date }
+
+Risk       { <portfolio_id>: { risk_score, risk_tier, est_vol, asset_mix,
+             largest_class, top1_pct, top1_name, eq_hhi, wtd_beta, ... } }
+
+Benchmark  { name: "Nifty 50", ytd_pct, one_year_pct, three_year_cagr_pct }
 ```
 
-Every response that carries a claim also carries its citations (`doc_id`, `span`, `url`) and, where relevant, a `link_confidence`.
+- **Linkage target**: `Security` is the entity every citation is linked to, via
+  `primary_ticker`, `name`, and `aliases`.
+- **Factor sensitivities**: each security is hand-tagged with its sensitivity
+  (`positive` / `negative` / `same_direction`) to each macro factor, a stand-in for a full
+  factor-model matrix.
+- **Weights** are stored normalized (they sum to 1.0 per portfolio); `market_value = nav * weight`.
+- One portfolio (`pf_reference_balanced`) is a fixed 60/40 benchmark, not a client, used for the
+  "you vs a normal book" comparison.
 
-## Evaluation harness
+Current dataset: **69 securities, 16 client portfolios + 1 reference, 219 holdings**.
 
-Trust is measurable, so measure it continuously. The eval set is versioned and grows with each pilot finding.
+## 5. Research-to-insight pipeline
 
-| Eval | Method | Gate |
-| --- | --- | --- |
-| Linkage precision/recall | Hand-labelled mention→holding set | Precision > 92% |
-| Citation faithfulness | Claim vs cited span, LLM-judge + spot human audit | > 98% |
-| Summary quality | Rubric scoring on a fixed doc set | Human-acceptable > 90% |
-| Hallucination rate | Injected unanswerable questions | Refusal > 95% |
-| Latency & cost | Load test on representative corpus | Meets §9 NFRs |
+Both the Analysis flow and the News Feed run the same core pipeline in `insight_lens.py`. All
+functions after the search are pure and deterministic.
 
-## Tech stack & ops
+1. **`run_search(sector)` / `run_news_feed(category)`** - one Claude call with the hosted
+   `web_search_20250305` tool, India-focused prompt, capped at 4 searches. Returns cited prose.
+2. **`extract_citations_and_narrative(response)`** - pulls the narrative text and structured
+   citations out of Claude's content blocks (`server_tool_use` + `web_search_result_location`).
+3. **`link_citations_to_securities(citations, securities)`** - entity linking: matches each
+   citation to held securities by ticker / name / alias. This is the moat.
+4. **`compute_portfolio_impact(data, linked)`** - deterministic roll-up: for each portfolio, the
+   percentage of NAV touched by directly-cited holdings.
+5. **`detect_factor_signals(narrative)`** - `claude-haiku` classifies which macro factors moved
+   and in which direction. Signals are deduped to one per factor.
+6. **`compute_factor_impact(data, signals)`** - deterministic: rolls up tailwind/headwind exposure
+   per portfolio from the hand-tagged `factor_sensitivities`. Each holding counts once per factor,
+   so a book's exposure to a single factor is bounded at 100% of NAV.
+7. **`attach_reference_comparison(...)`** - expresses each book's exposure as a multiple of the
+   60/40 reference book ("you vs a normal book").
+8. **Narration** - `generate_talking_points(...)` and `generate_news_briefing(...)` make a single
+   forced structured-output call each, turning the computed impact plus the cited narrative into a
+   TL;DR, key points, and one persona-aware talking point per affected client. `max_tokens` is
+   sized so the per-client array is never truncated.
 
-#### Prototype stack
+Supporting engines: `detect_cross_desk_contradictions` (flags two books with opposing exposure to
+the same factor) and `compute_scenario_impact` (mild/moderate/severe stress bands).
 
-- **Language:** Python
-- **UI:** Streamlit (fast to a demo)
-- **LLM:** Claude, tiered (Opus-class for reasoning)
-- **Vector store:** Chroma / FAISS
-- **Portfolio store:** SQLite/Postgres
-- **Orchestration:** Lightweight Python services
+## 6. HTTP API surface
 
-#### Production evolution
+`backend/api.py`, all JSON, no auth (single-RM demo).
 
-- **UI:** React/typed web app for entitlements & scale
-- **Vector store:** managed, multi-tenant
-- **Data:** Postgres + object storage, tenant-isolated
-- **Ingestion:** queue-based workers, independent scaling
-- **Observability:** eval dashboards, cost + latency tracing
-- **Deploy:** tenant-isolated, configurable residency
+| Method | Path | Returns |
+|---|---|---|
+| GET | `/me` | The logged-in RM's display name. |
+| GET | `/sectors` | Sorted list of sectors present in the book. |
+| GET | `/portfolios` | All client portfolios (excludes the reference book). |
+| GET | `/clients` | Full client accounts: profile, holdings, sector breakdown, performance, suitability, insights, suggested sector. |
+| GET | `/overview` | Firm-wide roll-up: KPIs, action items, book performance, risk distribution, asset/sector allocation, top holdings, largest clients. |
+| GET | `/products` | Investable universe grouped by asset class. |
+| GET | `/news/categories` | The seven news categories. |
+| GET | `/news/feed?category=&force=` | Cached briefing: TL;DR, key points, key stats, affected clients with talking points, citations. |
+| POST | `/lens/run` | Run the research lens for a sector; returns narrative, citations, and all impact engines. |
+| POST | `/talking-points` | Talking points for one client + sector. |
 
-## Roadmap
+## 7. Caching
 
-## Open questions
+- **Server**: an in-process dict caches each news category for a TTL; `force=true` bypasses it.
+  This keeps repeated tab opens from re-running the pipeline.
+- **Client**: the News Feed persists each fetched category to `localStorage` (keyed
+  `prism_news_cache_v3`), so opening the tab is instant and never auto-refetches. A manual Reload
+  button forces a fresh call. The key is versioned so a schema change discards stale caches.
 
-- Which asset class and region for the pilot book (US equities, India equities, multi-asset)? It shapes the securities master and news sources.
-- What is the firm's system of record for holdings, and how do we get a daily feed?
-- What is the acceptable latency/cost envelope per analyst per day?
-- Which licensed news provider has redistribution terms compatible with the product?
-- What is the compliance line on surfacing internal research alongside external content?
-- Is the first buyer a single desk or the CIO office? It changes which oversight features move up the roadmap.
+## 8. Tech stack and ops
+
+- **Backend**: Python 3.13, FastAPI, uvicorn, `anthropic` SDK, `python-dotenv`. A Streamlit
+  script (`app.py`) exists for a quick standalone view.
+- **Frontend**: Next.js 16 (App Router, Turbopack), React 19, TypeScript 5, `@number-flow/react`
+  for animated stats. Runs as a production build (`next build` + `next start`) for stability.
+- **Config**: single `ANTHROPIC_API_KEY` plus an optional `PM_NAME`, both from `backend/.env`.
+  `.env` is gitignored.
+- **Tests**: 88 pytest tests across the dataset, entity linker, extraction, impact engines, and
+  the API. The deterministic core is fully covered; live LLM calls are exercised by manual runs
+  rather than mocked.
+
+### Running locally
+
+```
+# Backend
+cd backend
+pip install -r requirements.txt
+cp .env.example .env          # add ANTHROPIC_API_KEY
+python build_dataset.py       # generate prism_data.json
+uvicorn api:app --port 8000
+
+# Frontend
+cd frontend
+npm install
+npm run build && npm run start   # http://localhost:3000
+```
+
+## 9. Roadmap
+
+- **Real market data**: swap illustrative performance for live historical NAV via one of the free
+  market-data APIs in section 2 (Finnhub / Marketaux / NewsAPI), reusing the existing linking and
+  roll-up stages.
+- **Per-(client, sector) analysis cache** so repeated Analysis runs are instant.
+- **One-click meeting prep**: assemble a client's profile, performance, relevant news, and talking
+  points into a single brief.
+- **Client-facing change alerts**: what moved in a client's book since last contact.
+
+## 10. Open questions
+
+- How much of the performance layer should be driven by real NAV history versus staying
+  illustrative for the demo?
+- Should the "you vs a normal book" reference be the fixed 60/40, or a peer-group average?
+- What is the right cache TTL for live news given how fast the Indian market news cycle moves?
