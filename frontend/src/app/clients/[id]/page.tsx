@@ -318,6 +318,36 @@ export default function ClientDetailPage() {
               <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.55 }}>{account.mandate}</p>
             </div>
 
+            {account.product_suggestions && account.product_suggestions.length > 0 && (
+              <div className="panel">
+                <div className="panel-title">Products suited to {c.name.split(" ")[0]}</div>
+                <p className="cross-sell-note">
+                  Matched to this client&apos;s stated preferences and risk mandate, drawn from the sellable
+                  universe. Ideas to raise in conversation, not a recommendation to buy.
+                </p>
+                <div className="cross-sell-grid stagger">
+                  {account.product_suggestions.map((p) => (
+                    <div key={p.security_id} className="cross-sell-card">
+                      <div className="cross-sell-head">
+                        <span className="cross-sell-name">{p.name}</span>
+                        <span className="cross-sell-tkr">{p.ticker}</span>
+                      </div>
+                      <div className="cross-sell-tags">
+                        <span
+                          className="chip"
+                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, white)`, color: sectorColor(p.sector) }}
+                        >
+                          {p.asset_class}
+                        </span>
+                        <span className="cross-sell-instrument">{p.instrument_type}</span>
+                      </div>
+                      <p className="cross-sell-why">{p.rationale}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button className="btn" style={{ marginTop: 4 }} onClick={() => router.push(`/analysis?portfolio=${account.portfolio_id}`)}>
               Run market analysis on this book ›
             </button>

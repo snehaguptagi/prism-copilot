@@ -1799,6 +1799,29 @@ tr.clickable:active td {
   font-weight: 400;
 }
 
+/* small inline sector chip (Products table) */
+.sector-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+.sector-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.sector-chip-name {
+  color: var(--text-secondary);
+}
+
 /* sector exposure ranked bars */
 .sector-bars {
   display: grid;

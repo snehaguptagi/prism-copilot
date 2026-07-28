@@ -227,14 +227,68 @@ def _vol_band_rank(vol):
     return 4       # Very High
 
 
+def _preference_profile(client):
+    """Turn a client's stated preferences (goal, horizon, loss aversion, life
+    stage, persona) into a per-asset-class affinity score plus a short reason
+    for each class we lean toward. Deterministic keyword rules, no model."""
+    psy = client.get("psychographics", {}) or {}
+    goal = (psy.get("primary_goal") or "").lower()
+    horizon = (psy.get("time_horizon") or "").lower()
+    loss = (psy.get("loss_aversion") or "").lower()
+    stage = (psy.get("life_stage") or "").lower()
+    text = " ".join([goal, (client.get("persona") or "").lower()])
+
+    aff = {"Equity": 0.0, "Fixed Income": 0.0, "Commodity": 0.0, "Real Estate": 0.0}
+    reasons = {}
+
+    def bump(cls, amt, reason):
+        aff[cls] = aff.get(cls, 0.0) + amt
+        if amt > 0 and cls not in reasons:
+            reasons[cls] = reason
+
+    if any(k in text for k in ["income", "withdraw", "wedding", "predictable", "rental", "distribution"]):
+        bump("Fixed Income", 2.5, "their focus on steady, predictable income")
+        bump("Real Estate", 1.5, "their preference for rental-style income")
+    if any(k in text for k in ["preserve", "safety", "protect", "preservation", "medical", "capital safety"]):
+        bump("Fixed Income", 2.0, "their capital-preservation goal")
+    if any(k in text for k in ["inflation", "hedge", "gold", "depreciation"]):
+        bump("Commodity", 2.5, "their inflation-hedge preference")
+    if any(k in text for k in ["growth", "compound", "wealth", "long-term", "aggressive"]):
+        bump("Equity", 2.0, "their long-term growth focus")
+    if any(k in text for k in ["index", "low-cost", "market return", "passive", "diversified"]):
+        bump("Equity", 1.5, "their preference for broad, low-cost market exposure")
+
+    if "short" in horizon:
+        bump("Fixed Income", 1.5, "their short time horizon")
+        aff["Equity"] -= 1.0
+    if "long" in horizon or "10 year" in horizon or "generational" in horizon:
+        bump("Equity", 1.0, "their long time horizon")
+
+    if "high" in loss:  # covers "high" and "very high"
+        bump("Fixed Income", 1.0, "their high loss aversion")
+        bump("Commodity", 0.5, "their caution around drawdowns")
+        aff["Equity"] -= 0.5
+    if "low" in loss:
+        bump("Equity", 1.0, "their comfort with volatility")
+
+    if "retired" in stage:
+        bump("Fixed Income", 1.0, "their retirement life stage")
+    if "early" in stage:
+        bump("Equity", 1.0, "their early-career stage and long runway")
+
+    return aff, reasons
+
+
 def suggest_products(data, portfolio, max_n=3):
-    """Sellable securities the client does not already hold that (a) fit their
-    stated risk mandate and (b) help fill an asset-class gap in the book. Ranked
-    gap-first, then by how established the name is across the book. Returns a
-    short list, each with a plain suitability rationale. Fully deterministic."""
+    """Sellable securities the client does not already hold, ranked by how well
+    they match the client's stated PREFERENCES (goal, horizon, loss aversion,
+    life stage), gated by their risk mandate and nudged toward asset-class gaps.
+    Each carries a plain, preference-referencing rationale. Fully deterministic.
+    Sales enablement, never a market-timing buy call."""
     client = portfolio.get("client", {})
     mandate = (client.get("risk_mandate") or "").strip()
     max_band = _MANDATE_MAX_TIER.get(mandate.lower(), 2)
+    aff, reasons = _preference_profile(client)
 
     pid = portfolio["portfolio_id"]
     sec_by_id = {s["security_id"]: s for s in data["securities"]}
@@ -263,42 +317,44 @@ def suggest_products(data, portfolio, max_n=3):
             continue  # cash is not a product to cross-sell
         if _vol_band_rank(s.get("vol")) > max_band:
             continue  # too risky for this client's mandate
-        gap = class_weight.get(s["asset_class"], 0.0)
-        candidates.append((gap, -held_count.get(sid, 0), s))
+        cls = s["asset_class"]
+        gap = class_weight.get(cls, 0.0)
+        gap_bonus = 1.0 if gap < 0.05 else 0.3  # nudge toward diversification
+        established = 0.05 * held_count.get(sid, 0)
+        score = aff.get(cls, 0.0) + gap_bonus + established
+        candidates.append((score, s))
 
-    candidates.sort(key=lambda t: (t[0], t[1]))  # gap first, then most established
+    candidates.sort(key=lambda t: t[0], reverse=True)
 
     article = "an" if mandate[:1].lower() in "aeiou" else "a"
 
     def _entry(s):
-        label = _ASSET_CLASS_LABEL.get(s["asset_class"], s["asset_class"].lower())
-        gap = class_weight.get(s["asset_class"], 0.0)
-        if gap <= 0.001:
-            why = f"Adds {label} exposure the book currently lacks, and fits {article} {mandate} mandate."
+        cls = s["asset_class"]
+        label = _ASSET_CLASS_LABEL.get(cls, cls.lower())
+        if cls in reasons:
+            why = f"Matches {reasons[cls]}, and fits {article} {mandate} mandate."
+        elif class_weight.get(cls, 0.0) <= 0.001:
+            why = f"Adds {label} exposure the book currently lacks, within {article} {mandate} mandate."
         else:
-            why = f"Deepens {label} exposure the book is light on, and fits {article} {mandate} mandate."
+            why = f"Rounds out the book with more {label}, within {article} {mandate} mandate."
         return {
             "security_id": s["security_id"],
             "name": s["name"],
             "ticker": s["primary_ticker"],
             "sector": s["sector"],
-            "asset_class": s["asset_class"],
+            "asset_class": cls,
             "instrument_type": s["instrument_type"],
             "rationale": why,
         }
 
-    out, seen_classes = [], set()
-    for _gap, _neg, s in candidates:  # first pass: one per asset class for variety
-        if s["asset_class"] in seen_classes:
+    # Lead with the best preference matches, but cap at 2 of any one asset class
+    # so a strong preference dominates without becoming monotonous.
+    out, per_class = [], {}
+    for _score, s in candidates:
+        cls = s["asset_class"]
+        if per_class.get(cls, 0) >= 2:
             continue
-        seen_classes.add(s["asset_class"])
-        out.append(_entry(s))
-        if len(out) >= max_n:
-            return out
-    picked = {o["security_id"] for o in out}
-    for _gap, _neg, s in candidates:  # second pass: fill remaining slots
-        if s["security_id"] in picked:
-            continue
+        per_class[cls] = per_class.get(cls, 0) + 1
         out.append(_entry(s))
         if len(out) >= max_n:
             break
@@ -417,6 +473,7 @@ def get_clients():
             "insights": insights,
             "performance": perf,
             "suitability": suitability,
+            "product_suggestions": suggest_products(data, p),
         })
     return out
 

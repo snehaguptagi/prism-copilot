@@ -5,6 +5,7 @@ import { getProducts } from "@/lib/api";
 import { Products } from "@/lib/types";
 import { assetClassColor, sectorColor } from "@/lib/colors";
 import Topbar from "@/components/Topbar";
+import Donut from "@/components/Donut";
 
 export default function ProductsPage() {
   const [data, setData] = useState<Products | null>(null);
@@ -73,6 +74,58 @@ export default function ProductsPage() {
 
         {data && (
           <>
+            <div className="ov-grid" style={{ marginBottom: 16 }}>
+              {/* shelf composition donut */}
+              <div className="panel">
+                <div className="panel-title">Shelf composition by asset class</div>
+                <div className="donut-wrap">
+                  <Donut
+                    size={140}
+                    segments={data.groups.map((g) => ({
+                      label: g.asset_class,
+                      pct: (g.count / data.total) * 100,
+                      color: assetClassColor(g.asset_class),
+                    }))}
+                    centerTop={String(data.total)}
+                    centerSub="products"
+                  />
+                  <div className="donut-legend">
+                    {data.groups.map((g) => (
+                      <div key={g.asset_class} className="donut-legend-row">
+                        <span className="donut-dot" style={{ background: assetClassColor(g.asset_class) }} />
+                        <span className="donut-legend-name">{g.asset_class}</span>
+                        <span className="donut-legend-pct">{g.count}</span>
+                        <span className="donut-legend-val">{Math.round((g.count / data.total) * 100)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* most widely held across the book */}
+              <div className="panel">
+                <div className="panel-title">Most widely held across the book</div>
+                {(() => {
+                  const items = data.groups.flatMap((g) => g.items);
+                  const top = [...items].sort((a, b) => b.held_by_count - a.held_by_count).slice(0, 8);
+                  const max = Math.max(...top.map((i) => i.held_by_count), 1);
+                  return (
+                    <div className="sector-bars" style={{ gridTemplateColumns: "1fr" }}>
+                      {top.map((i) => (
+                        <div key={i.security_id} className="sector-bar-row" title={`${i.name}: held by ${i.held_by_count} client books`}>
+                          <span className="sector-bar-name">{i.name}</span>
+                          <span className="sector-bar-track">
+                            <span className="sector-bar-fill" style={{ width: `${(i.held_by_count / max) * 100}%`, background: sectorColor(i.sector) }} />
+                          </span>
+                          <span className="sector-bar-val">{i.held_by_count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
             <div className="controls" style={{ marginBottom: 16 }}>
               <input
                 type="text"

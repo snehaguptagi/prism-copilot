@@ -219,6 +219,7 @@ export interface ClientAccount {
   holdings: ClientHolding[];
   sector_breakdown: SectorWeight[];
   asset_class_allocation?: { asset_class: string; value: number; pct: number }[];
+  product_suggestions?: ProductSuggestion[];
   suggested_sector: string | null;
 }
 
