@@ -209,7 +209,7 @@ def test_news_categories_returns_expected_set():
     assert response.status_code == 200
     categories = response.json()
     for expected in [
-        "India Markets", "Global Markets", "Commodities & Energy",
+        "India Markets", "Global cues for India", "Commodities & Energy",
         "Currency & Rates", "Corporate Earnings", "Policy & Regulation", "India Startups",
     ]:
         assert expected in categories

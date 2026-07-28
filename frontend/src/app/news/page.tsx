@@ -9,7 +9,7 @@ import { avatarColor, initials } from "@/lib/colors";
 import CategoryIcon from "@/components/CategoryIcon";
 import Topbar from "@/components/Topbar";
 
-const NEWS_STORE_KEY = "prism_news_cache_v1";
+const NEWS_STORE_KEY = "prism_news_cache_v2";
 
 type StoredEntry = { result: NewsFeedResult; fetchedAt: number };
 
