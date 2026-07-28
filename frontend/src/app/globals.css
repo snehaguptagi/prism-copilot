@@ -981,6 +981,63 @@ tr.clickable:active td {
   line-height: 1;
 }
 
+.mini-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+
+/* per-row book-vs-Nifty micro comparison (Clients table) */
+.row-perf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.row-spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.row-spark-bar {
+  width: 5px;
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+}
+
+.row-spark-bar.book {
+  background: var(--accent);
+}
+
+.row-spark-bar.bench {
+  background: var(--text-faint);
+  opacity: 0.5;
+}
+
+.row-perf-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.row-perf-v {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.row-perf-delta {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* book-vs-benchmark returns across horizons (mini grouped bars) */
 .perf-horizons {
   display: flex;

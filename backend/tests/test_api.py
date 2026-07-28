@@ -109,7 +109,17 @@ def test_clients_endpoint_has_performance_and_suitability():
         p = c["performance"]
         assert p["one_year_pct"] is not None
         assert p["vs_benchmark_1y"] == pytest.approx(p["one_year_pct"] - p["benchmark_one_year_pct"], abs=0.15)
+        assert [h["label"] for h in p["horizons"]] == ["YTD", "1Y", "3Y"]
         assert c["suitability"]["status"] in ("matched", "aggressive", "conservative", "unknown")
+
+
+def test_clients_endpoint_asset_class_allocation_sums_to_100():
+    clients = client.get("/clients").json()
+    for c in clients:
+        alloc = c["asset_class_allocation"]
+        assert alloc  # non-empty
+        assert sum(a["pct"] for a in alloc) == pytest.approx(100.0, abs=0.5)
+        assert [a["pct"] for a in alloc] == sorted([a["pct"] for a in alloc], reverse=True)
 
 
 def test_every_client_mandate_is_mapped_for_suitability():

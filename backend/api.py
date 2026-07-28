@@ -142,7 +142,8 @@ def build_performance(perf, aum, benchmark):
     # value a year ago implied by the 1-year return, so 1y gain in rupees is exact
     value_year_ago = aum / (1 + one_yr / 100) if one_yr > -100 else aum
     gain_1y = aum - value_year_ago
-    bench_1y = (benchmark or {}).get("one_year_pct")
+    b = benchmark or {}
+    bench_1y = b.get("one_year_pct")
     return {
         "ytd_pct": perf.get("ytd_pct"),
         "one_year_pct": one_yr,
@@ -151,6 +152,11 @@ def build_performance(perf, aum, benchmark):
         "gain_1y": round(gain_1y, 2),
         "benchmark_one_year_pct": bench_1y,
         "vs_benchmark_1y": round(one_yr - bench_1y, 1) if bench_1y is not None else None,
+        "horizons": [
+            {"label": "YTD", "book": perf.get("ytd_pct"), "benchmark": b.get("ytd_pct")},
+            {"label": "1Y", "book": one_yr, "benchmark": bench_1y},
+            {"label": "3Y", "book": perf.get("three_year_cagr_pct"), "benchmark": b.get("three_year_cagr_pct")},
+        ],
     }
 
 
@@ -382,6 +388,19 @@ def get_clients():
         insights = portfolio_insights(pid, data, r, holdings_out, breakdown)
         perf = build_performance(p.get("performance"), aum, data.get("benchmark"))
         suitability = check_suitability(p["client"].get("risk_mandate"), r.get("risk_tier"))
+        # asset-class mix for this client's book (for the detail-page donut)
+        class_val = {}
+        for h in pf_holdings:
+            cls = sec_by_id[h["security_id"]]["asset_class"]
+            class_val[cls] = class_val.get(cls, 0.0) + h["market_value"]
+        asset_class_allocation = sorted(
+            [
+                {"asset_class": c, "value": round(v, 2), "pct": round(v / aum * 100, 1) if aum else 0.0}
+                for c, v in class_val.items()
+            ],
+            key=lambda x: x["pct"],
+            reverse=True,
+        )
         out.append({
             "portfolio_id": pid,
             "portfolio_name": p["name"],
@@ -393,6 +412,7 @@ def get_clients():
             "client": p["client"],
             "holdings": holdings_out,
             "sector_breakdown": breakdown,
+            "asset_class_allocation": asset_class_allocation,
             "suggested_sector": suggested,
             "insights": insights,
             "performance": perf,

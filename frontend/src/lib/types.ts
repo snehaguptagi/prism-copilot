@@ -115,6 +115,7 @@ export interface Performance {
   gain_1y: number;
   benchmark_one_year_pct: number | null;
   vs_benchmark_1y: number | null;
+  horizons: { label: string; book: number; benchmark: number | null }[];
 }
 
 export interface Suitability {
@@ -217,6 +218,7 @@ export interface ClientAccount {
   suitability?: Suitability;
   holdings: ClientHolding[];
   sector_breakdown: SectorWeight[];
+  asset_class_allocation?: { asset_class: string; value: number; pct: number }[];
   suggested_sector: string | null;
 }
 

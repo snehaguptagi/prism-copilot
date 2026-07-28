@@ -7,6 +7,8 @@ import { Overview } from "@/lib/types";
 import { assetClassColor, sectorColor, severityColor } from "@/lib/colors";
 import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
+import Donut from "@/components/Donut";
+import PerfHorizons from "@/components/PerfHorizons";
 import NumberFlow from "@number-flow/react";
 
 export default function OverviewPage() {
@@ -101,38 +103,7 @@ export default function OverviewPage() {
                   </div>
                 </div>
 
-                {data.performance.horizons.length > 0 && (() => {
-                  const hs = data.performance.horizons;
-                  const max = Math.max(...hs.flatMap((h) => [h.book, h.benchmark ?? 0]), 1);
-                  return (
-                    <div className="perf-horizons">
-                      <div className="perf-horizons-chart">
-                        {hs.map((h) => (
-                          <div className="perf-h" key={h.label}>
-                            <div className="perf-h-bars">
-                              <span
-                                className="perf-h-bar book"
-                                style={{ height: `${(h.book / max) * 100}%` }}
-                                title={`Your book, ${h.label}: ${h.book}%`}
-                              />
-                              <span
-                                className="perf-h-bar bench"
-                                style={{ height: `${((h.benchmark ?? 0) / max) * 100}%` }}
-                                title={`${data.performance.benchmark_name}, ${h.label}: ${h.benchmark}%`}
-                              />
-                            </div>
-                            <div className="perf-h-label">{h.label}</div>
-                            <div className="perf-h-val">+{h.book}%</div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="perf-horizons-legend">
-                        <span><span className="dot" style={{ background: "var(--accent)" }} />Your book</span>
-                        <span><span className="dot" style={{ background: "var(--text-faint)" }} />{data.performance.benchmark_name}</span>
-                      </div>
-                    </div>
-                  );
-                })()}
+                <PerfHorizons horizons={data.performance.horizons} benchmarkName={data.performance.benchmark_name} />
 
                 {data.performance.best && data.performance.worst && (
                   <div className="perf-banner-bw">
@@ -367,57 +338,5 @@ export default function OverviewPage() {
         </footer>
       </div>
     </>
-  );
-}
-
-function Donut({
-  segments,
-  centerTop,
-  centerSub,
-}: {
-  segments: { label: string; pct: number; color: string }[];
-  centerTop: string;
-  centerSub: string;
-}) {
-  const size = 168;
-  const stroke = 24;
-  const R = (size - stroke) / 2;
-  const C = 2 * Math.PI * R;
-  const cx = size / 2;
-  const cy = size / 2;
-  let acc = 0;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="donut" role="img">
-      <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} />
-      {segments.map((s) => {
-        const frac = s.pct / 100;
-        const dash = Math.max(frac * C - 2, 0); // 2px surface gap between segments
-        const offset = -acc * C;
-        acc += frac;
-        return (
-          <circle
-            key={s.label}
-            cx={cx}
-            cy={cy}
-            r={R}
-            fill="none"
-            stroke={s.color}
-            strokeWidth={stroke}
-            strokeDasharray={`${dash} ${C - dash}`}
-            strokeDashoffset={offset}
-            transform={`rotate(-90 ${cx} ${cy})`}
-            style={{ transition: "stroke-dasharray 700ms var(--ease-out)" }}
-          >
-            <title>{`${s.label}: ${s.pct}%`}</title>
-          </circle>
-        );
-      })}
-      <text x={cx} y={cy - 3} textAnchor="middle" className="donut-center-top" fill="var(--text)">
-        {centerTop}
-      </text>
-      <text x={cx} y={cy + 15} textAnchor="middle" className="donut-center-sub" fill="var(--text-faint)">
-        {centerSub}
-      </text>
-    </svg>
   );
 }

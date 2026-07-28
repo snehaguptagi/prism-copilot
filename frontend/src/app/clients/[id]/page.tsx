@@ -5,9 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getClients } from "@/lib/api";
 import { ClientAccount } from "@/lib/types";
-import { avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
-import { inr } from "@/lib/format";
+import { assetClassColor, avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
+import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
+import Donut from "@/components/Donut";
+import PerfHorizons from "@/components/PerfHorizons";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
@@ -193,6 +195,12 @@ export default function ClientDetailPage() {
                     <span className="perf-bench"> · Nifty 50 returned {account.performance.benchmark_one_year_pct}% over the same period</span>
                   )}
                 </div>
+                {account.performance.horizons && account.performance.horizons.length > 0 && (
+                  <div style={{ marginTop: 14, borderTop: "1px solid var(--border)", paddingTop: 14 }}>
+                    <div className="mini-head">Returns by horizon vs Nifty 50</div>
+                    <PerfHorizons horizons={account.performance.horizons} benchmarkName="Nifty 50" />
+                  </div>
+                )}
               </div>
             )}
 
@@ -220,21 +228,56 @@ export default function ClientDetailPage() {
               <Metric v={ins.concentration} l="Concentration" color={ins.concentration === "High" ? "var(--sev-high)" : ins.concentration === "Moderate" ? "var(--sev-elevated)" : "var(--sev-low)"} />
             </div>
 
-            <div className="panel">
-              <div className="panel-title">Sector allocation</div>
-              <div className="alloc-bar">
-                {account.sector_breakdown.map((s) => (
-                  <span key={s.sector} style={{ width: `${s.weight_pct}%`, background: sectorColor(s.sector) }} title={`${s.sector} ${s.weight_pct}%`} />
-                ))}
-              </div>
-              <div className="alloc-legend" style={{ marginTop: 12 }}>
-                {account.sector_breakdown.map((s) => (
-                  <div key={s.sector} className="alloc-legend-item">
-                    <span className="dot" style={{ background: sectorColor(s.sector) }} />
-                    <span className="alloc-name">{s.sector}</span>
-                    <span className="alloc-pct">{s.weight_pct}%</span>
+            <div className="ov-grid">
+              {/* asset-class donut */}
+              {account.asset_class_allocation && account.asset_class_allocation.length > 0 && (
+                <div className="panel">
+                  <div className="panel-title">Asset allocation</div>
+                  <div className="donut-wrap">
+                    <Donut
+                      size={140}
+                      segments={account.asset_class_allocation.map((a) => ({
+                        label: a.asset_class,
+                        pct: a.pct,
+                        color: assetClassColor(a.asset_class),
+                      }))}
+                      centerTop={`₹${crValue(account.aum)}`}
+                      centerSub="Cr book"
+                    />
+                    <div className="donut-legend">
+                      {account.asset_class_allocation.map((a) => (
+                        <div key={a.asset_class} className="donut-legend-row">
+                          <span className="donut-dot" style={{ background: assetClassColor(a.asset_class) }} />
+                          <span className="donut-legend-name">{a.asset_class}</span>
+                          <span className="donut-legend-pct">{a.pct}%</span>
+                          <span className="donut-legend-val">{inr(a.value)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                </div>
+              )}
+
+              {/* sector ranked bars */}
+              <div className="panel">
+                <div className="panel-title">Sector allocation</div>
+                {(() => {
+                  const sorted = [...account.sector_breakdown].sort((a, b) => b.weight_pct - a.weight_pct);
+                  const max = Math.max(...sorted.map((s) => s.weight_pct), 1);
+                  return (
+                    <div className="sector-bars" style={{ gridTemplateColumns: "1fr" }}>
+                      {sorted.map((s) => (
+                        <div key={s.sector} className="sector-bar-row" title={`${s.sector}: ${s.weight_pct}%`}>
+                          <span className="sector-bar-name">{s.sector}</span>
+                          <span className="sector-bar-track">
+                            <span className="sector-bar-fill" style={{ width: `${(s.weight_pct / max) * 100}%`, background: sectorColor(s.sector) }} />
+                          </span>
+                          <span className="sector-bar-val">{s.weight_pct}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 

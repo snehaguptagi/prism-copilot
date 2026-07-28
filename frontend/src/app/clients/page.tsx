@@ -148,6 +148,7 @@ export default function ClientsPage() {
                 <th>Occupation</th>
                 <th>Portfolio</th>
                 <th>Risk tier</th>
+                <th>1Y vs Nifty</th>
                 <th>Fee</th>
                 <th style={{ textAlign: "right" }}>AUM</th>
               </tr>
@@ -182,6 +183,32 @@ export default function ClientsPage() {
                         <span className="chip-dot" />
                         {c.risk_tier ?? "n/a"}
                       </span>
+                    </td>
+                    <td>
+                      {c.performance ? (() => {
+                        const oy = c.performance.one_year_pct;
+                        const bench = c.performance.benchmark_one_year_pct ?? 0;
+                        const vs = c.performance.vs_benchmark_1y ?? 0;
+                        const max = Math.max(oy, bench, 1);
+                        return (
+                          <div className="row-perf" title={`Book ${oy}% vs Nifty ${bench}% (1Y)`}>
+                            <span className="row-spark">
+                              <span className="row-spark-bar book" style={{ height: `${(oy / max) * 100}%` }} />
+                              <span className="row-spark-bar bench" style={{ height: `${(bench / max) * 100}%` }} />
+                            </span>
+                            <span className="row-perf-text">
+                              <span className="row-perf-v" style={{ color: oy >= 0 ? "var(--positive)" : "var(--negative)" }}>
+                                {oy >= 0 ? "+" : ""}{oy}%
+                              </span>
+                              <span className="row-perf-delta" style={{ color: vs >= 0 ? "var(--positive)" : "var(--negative)" }}>
+                                {vs >= 0 ? "+" : ""}{vs} vs Nifty
+                              </span>
+                            </span>
+                          </div>
+                        );
+                      })() : (
+                        <span style={{ color: "var(--text-faint)" }}>n/a</span>
+                      )}
                     </td>
                     <td>{c.client.aum_fee_pct}%</td>
                     <td className="num">{inr(c.aum)}</td>
