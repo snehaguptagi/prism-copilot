@@ -803,6 +803,270 @@
       }
     },
     {
+      "portfolio_id": "pf_promoter_equity",
+      "desk_id": "desk_equity",
+      "name": "Diversified Equity (Promoter Wealth) Portfolio",
+      "base_ccy": "INR",
+      "risk_driver": "Large-cap equity beta with an industrials & auto tilt",
+      "mandate": "Diversified large-cap equity for a business promoter who took money off the table, tilted toward the industrials, auto, and capex names he understands from running his own factory, with a bond sleeve for ballast.",
+      "manager_name": "Nikhil Sharma",
+      "manager_bio": "Manages large UHNI equity mandates. Comfortable working with self-made promoter clients who hold strong, informed sector views of their own.",
+      "client": {
+        "name": "Rajiv Malhotra",
+        "age": 59,
+        "occupation": "Promoter & MD, auto-components manufacturer",
+        "persona": "Built an auto-components business in Ludhiana over three decades and recently sold a partial stake to a PE fund, freeing up a large corpus to invest outside the company for the first time. Reads a balance sheet better than most analysts and has firm views on manufacturing and capex, but leans on the desk for everything outside his own industry. Wants his money working, not idle, but has no interest in speculative bets.",
+        "email": "rajiv.malhotra.md@gmail.com",
+        "phone": "+91 98140 55210",
+        "city": "Ludhiana",
+        "relationship_since": "2024-02-19",
+        "aum_fee_pct": 0.65,
+        "risk_mandate": "Growth",
+        "psychographics": {
+          "decision_style": "Decisive, informed on his sectors, delegates the rest",
+          "loss_aversion": "Low to moderate",
+          "financial_literacy": "Advanced",
+          "engagement": "Reviews monthly",
+          "comms_pref": "In-person or call",
+          "primary_goal": "Grow proceeds from a partial business exit",
+          "time_horizon": "Long, 10 years plus",
+          "life_stage": "Pre-retirement"
+        },
+        "relationship": {
+          "referral_source": "Introduced by his PE deal advisor",
+          "dependents": "Wife, son runs the business",
+          "satisfaction": "High",
+          "manager_note": "Engage him on industrials and capex, defer to him there. Keep the rest simple and diversified."
+        },
+        "communications": [
+          {
+            "date": "2026-07-18",
+            "channel": "In-person",
+            "direction": "both",
+            "summary": "Reviewed the book at his office, discussed adding to capex and defence names."
+          },
+          {
+            "date": "2026-07-05",
+            "channel": "Phone",
+            "direction": "inbound",
+            "summary": "Asked for a view on cement demand, shared the desk's read."
+          },
+          {
+            "date": "2026-06-12",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Sent the half-yearly performance pack with sector attribution."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-05",
+          "action": "Discuss deploying the remaining cash tranche",
+          "priority": "High"
+        }
+      },
+      "performance": {
+        "ytd_pct": 9.8,
+        "one_year_pct": 17.6,
+        "three_year_cagr_pct": 15.8,
+        "since_inception_cagr_pct": 14.2
+      }
+    },
+    {
+      "portfolio_id": "pf_family_office",
+      "desk_id": "desk_equity",
+      "name": "Multi-Asset Family Office Portfolio",
+      "base_ccy": "INR",
+      "risk_driver": "Blended equity, debt, gold, and REIT allocation across one household",
+      "mandate": "A single multi-asset mandate for a second-generation family office: roughly half large-cap equity, a third high-grade debt, plus gold and REIT sleeves, run as one coordinated book so the family sees their whole balance sheet in one place.",
+      "manager_name": "Ritika Bajaj",
+      "manager_bio": "Runs multi-asset family-office mandates. Coordinates the equity, debt, gold, and real-assets sleeves under one roof so the client never has to stitch statements together.",
+      "client": {
+        "name": "Anjali Bhandari",
+        "age": 46,
+        "occupation": "Head of family office (2nd-generation wealth)",
+        "persona": "Runs the family office for a Mumbai business family whose founding generation built and exited a consumer brand. Thinks in terms of preserving and growing capital across generations, not chasing any single year's return. Wants diversification across asset classes as a matter of principle and expects a single, clear view of the entire household balance sheet rather than a dozen scattered products.",
+        "email": "anjali.bhandari.fo@gmail.com",
+        "phone": "+91 98670 44120",
+        "city": "Mumbai",
+        "relationship_since": "2020-07-14",
+        "aum_fee_pct": 0.55,
+        "risk_mandate": "Balanced-Diversified",
+        "psychographics": {
+          "decision_style": "Institutional, process-driven, diversification-first",
+          "loss_aversion": "Moderate",
+          "financial_literacy": "Expert",
+          "engagement": "Reviews monthly",
+          "comms_pref": "Formal review meetings",
+          "primary_goal": "Preserve and grow multi-generational family wealth",
+          "time_horizon": "Very long, generational",
+          "life_stage": "Established"
+        },
+        "relationship": {
+          "referral_source": "Long-standing family relationship",
+          "dependents": "Manages wealth for three households",
+          "satisfaction": "High",
+          "manager_note": "Institutional counterpart. Bring structure, attribution, and a whole-balance-sheet view to every review."
+        },
+        "communications": [
+          {
+            "date": "2026-07-16",
+            "channel": "Formal review",
+            "direction": "both",
+            "summary": "Quarterly family-office review, walked through allocation drift and rebalancing plan."
+          },
+          {
+            "date": "2026-06-28",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Requested a consolidated cross-asset exposure report."
+          },
+          {
+            "date": "2026-05-20",
+            "channel": "Video call",
+            "direction": "outbound",
+            "summary": "Discussed trimming equity slightly after the run-up, agreed to stay balanced."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-16",
+          "action": "Prepare quarterly consolidated review pack",
+          "priority": "Normal"
+        }
+      },
+      "performance": {
+        "ytd_pct": 7.4,
+        "one_year_pct": 13.4,
+        "three_year_cagr_pct": 11.6,
+        "since_inception_cagr_pct": 11.2
+      }
+    },
+    {
+      "portfolio_id": "pf_founder_growth",
+      "desk_id": "desk_equity",
+      "name": "Founder Growth Equity Portfolio",
+      "base_ccy": "INR",
+      "risk_driver": "Growth-tilted large-cap plus quality midcap, higher volatility by design",
+      "mandate": "Growth-oriented equity for a technology founder with a high risk appetite and a long horizon: quality large-cap tech and financials anchored by a deliberate sleeve of high-conviction midcap names.",
+      "manager_name": "Karan Nair",
+      "manager_bio": "Growth-equity specialist for founder and new-economy wealth. Comfortable carrying concentrated technology and midcap risk for clients with the horizon and stomach for it.",
+      "client": {
+        "name": "Suhas Kamath",
+        "age": 44,
+        "occupation": "Tech founder (post-exit)",
+        "persona": "Sold his SaaS company to a larger acquirer and now has real liquidity for the first time after years of everything being tied up in equity. Understands compounding and volatility intuitively, is comfortable with drawdowns that would scare most clients, and explicitly wants growth over safety while he is still decades from needing the money. Sharp, busy, prefers a crisp thesis over hand-holding.",
+        "email": "suhas.kamath.founder@gmail.com",
+        "phone": "+91 99020 33418",
+        "city": "Bengaluru",
+        "relationship_since": "2023-11-08",
+        "aum_fee_pct": 0.75,
+        "risk_mandate": "Aggressive-Growth",
+        "psychographics": {
+          "decision_style": "Fast, conviction-led, comfortable with risk",
+          "loss_aversion": "Very low",
+          "financial_literacy": "Expert",
+          "engagement": "Reviews monthly, low-touch",
+          "comms_pref": "Concise email",
+          "primary_goal": "Aggressive long-horizon growth of exit proceeds",
+          "time_horizon": "Long, 10 years plus",
+          "life_stage": "Mid-career"
+        },
+        "relationship": {
+          "referral_source": "Referred by another founder client",
+          "dependents": "Married, young children",
+          "satisfaction": "High",
+          "manager_note": "Time-poor and sharp. Lead with a one-line thesis, skip the hand-holding, he will ask if he wants more."
+        },
+        "communications": [
+          {
+            "date": "2026-07-19",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Sent a crisp note on midcap IT valuations after the rally."
+          },
+          {
+            "date": "2026-06-24",
+            "channel": "Email",
+            "direction": "inbound",
+            "summary": "Asked whether to add to Trent, discussed position sizing."
+          }
+        ],
+        "next_action": {
+          "due": "2026-08-19",
+          "action": "Monthly growth-book review note",
+          "priority": "Normal"
+        }
+      },
+      "performance": {
+        "ytd_pct": 12.2,
+        "one_year_pct": 24.6,
+        "three_year_cagr_pct": 20.4,
+        "since_inception_cagr_pct": 18.5
+      }
+    },
+    {
+      "portfolio_id": "pf_physician_wealth",
+      "desk_id": "desk_income",
+      "name": "Blue-Chip Conservative Wealth Portfolio",
+      "base_ccy": "INR",
+      "risk_driver": "Blue-chip equity and high-grade debt blend, downside-protected",
+      "mandate": "Capital-protective wealth for a senior physician couple: blue-chip, dividend-oriented equity paired with a large high-grade debt and gold allocation, built to grow steadily without the swings a demanding medical practice leaves no time to watch.",
+      "manager_name": "Lakshmi Menon",
+      "manager_bio": "Conservative wealth manager for established professionals and retirees. Prioritizes capital protection and steady, predictable income over chasing the market.",
+      "client": {
+        "name": "Dr. Venkat & Latha Reddy",
+        "age": 61,
+        "occupation": "Senior cardiologist couple, part-owners of a hospital",
+        "persona": "Both are practising doctors in Hyderabad with a stake in the hospital chain they helped build, and almost no free time to think about markets. Their biggest fear is a large loss close to retirement, so capital protection comes first, with steady growth a close second. They defer to the desk on structure but want plain-language explanations and no exotic products they cannot understand.",
+        "email": "reddy.family.hyd@gmail.com",
+        "phone": "+91 99490 22781",
+        "city": "Hyderabad",
+        "relationship_since": "2019-12-03",
+        "aum_fee_pct": 0.6,
+        "risk_mandate": "Conservative-Growth",
+        "psychographics": {
+          "decision_style": "Cautious, defers on structure, wants clarity",
+          "loss_aversion": "High",
+          "financial_literacy": "Intermediate",
+          "engagement": "Reviews a few times a year",
+          "comms_pref": "Phone call",
+          "primary_goal": "Protect capital into retirement with steady growth",
+          "time_horizon": "Medium, 5 to 10 years",
+          "life_stage": "Pre-retirement"
+        },
+        "relationship": {
+          "referral_source": "Referred by their chartered accountant",
+          "dependents": "Two children, both settled abroad",
+          "satisfaction": "High",
+          "manager_note": "Capital protection first. Explain everything in plain language, never pitch anything they cannot easily understand."
+        },
+        "communications": [
+          {
+            "date": "2026-07-11",
+            "channel": "Phone",
+            "direction": "outbound",
+            "summary": "Half-yearly call, reassured them the debt and gold sleeve cushions any equity dip."
+          },
+          {
+            "date": "2026-05-30",
+            "channel": "Email",
+            "direction": "outbound",
+            "summary": "Sent a simple summary of the year's income and growth."
+          }
+        ],
+        "next_action": {
+          "due": "2026-09-11",
+          "action": "Half-yearly capital-protection review",
+          "priority": "Normal"
+        }
+      },
+      "performance": {
+        "ytd_pct": 6.4,
+        "one_year_pct": 11.8,
+        "three_year_cagr_pct": 10.2,
+        "since_inception_cagr_pct": 10.5
+      }
+    },
+    {
       "portfolio_id": "pf_reference_balanced",
       "desk_id": "desk_benchmark",
       "name": "Reference Balanced 60/40 Fund",
@@ -3424,6 +3688,518 @@
     },
     {
       "holding_id": "hld_0133",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_reliance",
+      "weight": 0.09873708381171067,
+      "market_value": 45419058.55,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0134",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.09414466130884042,
+      "market_value": 43306544.2,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0135",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_lt",
+      "weight": 0.0849598163030999,
+      "market_value": 39081515.5,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0136",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_icicibank",
+      "weight": 0.0780711825487945,
+      "market_value": 35912743.97,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0137",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_mm",
+      "weight": 0.07003444316877153,
+      "market_value": 32215843.86,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0138",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_maruti",
+      "weight": 0.061997703788748575,
+      "market_value": 28518943.74,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0139",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_infosys",
+      "weight": 0.056257175660160745,
+      "market_value": 25878300.8,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0140",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.05281285878300804,
+      "market_value": 24293915.04,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0141",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_tcs",
+      "weight": 0.04822043628013778,
+      "market_value": 22181400.69,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0142",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_ultracemco",
+      "weight": 0.04362801377726751,
+      "market_value": 20068886.34,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0143",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_bel",
+      "weight": 0.04133180252583238,
+      "market_value": 19012629.16,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0144",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_cumminsind",
+      "weight": 0.03903559127439725,
+      "market_value": 17956371.99,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0145",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_ntpc",
+      "weight": 0.03788748564867968,
+      "market_value": 17428243.4,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0146",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_sbin",
+      "weight": 0.03559127439724455,
+      "market_value": 16371986.22,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0147",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_titan",
+      "weight": 0.03214695752009185,
+      "market_value": 14787600.46,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0148",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_sunpharma",
+      "weight": 0.02985074626865672,
+      "market_value": 13731343.28,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0149",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_asianpaint",
+      "weight": 0.02640642939150402,
+      "market_value": 12146957.52,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0150",
+      "portfolio_id": "pf_promoter_equity",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.06888633754305397,
+      "market_value": 31687715.27,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0151",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.06948968512486428,
+      "market_value": 26406080.35,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0152",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_reliance",
+      "weight": 0.06297502714440825,
+      "market_value": 23930510.31,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0153",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_icicibank",
+      "weight": 0.05646036916395223,
+      "market_value": 21454940.28,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0154",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_infosys",
+      "weight": 0.0499457111834962,
+      "market_value": 18979370.25,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0155",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_tcs",
+      "weight": 0.042345276872964174,
+      "market_value": 16091205.21,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0156",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_lt",
+      "weight": 0.03691639522258415,
+      "market_value": 14028230.18,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0157",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.033659066232356136,
+      "market_value": 12790445.17,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0158",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_hindunilvr",
+      "weight": 0.03040173724212812,
+      "market_value": 11552660.15,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0159",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_bajfinance",
+      "weight": 0.026058631921824105,
+      "market_value": 9902280.13,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0160",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_itc",
+      "weight": 0.028230184581976115,
+      "market_value": 10727470.14,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0161",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_titan",
+      "weight": 0.0238870792616721,
+      "market_value": 9077090.12,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0162",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.11943539630836049,
+      "market_value": 45385450.6,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0163",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.11400651465798047,
+      "market_value": 43322475.57,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0164",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_gsec_5y",
+      "weight": 0.07057546145494029,
+      "market_value": 26818675.35,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0165",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_psu_bond",
+      "weight": 0.038002171552660155,
+      "market_value": 14440825.19,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0166",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_gold_etf",
+      "weight": 0.07817589576547232,
+      "market_value": 29706840.39,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0167",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_sgb",
+      "weight": 0.04343105320304018,
+      "market_value": 16503800.22,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0168",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_embassy_reit",
+      "weight": 0.04560260586319219,
+      "market_value": 17328990.23,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0169",
+      "portfolio_id": "pf_family_office",
+      "security_id": "sec_mindspace_reit",
+      "weight": 0.03040173724212812,
+      "market_value": 11552660.15,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0170",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_infosys",
+      "weight": 0.1108108108108108,
+      "market_value": 33243243.24,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0171",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.08918918918918918,
+      "market_value": 26756756.76,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0172",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_tcs",
+      "weight": 0.09189189189189188,
+      "market_value": 27567567.57,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0173",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_reliance",
+      "weight": 0.08378378378378379,
+      "market_value": 25135135.14,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0174",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_icicibank",
+      "weight": 0.07837837837837838,
+      "market_value": 23513513.51,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0175",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_hcltech",
+      "weight": 0.07297297297297298,
+      "market_value": 21891891.89,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0176",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.06891891891891891,
+      "market_value": 20675675.68,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0177",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_bajfinance",
+      "weight": 0.06486486486486487,
+      "market_value": 19459459.46,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0178",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_trent",
+      "weight": 0.06216216216216216,
+      "market_value": 18648648.65,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0179",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_persistent",
+      "weight": 0.05945945945945946,
+      "market_value": 17837837.84,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0180",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_dixon",
+      "weight": 0.05675675675675676,
+      "market_value": 17027027.03,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0181",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_titan",
+      "weight": 0.05675675675675676,
+      "market_value": 17027027.03,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0182",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_kpit",
+      "weight": 0.0527027027027027,
+      "market_value": 15810810.81,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0183",
+      "portfolio_id": "pf_founder_growth",
+      "security_id": "sec_ltim",
+      "weight": 0.05135135135135135,
+      "market_value": 15405405.41,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0184",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_hdfcbank",
+      "weight": 0.07808564231738035,
+      "market_value": 17178841.31,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0185",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_reliance",
+      "weight": 0.06801007556675064,
+      "market_value": 14962216.62,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0186",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_tcs",
+      "weight": 0.06045340050377833,
+      "market_value": 13299748.11,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0187",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_hindunilvr",
+      "weight": 0.057934508816120896,
+      "market_value": 12745591.94,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0188",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_itc",
+      "weight": 0.055415617128463476,
+      "market_value": 12191435.77,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0189",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_infosys",
+      "weight": 0.05289672544080604,
+      "market_value": 11637279.6,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0190",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_sunpharma",
+      "weight": 0.04534005037783375,
+      "market_value": 9974811.08,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0191",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_bhartiartl",
+      "weight": 0.04030226700251889,
+      "market_value": 8866498.74,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0192",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_corp_bond_aaa",
+      "weight": 0.17632241813602015,
+      "market_value": 38790931.99,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0193",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_gsec_10y",
+      "weight": 0.15113350125944583,
+      "market_value": 33249370.28,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0194",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_gsec_5y",
+      "weight": 0.10075566750629722,
+      "market_value": 22166246.85,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0195",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_psu_bond",
+      "weight": 0.06297229219143577,
+      "market_value": 13853904.28,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0196",
+      "portfolio_id": "pf_physician_wealth",
+      "security_id": "sec_gold_etf",
+      "weight": 0.05037783375314861,
+      "market_value": 11083123.43,
+      "as_of_date": "2026-07-23"
+    },
+    {
+      "holding_id": "hld_0197",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_hdfcbank",
       "weight": 0.09296781883194279,
@@ -3431,7 +4207,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0134",
+      "holding_id": "hld_0198",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_reliance",
       "weight": 0.06078665077473182,
@@ -3439,7 +4215,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0135",
+      "holding_id": "hld_0199",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_icicibank",
       "weight": 0.05959475566150178,
@@ -3447,7 +4223,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0136",
+      "holding_id": "hld_0200",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_infosys",
       "weight": 0.04052443384982121,
@@ -3455,7 +4231,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0137",
+      "holding_id": "hld_0201",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_tcs",
       "weight": 0.028605482717520857,
@@ -3463,7 +4239,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0138",
+      "holding_id": "hld_0202",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_lt",
       "weight": 0.02741358760429082,
@@ -3471,7 +4247,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0139",
+      "holding_id": "hld_0203",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_bhartiartl",
       "weight": 0.023837902264600714,
@@ -3479,7 +4255,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0140",
+      "holding_id": "hld_0204",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_itc",
       "weight": 0.02979737783075089,
@@ -3487,7 +4263,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0141",
+      "holding_id": "hld_0205",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_sbin",
       "weight": 0.020262216924910606,
@@ -3495,7 +4271,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0142",
+      "holding_id": "hld_0206",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_mm",
       "weight": 0.016686531585220498,
@@ -3503,7 +4279,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0143",
+      "holding_id": "hld_0207",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_axisbank",
       "weight": 0.022646007151370676,
@@ -3511,7 +4287,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0144",
+      "holding_id": "hld_0208",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_hindunilvr",
       "weight": 0.015494636471990465,
@@ -3519,7 +4295,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0145",
+      "holding_id": "hld_0209",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_maruti",
       "weight": 0.014302741358760428,
@@ -3527,7 +4303,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0146",
+      "holding_id": "hld_0210",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_sunpharma",
       "weight": 0.013110846245530394,
@@ -3535,7 +4311,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0147",
+      "holding_id": "hld_0211",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_ntpc",
       "weight": 0.011918951132300357,
@@ -3543,7 +4319,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0148",
+      "holding_id": "hld_0212",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_titan",
       "weight": 0.010727056019070322,
@@ -3551,7 +4327,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0149",
+      "holding_id": "hld_0213",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_ultracemco",
       "weight": 0.009535160905840286,
@@ -3559,7 +4335,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0150",
+      "holding_id": "hld_0214",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_asianpaint",
       "weight": 0.008343265792610249,
@@ -3567,7 +4343,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0151",
+      "holding_id": "hld_0215",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_bajfinance",
       "weight": 0.016686531585220498,
@@ -3575,7 +4351,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0152",
+      "holding_id": "hld_0216",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_gsec_10y",
       "weight": 0.17878426698450536,
@@ -3583,7 +4359,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0153",
+      "holding_id": "hld_0217",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_corp_bond_aaa",
       "weight": 0.166865315852205,
@@ -3591,7 +4367,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0154",
+      "holding_id": "hld_0218",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_gsec_5y",
       "weight": 0.09535160905840286,
@@ -3599,7 +4375,7 @@
       "as_of_date": "2026-07-23"
     },
     {
-      "holding_id": "hld_0155",
+      "holding_id": "hld_0219",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_psu_bond",
       "weight": 0.03575685339690107,
@@ -3817,6 +4593,80 @@
       "hy_credit_pct": 0.0,
       "wtd_beta": 0.29,
       "num_holdings": 6
+    },
+    "pf_promoter_equity": {
+      "risk_score": 21.2,
+      "risk_tier": "High",
+      "est_vol": 20.5,
+      "asset_mix": {
+        "Equity": 93.1,
+        "Fixed Income": 6.9
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 93.1,
+      "top1_pct": 9.9,
+      "top1_name": "Reliance Industries Ltd",
+      "eq_hhi": 642.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.94,
+      "num_holdings": 18
+    },
+    "pf_family_office": {
+      "risk_score": 13.8,
+      "risk_tier": "Moderate",
+      "est_vol": 13.4,
+      "asset_mix": {
+        "Equity": 46.0,
+        "Fixed Income": 34.2,
+        "Commodity": 12.2,
+        "Real Estate": 7.6
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 46.0,
+      "top1_pct": 11.9,
+      "top1_name": "GoI 10-Year Government Security",
+      "eq_hhi": 664.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.49,
+      "num_holdings": 19
+    },
+    "pf_founder_growth": {
+      "risk_score": 24.9,
+      "risk_tier": "Very High",
+      "est_vol": 24.0,
+      "asset_mix": {
+        "Equity": 100.0
+      },
+      "largest_class": "Equity",
+      "largest_class_pct": 100.0,
+      "top1_pct": 11.1,
+      "top1_name": "Infosys Ltd",
+      "eq_hhi": 754.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 1.06,
+      "num_holdings": 14
+    },
+    "pf_physician_wealth": {
+      "risk_score": 11.4,
+      "risk_tier": "Moderate",
+      "est_vol": 10.9,
+      "asset_mix": {
+        "Equity": 45.8,
+        "Fixed Income": 49.1,
+        "Commodity": 5.0
+      },
+      "largest_class": "Fixed Income",
+      "largest_class_pct": 49.1,
+      "top1_pct": 17.6,
+      "top1_name": "HDFC AAA Corporate Bond Fund",
+      "eq_hhi": 979.0,
+      "em_pct": 100.0,
+      "hy_credit_pct": 0.0,
+      "wtd_beta": 0.38,
+      "num_holdings": 13
     },
     "pf_reference_balanced": {
       "risk_score": 13.2,

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getOverview } from "@/lib/api";
 import { Overview } from "@/lib/types";
 import { assetClassColor, sectorColor, severityColor } from "@/lib/colors";
-import { inr, crValue, lakhValue } from "@/lib/format";
+import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import NumberFlow from "@number-flow/react";
 
@@ -60,7 +60,7 @@ export default function OverviewPage() {
               </div>
               <div className="kpi">
                 <div className="kpi-v">
-                  <NumberFlow value={lakhValue(data.kpis.annual_fee_revenue)} prefix="₹" suffix=" L" />
+                  <NumberFlow value={data.kpis.annual_fee_revenue / 1e7} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 2 }} />
                 </div>
                 <div className="kpi-l">Annual fee revenue</div>
               </div>

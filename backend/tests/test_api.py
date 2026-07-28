@@ -48,7 +48,7 @@ def test_portfolios_endpoint_excludes_reference_book():
 def test_portfolios_endpoint_includes_manager_personas():
     response = client.get("/portfolios")
     portfolios = response.json()
-    assert len(portfolios) == 12
+    assert len(portfolios) == 16
     assert all(p["manager_name"] for p in portfolios)
 
 
@@ -68,7 +68,7 @@ def test_clients_endpoint_returns_one_per_real_portfolio():
     response = client.get("/clients")
     assert response.status_code == 200
     clients = response.json()
-    assert len(clients) == 12
+    assert len(clients) == 16
 
 
 def test_clients_endpoint_excludes_reference_book():
@@ -110,6 +110,14 @@ def test_clients_endpoint_has_performance_and_suitability():
         assert p["one_year_pct"] is not None
         assert p["vs_benchmark_1y"] == pytest.approx(p["one_year_pct"] - p["benchmark_one_year_pct"], abs=0.15)
         assert c["suitability"]["status"] in ("matched", "aggressive", "conservative", "unknown")
+
+
+def test_every_client_mandate_is_mapped_for_suitability():
+    """Every client's stated mandate should resolve to a real suitability verdict,
+    never 'unknown' (which means the mandate string isn't in the tier maps)."""
+    clients = client.get("/clients").json()
+    unmapped = [c["client"]["name"] for c in clients if c["suitability"]["status"] == "unknown"]
+    assert unmapped == [], f"Unmapped mandates: {unmapped}"
 
 
 def test_overview_book_performance_present():
@@ -158,7 +166,7 @@ def test_banking_fund_suggested_sector_is_financials():
 
 def test_overview_kpis_present_and_positive():
     kpis = client.get("/overview").json()["kpis"]
-    assert kpis["client_count"] == 12
+    assert kpis["client_count"] == 16
     assert kpis["total_aum"] > 0
     assert kpis["holdings_count"] > 0
     assert kpis["distinct_securities"] > 0
@@ -187,14 +195,14 @@ def test_overview_top_holdings_ranked_and_capped():
     values = [h["value"] for h in top]
     assert values == sorted(values, reverse=True)
     for h in top:
-        assert 1 <= h["held_by_count"] <= 12
+        assert 1 <= h["held_by_count"] <= 16
 
 
 def test_overview_risk_distribution_covers_all_tiers():
     dist = client.get("/overview").json()["risk_distribution"]
     tiers = [d["tier"] for d in dist]
     assert tiers == ["Low", "Moderate", "Elevated", "High", "Very High"]
-    assert sum(d["count"] for d in dist) == 12
+    assert sum(d["count"] for d in dist) == 16
 
 
 def test_overview_action_items_sorted_soonest_first():
@@ -211,7 +219,7 @@ def test_overview_largest_clients_sorted_desc():
     largest = client.get("/overview").json()["largest_clients"]
     aums = [c["aum"] for c in largest]
     assert aums == sorted(aums, reverse=True)
-    assert len(largest) == 12
+    assert len(largest) == 16
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +252,7 @@ def test_products_held_by_count_within_bounds():
     resp = client.get("/products").json()
     for g in resp["groups"]:
         for item in g["items"]:
-            assert 0 <= item["held_by_count"] <= 12
+            assert 0 <= item["held_by_count"] <= 16
 
 
 def test_clients_include_communications_and_next_action():

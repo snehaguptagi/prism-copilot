@@ -159,14 +159,16 @@ def build_performance(perf, aum, benchmark):
 # actually signed up for, a genuine suitability / compliance check.
 _TIER_RANK = {"Low": 0, "Moderate": 1, "Elevated": 2, "High": 3, "Very High": 4}
 _MANDATE_MAX_TIER = {
-    "conservative": 1, "conservative-moderate": 2, "moderate": 2, "moderate-income": 2,
-    "moderate-growth": 3, "growth-stable": 3, "growth-concentrated": 4,
-    "aggressive": 4, "aggressive-concentrated": 4,
+    "conservative": 1, "conservative-moderate": 2, "conservative-growth": 2, "conservative-income": 2,
+    "moderate": 2, "moderate-income": 2, "moderate-passive": 3, "moderate-growth": 3,
+    "growth-stable": 3, "growth": 4, "growth-concentrated": 4, "balanced-diversified": 2,
+    "aggressive": 4, "aggressive-growth": 4, "aggressive-concentrated": 4,
 }
 _MANDATE_MIN_TIER = {
-    "conservative": 0, "conservative-moderate": 0, "moderate": 1, "moderate-income": 1,
-    "moderate-growth": 2, "growth-stable": 2, "growth-concentrated": 3,
-    "aggressive": 3, "aggressive-concentrated": 4,
+    "conservative": 0, "conservative-moderate": 0, "conservative-growth": 0, "conservative-income": 0,
+    "moderate": 1, "moderate-income": 1, "moderate-passive": 1, "moderate-growth": 2,
+    "growth-stable": 2, "growth": 1, "growth-concentrated": 3, "balanced-diversified": 0,
+    "aggressive": 3, "aggressive-growth": 3, "aggressive-concentrated": 4,
 }
 
 

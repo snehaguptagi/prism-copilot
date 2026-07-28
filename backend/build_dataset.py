@@ -472,6 +472,88 @@ PORTFOLIOS = [
         },
     },
     {
+        "portfolio_id": "pf_promoter_equity", "desk_id": "desk_equity",
+        "name": "Diversified Equity (Promoter Wealth) Portfolio", "base_ccy": "INR",
+        "risk_driver": "Large-cap equity beta with an industrials & auto tilt",
+        "mandate": "Diversified large-cap equity for a business promoter who took money off the table, tilted toward the industrials, auto, and capex names he understands from running his own factory, with a bond sleeve for ballast.",
+        "manager_name": "Nikhil Sharma",
+        "manager_bio": "Manages large UHNI equity mandates. Comfortable working with self-made promoter clients who hold strong, informed sector views of their own.",
+        "nav": 460_000_000,
+        "holdings": {
+            "sec_reliance": 8.6, "sec_hdfcbank": 8.2, "sec_lt": 7.4, "sec_icicibank": 6.8, "sec_mm": 6.1,
+            "sec_maruti": 5.4, "sec_infosys": 4.9, "sec_bhartiartl": 4.6, "sec_tcs": 4.2, "sec_ultracemco": 3.8,
+            "sec_bel": 3.6, "sec_cumminsind": 3.4, "sec_ntpc": 3.3, "sec_sbin": 3.1, "sec_titan": 2.8,
+            "sec_sunpharma": 2.6, "sec_asianpaint": 2.3, "sec_corp_bond_aaa": 6.0,
+        },
+        "client": {
+            "name": "Rajiv Malhotra", "age": 59, "occupation": "Promoter & MD, auto-components manufacturer",
+            "persona": "Built an auto-components business in Ludhiana over three decades and recently sold a partial stake to a PE fund, freeing up a large corpus to invest outside the company for the first time. Reads a balance sheet better than most analysts and has firm views on manufacturing and capex, but leans on the desk for everything outside his own industry. Wants his money working, not idle, but has no interest in speculative bets.",
+            "email": "rajiv.malhotra.md@gmail.com", "phone": "+91 98140 55210", "city": "Ludhiana",
+            "relationship_since": "2024-02-19", "aum_fee_pct": 0.65, "risk_mandate": "Growth",
+        },
+    },
+    {
+        "portfolio_id": "pf_family_office", "desk_id": "desk_equity",
+        "name": "Multi-Asset Family Office Portfolio", "base_ccy": "INR",
+        "risk_driver": "Blended equity, debt, gold, and REIT allocation across one household",
+        "mandate": "A single multi-asset mandate for a second-generation family office: roughly half large-cap equity, a third high-grade debt, plus gold and REIT sleeves, run as one coordinated book so the family sees their whole balance sheet in one place.",
+        "manager_name": "Ritika Bajaj",
+        "manager_bio": "Runs multi-asset family-office mandates. Coordinates the equity, debt, gold, and real-assets sleeves under one roof so the client never has to stitch statements together.",
+        "nav": 380_000_000,
+        "holdings": {
+            "sec_hdfcbank": 6.4, "sec_reliance": 5.8, "sec_icicibank": 5.2, "sec_infosys": 4.6, "sec_tcs": 3.9,
+            "sec_lt": 3.4, "sec_bhartiartl": 3.1, "sec_hindunilvr": 2.8, "sec_bajfinance": 2.4, "sec_itc": 2.6,
+            "sec_titan": 2.2, "sec_gsec_10y": 11.0, "sec_corp_bond_aaa": 10.5, "sec_gsec_5y": 6.5, "sec_psu_bond": 3.5,
+            "sec_gold_etf": 7.2, "sec_sgb": 4.0, "sec_embassy_reit": 4.2, "sec_mindspace_reit": 2.8,
+        },
+        "client": {
+            "name": "Anjali Bhandari", "age": 46, "occupation": "Head of family office (2nd-generation wealth)",
+            "persona": "Runs the family office for a Mumbai business family whose founding generation built and exited a consumer brand. Thinks in terms of preserving and growing capital across generations, not chasing any single year's return. Wants diversification across asset classes as a matter of principle and expects a single, clear view of the entire household balance sheet rather than a dozen scattered products.",
+            "email": "anjali.bhandari.fo@gmail.com", "phone": "+91 98670 44120", "city": "Mumbai",
+            "relationship_since": "2020-07-14", "aum_fee_pct": 0.55, "risk_mandate": "Balanced-Diversified",
+        },
+    },
+    {
+        "portfolio_id": "pf_founder_growth", "desk_id": "desk_equity",
+        "name": "Founder Growth Equity Portfolio", "base_ccy": "INR",
+        "risk_driver": "Growth-tilted large-cap plus quality midcap, higher volatility by design",
+        "mandate": "Growth-oriented equity for a technology founder with a high risk appetite and a long horizon: quality large-cap tech and financials anchored by a deliberate sleeve of high-conviction midcap names.",
+        "manager_name": "Karan Nair",
+        "manager_bio": "Growth-equity specialist for founder and new-economy wealth. Comfortable carrying concentrated technology and midcap risk for clients with the horizon and stomach for it.",
+        "nav": 300_000_000,
+        "holdings": {
+            "sec_infosys": 8.2, "sec_hdfcbank": 6.6, "sec_tcs": 6.8, "sec_reliance": 6.2, "sec_icicibank": 5.8,
+            "sec_hcltech": 5.4, "sec_bhartiartl": 5.1, "sec_bajfinance": 4.8, "sec_trent": 4.6, "sec_persistent": 4.4,
+            "sec_dixon": 4.2, "sec_titan": 4.2, "sec_kpit": 3.9, "sec_ltim": 3.8,
+        },
+        "client": {
+            "name": "Suhas Kamath", "age": 44, "occupation": "Tech founder (post-exit)",
+            "persona": "Sold his SaaS company to a larger acquirer and now has real liquidity for the first time after years of everything being tied up in equity. Understands compounding and volatility intuitively, is comfortable with drawdowns that would scare most clients, and explicitly wants growth over safety while he is still decades from needing the money. Sharp, busy, prefers a crisp thesis over hand-holding.",
+            "email": "suhas.kamath.founder@gmail.com", "phone": "+91 99020 33418", "city": "Bengaluru",
+            "relationship_since": "2023-11-08", "aum_fee_pct": 0.75, "risk_mandate": "Aggressive-Growth",
+        },
+    },
+    {
+        "portfolio_id": "pf_physician_wealth", "desk_id": "desk_income",
+        "name": "Blue-Chip Conservative Wealth Portfolio", "base_ccy": "INR",
+        "risk_driver": "Blue-chip equity and high-grade debt blend, downside-protected",
+        "mandate": "Capital-protective wealth for a senior physician couple: blue-chip, dividend-oriented equity paired with a large high-grade debt and gold allocation, built to grow steadily without the swings a demanding medical practice leaves no time to watch.",
+        "manager_name": "Lakshmi Menon",
+        "manager_bio": "Conservative wealth manager for established professionals and retirees. Prioritizes capital protection and steady, predictable income over chasing the market.",
+        "nav": 220_000_000,
+        "holdings": {
+            "sec_hdfcbank": 6.2, "sec_reliance": 5.4, "sec_tcs": 4.8, "sec_hindunilvr": 4.6, "sec_itc": 4.4,
+            "sec_infosys": 4.2, "sec_sunpharma": 3.6, "sec_bhartiartl": 3.2, "sec_corp_bond_aaa": 14.0,
+            "sec_gsec_10y": 12.0, "sec_gsec_5y": 8.0, "sec_psu_bond": 5.0, "sec_gold_etf": 4.0,
+        },
+        "client": {
+            "name": "Dr. Venkat & Latha Reddy", "age": 61, "occupation": "Senior cardiologist couple, part-owners of a hospital",
+            "persona": "Both are practising doctors in Hyderabad with a stake in the hospital chain they helped build, and almost no free time to think about markets. Their biggest fear is a large loss close to retirement, so capital protection comes first, with steady growth a close second. They defer to the desk on structure but want plain-language explanations and no exotic products they cannot understand.",
+            "email": "reddy.family.hyd@gmail.com", "phone": "+91 99490 22781", "city": "Hyderabad",
+            "relationship_since": "2019-12-03", "aum_fee_pct": 0.6, "risk_mandate": "Conservative-Growth",
+        },
+    },
+    {
         "portfolio_id": "pf_reference_balanced", "desk_id": "desk_benchmark",
         "name": "Reference Balanced 60/40 Fund", "base_ccy": "INR",
         "risk_driver": "N/A — fixed benchmark, not actively managed",
@@ -653,6 +735,34 @@ PSYCHOGRAPHICS = {
         "primary_goal": "Regular retirement income through withdrawals",
         "time_horizon": "Short to medium", "life_stage": "Retired",
     },
+    "pf_promoter_equity": {
+        "decision_style": "Decisive, informed on his sectors, delegates the rest",
+        "loss_aversion": "Low to moderate", "financial_literacy": "Advanced",
+        "engagement": "Reviews monthly", "comms_pref": "In-person or call",
+        "primary_goal": "Grow proceeds from a partial business exit",
+        "time_horizon": "Long, 10 years plus", "life_stage": "Pre-retirement",
+    },
+    "pf_family_office": {
+        "decision_style": "Institutional, process-driven, diversification-first",
+        "loss_aversion": "Moderate", "financial_literacy": "Expert",
+        "engagement": "Reviews monthly", "comms_pref": "Formal review meetings",
+        "primary_goal": "Preserve and grow multi-generational family wealth",
+        "time_horizon": "Very long, generational", "life_stage": "Established",
+    },
+    "pf_founder_growth": {
+        "decision_style": "Fast, conviction-led, comfortable with risk",
+        "loss_aversion": "Very low", "financial_literacy": "Expert",
+        "engagement": "Reviews monthly, low-touch", "comms_pref": "Concise email",
+        "primary_goal": "Aggressive long-horizon growth of exit proceeds",
+        "time_horizon": "Long, 10 years plus", "life_stage": "Mid-career",
+    },
+    "pf_physician_wealth": {
+        "decision_style": "Cautious, defers on structure, wants clarity",
+        "loss_aversion": "High", "financial_literacy": "Intermediate",
+        "engagement": "Reviews a few times a year", "comms_pref": "Phone call",
+        "primary_goal": "Protect capital into retirement with steady growth",
+        "time_horizon": "Medium, 5 to 10 years", "life_stage": "Pre-retirement",
+    },
 }
 
 
@@ -776,6 +886,44 @@ COMMUNICATIONS = {
         ],
         "next_action": {"due": "2026-08-14", "action": "Monthly SWP payout confirmation", "priority": "Normal"},
     },
+    "pf_promoter_equity": {
+        "relationship": {"referral_source": "Introduced by his PE deal advisor", "dependents": "Wife, son runs the business",
+                         "satisfaction": "High", "manager_note": "Engage him on industrials and capex, defer to him there. Keep the rest simple and diversified."},
+        "history": [
+            _c("2026-07-18", "In-person", "both", "Reviewed the book at his office, discussed adding to capex and defence names."),
+            _c("2026-07-05", "Phone", "inbound", "Asked for a view on cement demand, shared the desk's read."),
+            _c("2026-06-12", "Email", "outbound", "Sent the half-yearly performance pack with sector attribution."),
+        ],
+        "next_action": {"due": "2026-08-05", "action": "Discuss deploying the remaining cash tranche", "priority": "High"},
+    },
+    "pf_family_office": {
+        "relationship": {"referral_source": "Long-standing family relationship", "dependents": "Manages wealth for three households",
+                         "satisfaction": "High", "manager_note": "Institutional counterpart. Bring structure, attribution, and a whole-balance-sheet view to every review."},
+        "history": [
+            _c("2026-07-16", "Formal review", "both", "Quarterly family-office review, walked through allocation drift and rebalancing plan."),
+            _c("2026-06-28", "Email", "inbound", "Requested a consolidated cross-asset exposure report."),
+            _c("2026-05-20", "Video call", "outbound", "Discussed trimming equity slightly after the run-up, agreed to stay balanced."),
+        ],
+        "next_action": {"due": "2026-08-16", "action": "Prepare quarterly consolidated review pack", "priority": "Normal"},
+    },
+    "pf_founder_growth": {
+        "relationship": {"referral_source": "Referred by another founder client", "dependents": "Married, young children",
+                         "satisfaction": "High", "manager_note": "Time-poor and sharp. Lead with a one-line thesis, skip the hand-holding, he will ask if he wants more."},
+        "history": [
+            _c("2026-07-19", "Email", "outbound", "Sent a crisp note on midcap IT valuations after the rally."),
+            _c("2026-06-24", "Email", "inbound", "Asked whether to add to Trent, discussed position sizing."),
+        ],
+        "next_action": {"due": "2026-08-19", "action": "Monthly growth-book review note", "priority": "Normal"},
+    },
+    "pf_physician_wealth": {
+        "relationship": {"referral_source": "Referred by their chartered accountant", "dependents": "Two children, both settled abroad",
+                         "satisfaction": "High", "manager_note": "Capital protection first. Explain everything in plain language, never pitch anything they cannot easily understand."},
+        "history": [
+            _c("2026-07-11", "Phone", "outbound", "Half-yearly call, reassured them the debt and gold sleeve cushions any equity dip."),
+            _c("2026-05-30", "Email", "outbound", "Sent a simple summary of the year's income and growth."),
+        ],
+        "next_action": {"due": "2026-09-11", "action": "Half-yearly capital-protection review", "priority": "Normal"},
+    },
 }
 
 
@@ -799,6 +947,10 @@ PERFORMANCE = {
     "pf_balanced_hybrid": {"ytd_pct": 6.2, "one_year_pct": 11.6, "three_year_cagr_pct": 10.4, "since_inception_cagr_pct": 10.8},
     "pf_nri_growth": {"ytd_pct": 7.8, "one_year_pct": 14.8, "three_year_cagr_pct": 13.2, "since_inception_cagr_pct": 12.9},
     "pf_retirement_income": {"ytd_pct": 5.1, "one_year_pct": 9.4, "three_year_cagr_pct": 8.2, "since_inception_cagr_pct": 8.6},
+    "pf_promoter_equity": {"ytd_pct": 9.8, "one_year_pct": 17.6, "three_year_cagr_pct": 15.8, "since_inception_cagr_pct": 14.2},
+    "pf_family_office": {"ytd_pct": 7.4, "one_year_pct": 13.4, "three_year_cagr_pct": 11.6, "since_inception_cagr_pct": 11.2},
+    "pf_founder_growth": {"ytd_pct": 12.2, "one_year_pct": 24.6, "three_year_cagr_pct": 20.4, "since_inception_cagr_pct": 18.5},
+    "pf_physician_wealth": {"ytd_pct": 6.4, "one_year_pct": 11.8, "three_year_cagr_pct": 10.2, "since_inception_cagr_pct": 10.5},
 }
 
 
