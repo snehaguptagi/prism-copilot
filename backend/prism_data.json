@@ -25,7 +25,7 @@
     {
       "portfolio_id": "pf_cap_preservation",
       "desk_id": "desk_income",
-      "name": "Capital Preservation Fund",
+      "name": "Capital Preservation Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Cash & short-term rates",
       "mandate": "Park capital with near-zero drawdown in T-bills, liquid funds, and cash. Return of capital before return on capital.",
@@ -163,7 +163,7 @@
     {
       "portfolio_id": "pf_largecap_growth",
       "desk_id": "desk_equity",
-      "name": "Large-Cap Equity Growth Fund",
+      "name": "Large-Cap Equity Growth Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Broad market beta, large-cap concentration",
       "mandate": "Core Nifty-heavyweight exposure across financials, energy, IT, and consumer names for long-term capital growth.",
@@ -226,7 +226,7 @@
     {
       "portfolio_id": "pf_banking_financials",
       "desk_id": "desk_equity",
-      "name": "Banking & Financials Concentrated Fund",
+      "name": "Banking & Financials Concentrated Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Financial-sector concentration, credit cycle & NIM sensitivity",
       "mandate": "High-conviction, concentrated bets on India's private and public banks plus leading NBFCs.",
@@ -295,7 +295,7 @@
     {
       "portfolio_id": "pf_it_services",
       "desk_id": "desk_equity",
-      "name": "IT & Technology Services Fund",
+      "name": "IT & Technology Services Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Export/currency sensitivity, US & EU client discretionary IT spend",
       "mandate": "Concentrated exposure to India's IT services exporters; returns depend heavily on US/EU enterprise tech budgets and INR/USD movement.",
@@ -358,7 +358,7 @@
     {
       "portfolio_id": "pf_gold_hedge",
       "desk_id": "desk_real",
-      "name": "Gold & Inflation Hedge Fund",
+      "name": "Gold & Inflation Hedge Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Real rates, inflation, INR depreciation",
       "mandate": "Physical-gold-linked exposure via ETFs and Sovereign Gold Bonds, held as a portfolio-level inflation and currency hedge.",
@@ -421,7 +421,7 @@
     {
       "portfolio_id": "pf_smallcap_value",
       "desk_id": "desk_equity",
-      "name": "Small & Midcap Value Fund",
+      "name": "Small & Midcap Value Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Small/midcap liquidity & earnings volatility",
       "mandate": "Higher-risk, higher-reward bets on midcap IT, industrials, and engineering names below the large-cap universe.",
@@ -490,7 +490,7 @@
     {
       "portfolio_id": "pf_reit_income",
       "desk_id": "desk_real",
-      "name": "Real Estate & REIT Income Fund",
+      "name": "Real Estate & REIT Income Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Office real estate demand, rate sensitivity via yield competition",
       "mandate": "Income-focused exposure to listed Indian REITs (office/commercial real estate) for stable distributions.",
@@ -553,7 +553,7 @@
     {
       "portfolio_id": "pf_nifty_index",
       "desk_id": "desk_equity",
-      "name": "Nifty 50 Index Fund",
+      "name": "Nifty 50 Index Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Broad market beta, no active stock selection",
       "mandate": "Passive, broadly diversified exposure across large-cap India equity at index-like weights. No concentrated bets, no active selection \u2014 designed to track the market, not beat it.",
@@ -616,7 +616,7 @@
     {
       "portfolio_id": "pf_balanced_hybrid",
       "desk_id": "desk_equity",
-      "name": "Balanced Advantage Hybrid Fund",
+      "name": "Balanced Advantage Hybrid Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Blended equity/debt allocation, moderate volatility by design",
       "mandate": "A single all-weather blend of large-cap equity and high-grade debt, roughly 65/35, designed so the client never has to think about rebalancing between asset classes themselves.",
@@ -742,7 +742,7 @@
     {
       "portfolio_id": "pf_retirement_income",
       "desk_id": "desk_income",
-      "name": "Retirement Income (SWP) Fund",
+      "name": "Retirement Income (SWP) Portfolio",
       "base_ccy": "INR",
       "risk_driver": "Dividend/income stability, sequence-of-return risk in retirement",
       "mandate": "Income-first allocation blending dividend-paying equity, high-grade debt, and REIT distributions to support a monthly systematic withdrawal without eroding capital in a downturn.",
@@ -2371,7 +2371,7 @@
       "portfolio_id": "pf_cap_preservation",
       "security_id": "sec_tbill_91d",
       "weight": 0.55,
-      "market_value": 4400000000.0,
+      "market_value": 7425000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2379,7 +2379,7 @@
       "portfolio_id": "pf_cap_preservation",
       "security_id": "sec_liquid_fund",
       "weight": 0.35,
-      "market_value": 2800000000.0,
+      "market_value": 4725000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2387,7 +2387,7 @@
       "portfolio_id": "pf_cap_preservation",
       "security_id": "sec_cash_inr",
       "weight": 0.1,
-      "market_value": 800000000.0,
+      "market_value": 1350000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2395,7 +2395,7 @@
       "portfolio_id": "pf_bond_ladder",
       "security_id": "sec_gsec_10y",
       "weight": 0.3,
-      "market_value": 3600000000.0,
+      "market_value": 2760000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2403,7 +2403,7 @@
       "portfolio_id": "pf_bond_ladder",
       "security_id": "sec_gsec_5y",
       "weight": 0.25,
-      "market_value": 3000000000.0,
+      "market_value": 2300000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2411,7 +2411,7 @@
       "portfolio_id": "pf_bond_ladder",
       "security_id": "sec_corp_bond_aaa",
       "weight": 0.25,
-      "market_value": 3000000000.0,
+      "market_value": 2300000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2419,7 +2419,7 @@
       "portfolio_id": "pf_bond_ladder",
       "security_id": "sec_psu_bond",
       "weight": 0.15,
-      "market_value": 1800000000.0,
+      "market_value": 1380000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2427,7 +2427,7 @@
       "portfolio_id": "pf_bond_ladder",
       "security_id": "sec_cash_inr",
       "weight": 0.05,
-      "market_value": 600000000.0,
+      "market_value": 460000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2435,7 +2435,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_hdfcbank",
       "weight": 0.1032967032967033,
-      "market_value": 3098901098.9,
+      "market_value": 2685714.29,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2443,7 +2443,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_icicibank",
       "weight": 0.08901098901098901,
-      "market_value": 2670329670.33,
+      "market_value": 2314285.71,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2451,7 +2451,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_reliance",
       "weight": 0.07912087912087912,
-      "market_value": 2373626373.63,
+      "market_value": 2057142.86,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2459,7 +2459,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_lt",
       "weight": 0.06923076923076923,
-      "market_value": 2076923076.92,
+      "market_value": 1800000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2467,7 +2467,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_axisbank",
       "weight": 0.05604395604395604,
-      "market_value": 1681318681.32,
+      "market_value": 1457142.86,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2475,7 +2475,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_infosys",
       "weight": 0.05274725274725275,
-      "market_value": 1582417582.42,
+      "market_value": 1371428.57,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2483,7 +2483,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_bhartiartl",
       "weight": 0.05054945054945054,
-      "market_value": 1516483516.48,
+      "market_value": 1314285.71,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2491,7 +2491,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_sbin",
       "weight": 0.04835164835164835,
-      "market_value": 1450549450.55,
+      "market_value": 1257142.86,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2499,7 +2499,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_tcs",
       "weight": 0.045054945054945054,
-      "market_value": 1351648351.65,
+      "market_value": 1171428.57,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2507,7 +2507,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_mm",
       "weight": 0.04285714285714286,
-      "market_value": 1285714285.71,
+      "market_value": 1114285.71,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2515,7 +2515,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_bajfinance",
       "weight": 0.04065934065934066,
-      "market_value": 1219780219.78,
+      "market_value": 1057142.86,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2523,7 +2523,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_ultracemco",
       "weight": 0.03736263736263736,
-      "market_value": 1120879120.88,
+      "market_value": 971428.57,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2531,7 +2531,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_maruti",
       "weight": 0.035164835164835165,
-      "market_value": 1054945054.95,
+      "market_value": 914285.71,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2539,7 +2539,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_ntpc",
       "weight": 0.03406593406593407,
-      "market_value": 1021978021.98,
+      "market_value": 885714.29,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2547,7 +2547,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_titan",
       "weight": 0.031868131868131866,
-      "market_value": 956043956.04,
+      "market_value": 828571.43,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2555,7 +2555,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_sunpharma",
       "weight": 0.030769230769230767,
-      "market_value": 923076923.08,
+      "market_value": 800000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2563,7 +2563,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_hindunilvr",
       "weight": 0.029670329670329672,
-      "market_value": 890109890.11,
+      "market_value": 771428.57,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2571,7 +2571,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_bel",
       "weight": 0.028571428571428574,
-      "market_value": 857142857.14,
+      "market_value": 742857.14,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2579,7 +2579,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_adaniports",
       "weight": 0.026373626373626374,
-      "market_value": 791208791.21,
+      "market_value": 685714.29,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2587,7 +2587,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_trent",
       "weight": 0.02527472527472527,
-      "market_value": 758241758.24,
+      "market_value": 657142.86,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2595,7 +2595,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_hcltech",
       "weight": 0.023076923076923078,
-      "market_value": 692307692.31,
+      "market_value": 600000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2603,7 +2603,7 @@
       "portfolio_id": "pf_largecap_growth",
       "security_id": "sec_asianpaint",
       "weight": 0.020879120879120878,
-      "market_value": 626373626.37,
+      "market_value": 542857.14,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2611,7 +2611,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_hdfcbank",
       "weight": 0.214,
-      "market_value": 3210000000.0,
+      "market_value": 28890000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2619,7 +2619,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_icicibank",
       "weight": 0.196,
-      "market_value": 2940000000.0,
+      "market_value": 26460000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2627,7 +2627,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_axisbank",
       "weight": 0.128,
-      "market_value": 1920000000.0,
+      "market_value": 17280000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2635,7 +2635,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_kotakbank",
       "weight": 0.11199999999999999,
-      "market_value": 1680000000.0,
+      "market_value": 15120000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2643,7 +2643,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_sbin",
       "weight": 0.107,
-      "market_value": 1605000000.0,
+      "market_value": 14445000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2651,7 +2651,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_bajfinance",
       "weight": 0.09300000000000001,
-      "market_value": 1395000000.0,
+      "market_value": 12555000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2659,7 +2659,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_bajajfinsv",
       "weight": 0.076,
-      "market_value": 1140000000.0,
+      "market_value": 10260000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2667,7 +2667,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_jiofin",
       "weight": 0.042,
-      "market_value": 630000000.0,
+      "market_value": 5670000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2675,7 +2675,7 @@
       "portfolio_id": "pf_banking_financials",
       "security_id": "sec_shriramfin",
       "weight": 0.032,
-      "market_value": 480000000.0,
+      "market_value": 4320000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2683,7 +2683,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_tcs",
       "weight": 0.243,
-      "market_value": 4374000000.0,
+      "market_value": 3766500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2691,7 +2691,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_infosys",
       "weight": 0.217,
-      "market_value": 3906000000.0,
+      "market_value": 3363500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2699,7 +2699,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_hcltech",
       "weight": 0.152,
-      "market_value": 2736000000.0,
+      "market_value": 2356000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2707,7 +2707,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_wipro",
       "weight": 0.114,
-      "market_value": 2052000000.0,
+      "market_value": 1767000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2715,7 +2715,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_techm",
       "weight": 0.106,
-      "market_value": 1908000000.0,
+      "market_value": 1643000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2723,7 +2723,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_ltim",
       "weight": 0.091,
-      "market_value": 1638000000.0,
+      "market_value": 1410500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2731,7 +2731,7 @@
       "portfolio_id": "pf_it_services",
       "security_id": "sec_coforge",
       "weight": 0.077,
-      "market_value": 1386000000.0,
+      "market_value": 1193500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2739,7 +2739,7 @@
       "portfolio_id": "pf_gold_hedge",
       "security_id": "sec_gold_etf",
       "weight": 0.55,
-      "market_value": 3300000000.0,
+      "market_value": 29700000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2747,7 +2747,7 @@
       "portfolio_id": "pf_gold_hedge",
       "security_id": "sec_sgb",
       "weight": 0.35,
-      "market_value": 2100000000.0,
+      "market_value": 18900000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2755,7 +2755,7 @@
       "portfolio_id": "pf_gold_hedge",
       "security_id": "sec_cash_inr",
       "weight": 0.1,
-      "market_value": 600000000.0,
+      "market_value": 5400000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2763,7 +2763,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_dixon",
       "weight": 0.192,
-      "market_value": 1728000000.0,
+      "market_value": 729600.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2771,7 +2771,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_persistent",
       "weight": 0.17600000000000002,
-      "market_value": 1584000000.0,
+      "market_value": 668800.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2779,7 +2779,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_kpit",
       "weight": 0.163,
-      "market_value": 1467000000.0,
+      "market_value": 619400.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2787,7 +2787,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_coforge",
       "weight": 0.151,
-      "market_value": 1359000000.0,
+      "market_value": 573800.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2795,7 +2795,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_cumminsind",
       "weight": 0.168,
-      "market_value": 1512000000.0,
+      "market_value": 638400.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2803,7 +2803,7 @@
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_voltas",
       "weight": 0.15,
-      "market_value": 1350000000.0,
+      "market_value": 570000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2811,7 +2811,7 @@
       "portfolio_id": "pf_reit_income",
       "security_id": "sec_embassy_reit",
       "weight": 0.6,
-      "market_value": 3000000000.0,
+      "market_value": 18600000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2819,7 +2819,7 @@
       "portfolio_id": "pf_reit_income",
       "security_id": "sec_mindspace_reit",
       "weight": 0.4,
-      "market_value": 2000000000.0,
+      "market_value": 12400000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2827,7 +2827,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hdfcbank",
       "weight": 0.12584053794428435,
-      "market_value": 3146013448.61,
+      "market_value": 1321325.65,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2835,7 +2835,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_reliance",
       "weight": 0.08165225744476465,
-      "market_value": 2041306436.12,
+      "market_value": 857348.7,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2843,7 +2843,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_icicibank",
       "weight": 0.07973102785782903,
-      "market_value": 1993275696.45,
+      "market_value": 837175.79,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2851,7 +2851,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_infosys",
       "weight": 0.053794428434197884,
-      "market_value": 1344860710.85,
+      "market_value": 564841.5,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2859,7 +2859,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_itc",
       "weight": 0.0393852065321806,
-      "market_value": 984630163.3,
+      "market_value": 413544.67,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2867,7 +2867,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tcs",
       "weight": 0.03842459173871278,
-      "market_value": 960614793.47,
+      "market_value": 403458.21,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2875,7 +2875,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_lt",
       "weight": 0.037463976945244955,
-      "market_value": 936599423.63,
+      "market_value": 393371.76,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2883,7 +2883,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bhartiartl",
       "weight": 0.03266090297790586,
-      "market_value": 816522574.45,
+      "market_value": 342939.48,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2891,7 +2891,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_axisbank",
       "weight": 0.029779058597502402,
-      "market_value": 744476464.94,
+      "market_value": 312680.12,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2899,7 +2899,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_kotakbank",
       "weight": 0.027857829010566763,
-      "market_value": 696445725.26,
+      "market_value": 292507.2,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2907,7 +2907,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sbin",
       "weight": 0.026897214217098942,
-      "market_value": 672430355.43,
+      "market_value": 282420.75,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2915,7 +2915,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_mm",
       "weight": 0.022094140249759846,
-      "market_value": 552353506.24,
+      "market_value": 231988.47,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2923,7 +2923,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajfinance",
       "weight": 0.022094140249759846,
-      "market_value": 552353506.24,
+      "market_value": 231988.47,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2931,7 +2931,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hindunilvr",
       "weight": 0.02113352545629203,
-      "market_value": 528338136.41,
+      "market_value": 221902.02,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2939,7 +2939,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_maruti",
       "weight": 0.01921229586935639,
-      "market_value": 480307396.73,
+      "market_value": 201729.11,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2947,7 +2947,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tatamotors",
       "weight": 0.01825168107588857,
-      "market_value": 456292026.9,
+      "market_value": 191642.65,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2955,7 +2955,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sunpharma",
       "weight": 0.01729106628242075,
-      "market_value": 432276657.06,
+      "market_value": 181556.2,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2963,7 +2963,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_ntpc",
       "weight": 0.01633045148895293,
-      "market_value": 408261287.22,
+      "market_value": 171469.74,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2971,7 +2971,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hcltech",
       "weight": 0.015369836695485112,
-      "market_value": 384245917.39,
+      "market_value": 161383.29,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2979,7 +2979,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_titan",
       "weight": 0.013448607108549471,
-      "market_value": 336215177.71,
+      "market_value": 141210.37,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2987,7 +2987,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_ultracemco",
       "weight": 0.012487992315081653,
-      "market_value": 312199807.88,
+      "market_value": 131123.92,
       "as_of_date": "2026-07-23"
     },
     {
@@ -2995,7 +2995,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_powergrid",
       "weight": 0.012487992315081653,
-      "market_value": 312199807.88,
+      "market_value": 131123.92,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3003,7 +3003,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tatasteel",
       "weight": 0.012487992315081653,
-      "market_value": 312199807.88,
+      "market_value": 131123.92,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3011,7 +3011,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_asianpaint",
       "weight": 0.011527377521613834,
-      "market_value": 288184438.04,
+      "market_value": 121037.46,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3019,7 +3019,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajajfinsv",
       "weight": 0.011527377521613834,
-      "market_value": 288184438.04,
+      "market_value": 121037.46,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3027,7 +3027,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_nestle",
       "weight": 0.010566762728146014,
-      "market_value": 264169068.2,
+      "market_value": 110951.01,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3035,7 +3035,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_adaniports",
       "weight": 0.010566762728146014,
-      "market_value": 264169068.2,
+      "market_value": 110951.01,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3043,7 +3043,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_coalindia",
       "weight": 0.010566762728146014,
-      "market_value": 264169068.2,
+      "market_value": 110951.01,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3051,7 +3051,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hindalco",
       "weight": 0.009606147934678195,
-      "market_value": 240153698.37,
+      "market_value": 100864.55,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3059,7 +3059,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_grasim",
       "weight": 0.009606147934678195,
-      "market_value": 240153698.37,
+      "market_value": 100864.55,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3067,7 +3067,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hdfclife",
       "weight": 0.009606147934678195,
-      "market_value": 240153698.37,
+      "market_value": 100864.55,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3075,7 +3075,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_jswsteel",
       "weight": 0.009606147934678195,
-      "market_value": 240153698.37,
+      "market_value": 100864.55,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3083,7 +3083,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_techm",
       "weight": 0.009606147934678195,
-      "market_value": 240153698.37,
+      "market_value": 100864.55,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3091,7 +3091,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_ongc",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3099,7 +3099,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sbilife",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3107,7 +3107,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_wipro",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3115,7 +3115,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_trent",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3123,7 +3123,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bel",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3131,7 +3131,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_adanient",
       "weight": 0.008645533141210375,
-      "market_value": 216138328.53,
+      "market_value": 90778.1,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3139,7 +3139,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajajauto",
       "weight": 0.007684918347742556,
-      "market_value": 192122958.69,
+      "market_value": 80691.64,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3147,7 +3147,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_drreddy",
       "weight": 0.007684918347742556,
-      "market_value": 192122958.69,
+      "market_value": 80691.64,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3155,7 +3155,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_cipla",
       "weight": 0.007684918347742556,
-      "market_value": 192122958.69,
+      "market_value": 80691.64,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3163,7 +3163,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_shriramfin",
       "weight": 0.007684918347742556,
-      "market_value": 192122958.69,
+      "market_value": 80691.64,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3171,7 +3171,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_apollohosp",
       "weight": 0.0067243035542747355,
-      "market_value": 168107588.86,
+      "market_value": 70605.19,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3179,7 +3179,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_britannia",
       "weight": 0.0067243035542747355,
-      "market_value": 168107588.86,
+      "market_value": 70605.19,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3187,7 +3187,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_eichermot",
       "weight": 0.0067243035542747355,
-      "market_value": 168107588.86,
+      "market_value": 70605.19,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3195,7 +3195,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tataconsum",
       "weight": 0.0067243035542747355,
-      "market_value": 168107588.86,
+      "market_value": 70605.19,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3203,7 +3203,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_herohonda",
       "weight": 0.005763688760806917,
-      "market_value": 144092219.02,
+      "market_value": 60518.73,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3211,7 +3211,7 @@
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bpcl",
       "weight": 0.005763688760806917,
-      "market_value": 144092219.02,
+      "market_value": 60518.73,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3219,7 +3219,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_corp_bond_aaa",
       "weight": 0.196,
-      "market_value": 2744000000.0,
+      "market_value": 3626000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3227,7 +3227,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_gsec_10y",
       "weight": 0.154,
-      "market_value": 2156000000.0,
+      "market_value": 2849000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3235,7 +3235,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_hdfcbank",
       "weight": 0.12300000000000001,
-      "market_value": 1722000000.0,
+      "market_value": 2275500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3243,7 +3243,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_reliance",
       "weight": 0.098,
-      "market_value": 1372000000.0,
+      "market_value": 1813000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3251,7 +3251,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_icicibank",
       "weight": 0.081,
-      "market_value": 1134000000.0,
+      "market_value": 1498500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3259,7 +3259,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_infosys",
       "weight": 0.07400000000000001,
-      "market_value": 1036000000.0,
+      "market_value": 1369000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3267,7 +3267,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_lt",
       "weight": 0.069,
-      "market_value": 966000000.0,
+      "market_value": 1276500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3275,7 +3275,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_tcs",
       "weight": 0.062,
-      "market_value": 868000000.0,
+      "market_value": 1147000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3283,7 +3283,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_hindunilvr",
       "weight": 0.048,
-      "market_value": 672000000.0,
+      "market_value": 888000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3291,7 +3291,7 @@
       "portfolio_id": "pf_balanced_hybrid",
       "security_id": "sec_gsec_5y",
       "weight": 0.095,
-      "market_value": 1330000000.0,
+      "market_value": 1757500.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3299,7 +3299,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_hdfcbank",
       "weight": 0.168,
-      "market_value": 1848000000.0,
+      "market_value": 12096000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3307,7 +3307,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_reliance",
       "weight": 0.142,
-      "market_value": 1562000000.0,
+      "market_value": 10224000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3315,7 +3315,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_tcs",
       "weight": 0.126,
-      "market_value": 1386000000.0,
+      "market_value": 9072000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3323,7 +3323,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_icicibank",
       "weight": 0.113,
-      "market_value": 1243000000.0,
+      "market_value": 8136000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3331,7 +3331,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_infosys",
       "weight": 0.09699999999999999,
-      "market_value": 1067000000.0,
+      "market_value": 6984000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3339,7 +3339,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_hindunilvr",
       "weight": 0.084,
-      "market_value": 924000000.0,
+      "market_value": 6048000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3347,7 +3347,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_itc",
       "weight": 0.079,
-      "market_value": 869000000.0,
+      "market_value": 5688000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3355,7 +3355,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_lt",
       "weight": 0.071,
-      "market_value": 781000000.0,
+      "market_value": 5112000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3363,7 +3363,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_asianpaint",
       "weight": 0.065,
-      "market_value": 715000000.0,
+      "market_value": 4680000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3371,7 +3371,7 @@
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_titan",
       "weight": 0.055,
-      "market_value": 605000000.0,
+      "market_value": 3960000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3379,7 +3379,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_itc",
       "weight": 0.15,
-      "market_value": 1500000000.0,
+      "market_value": 3600000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3387,7 +3387,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_hdfcbank",
       "weight": 0.1,
-      "market_value": 1000000000.0,
+      "market_value": 2400000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3395,7 +3395,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_corp_bond_aaa",
       "weight": 0.25,
-      "market_value": 2500000000.0,
+      "market_value": 6000000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3403,7 +3403,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_gsec_10y",
       "weight": 0.2,
-      "market_value": 2000000000.0,
+      "market_value": 4800000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3411,7 +3411,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_psu_bond",
       "weight": 0.15,
-      "market_value": 1500000000.0,
+      "market_value": 3600000.0,
       "as_of_date": "2026-07-23"
     },
     {
@@ -3419,7 +3419,7 @@
       "portfolio_id": "pf_retirement_income",
       "security_id": "sec_embassy_reit",
       "weight": 0.15,
-      "market_value": 1500000000.0,
+      "market_value": 3600000.0,
       "as_of_date": "2026-07-23"
     },
     {

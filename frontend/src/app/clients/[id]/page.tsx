@@ -6,11 +6,8 @@ import Link from "next/link";
 import { getClients } from "@/lib/api";
 import { ClientAccount } from "@/lib/types";
 import { avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
+import { inr } from "@/lib/format";
 import Topbar from "@/components/Topbar";
-
-function formatCrore(value: number): string {
-  return `₹${(value / 1e7).toLocaleString("en-IN", { maximumFractionDigits: 1 })} Cr`;
-}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
@@ -101,7 +98,7 @@ export default function ClientDetailPage() {
           </div>
           <div style={{ textAlign: "right" }}>
             <div className="kpi" style={{ border: "1px solid var(--border)", borderRadius: 10 }}>
-              <div className="kpi-v">{formatCrore(account.aum)}</div>
+              <div className="kpi-v">{inr(account.aum)}</div>
               <div className="kpi-l">AUM · {c.aum_fee_pct}% fee</div>
             </div>
           </div>
@@ -191,7 +188,7 @@ export default function ClientDetailPage() {
                   <PerfCell v={account.performance.since_inception_cagr_pct} l="Since inception" />
                 </div>
                 <div className="perf-gain">
-                  1-year gain <b>{formatCrore(account.performance.gain_1y)}</b>
+                  1-year gain <b>{inr(account.performance.gain_1y)}</b>
                   {account.performance.benchmark_one_year_pct != null && (
                     <span className="perf-bench"> · Nifty 50 returned {account.performance.benchmark_one_year_pct}% over the same period</span>
                   )}
@@ -301,7 +298,7 @@ export default function ClientDetailPage() {
                     <td>{h.name}</td>
                     <td>{h.ticker}</td>
                     <td className="num">{h.weight_pct}%</td>
-                    <td className="num">{formatCrore(h.market_value)}</td>
+                    <td className="num">{inr(h.market_value)}</td>
                   </tr>
                 ))}
               </tbody>

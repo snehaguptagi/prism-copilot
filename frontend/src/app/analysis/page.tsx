@@ -4,12 +4,9 @@ import { useEffect, useState } from "react";
 import { getClients, getSectors, getTalkingPoints } from "@/lib/api";
 import { ClientAccount, TalkingPointsResult } from "@/lib/types";
 import { avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
+import { inr } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import ComparisonBar from "@/components/ComparisonBar";
-
-function formatCrore(value: number): string {
-  return `₹${(value / 1e7).toLocaleString("en-IN", { maximumFractionDigits: 1 })} Cr`;
-}
 
 export default function AnalysisPage() {
   const [clients, setClients] = useState<ClientAccount[]>([]);
@@ -109,7 +106,7 @@ export default function AnalysisPage() {
                     <span className="chip-dot" />
                     {c.risk_tier ?? "n/a"}
                   </span>
-                  <span className="pick-aum">{formatCrore(c.aum)}</span>
+                  <span className="pick-aum">{inr(c.aum)}</span>
                 </div>
                 <div className="expo-bar">
                   {c.sector_breakdown.map((b) => (

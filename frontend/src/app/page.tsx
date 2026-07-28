@@ -5,12 +5,9 @@ import { useRouter } from "next/navigation";
 import { getOverview } from "@/lib/api";
 import { Overview } from "@/lib/types";
 import { assetClassColor, sectorColor, severityColor } from "@/lib/colors";
+import { inr, crValue, lakhValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import NumberFlow from "@number-flow/react";
-
-function crore(value: number): number {
-  return Math.round(value / 1e7);
-}
 
 export default function OverviewPage() {
   const router = useRouter();
@@ -51,7 +48,7 @@ export default function OverviewPage() {
             <div className="kpi-row stagger">
               <div className="kpi">
                 <div className="kpi-v">
-                  <NumberFlow value={crore(data.kpis.total_aum)} prefix="₹" suffix=" Cr" />
+                  <NumberFlow value={crValue(data.kpis.total_aum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
                 </div>
                 <div className="kpi-l">Total assets under management</div>
               </div>
@@ -63,7 +60,7 @@ export default function OverviewPage() {
               </div>
               <div className="kpi">
                 <div className="kpi-v">
-                  <NumberFlow value={crore(data.kpis.annual_fee_revenue)} prefix="₹" suffix=" Cr" />
+                  <NumberFlow value={lakhValue(data.kpis.annual_fee_revenue)} prefix="₹" suffix=" L" />
                 </div>
                 <div className="kpi-l">Annual fee revenue</div>
               </div>
@@ -199,7 +196,7 @@ export default function OverviewPage() {
                         />
                       </span>
                       <span className="risk-row-val">
-                        ₹{crore(d.aum).toLocaleString("en-IN")} Cr
+                        {inr(d.aum)}
                         <span className="risk-row-count"> · {d.count}</span>
                       </span>
                     </div>
@@ -293,7 +290,7 @@ export default function OverviewPage() {
                               {c.risk_tier ?? "n/a"}
                             </span>
                           </td>
-                          <td className="num">₹{crore(c.aum).toLocaleString("en-IN")} Cr</td>
+                          <td className="num">{inr(c.aum)}</td>
                         </tr>
                       );
                     })}

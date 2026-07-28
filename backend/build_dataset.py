@@ -243,17 +243,18 @@ SECURITIES = [
 SEC_BY_ID = {s["security_id"]: s for s in SECURITIES}
 
 # ---------------------------------------------------------------------------
-# Portfolios — 8 India-only funds, each with a named manager persona.
+# Portfolios — 12 India-only individual-client portfolios (HNI accounts, sized
+# realistically from ~₹38 lakh to ~₹13.5 crore), plus one reference benchmark.
 # ---------------------------------------------------------------------------
 PORTFOLIOS = [
     {
         "portfolio_id": "pf_cap_preservation", "desk_id": "desk_income",
-        "name": "Capital Preservation Fund", "base_ccy": "INR",
+        "name": "Capital Preservation Portfolio", "base_ccy": "INR",
         "risk_driver": "Cash & short-term rates",
         "mandate": "Park capital with near-zero drawdown in T-bills, liquid funds, and cash. Return of capital before return on capital.",
         "manager_name": "Kavita Iyer",
         "manager_bio": "18 years managing liquid and ultra-short debt funds. Prioritizes capital safety over yield, even at the cost of underperforming in rallies.",
-        "nav": 8_000_000_000,
+        "nav": 13_500_000,
         "holdings": {"sec_tbill_91d": 0.55, "sec_liquid_fund": 0.35, "sec_cash_inr": 0.10},
         "client": {
             "name": "Meena Iyer", "age": 68, "occupation": "Retired schoolteacher",
@@ -269,7 +270,7 @@ PORTFOLIOS = [
         "mandate": "Laddered exposure across GoI securities and high-grade corporate bonds for steady income with controlled duration risk.",
         "manager_name": "Rohan Deshpande",
         "manager_bio": "Fixed-income specialist who watches RBI policy meetings closely. Wary of duration risk if rates stay higher for longer.",
-        "nav": 12_000_000_000,
+        "nav": 9_200_000,
         "holdings": {"sec_gsec_10y": 0.30, "sec_gsec_5y": 0.25, "sec_corp_bond_aaa": 0.25,
                      "sec_psu_bond": 0.15, "sec_cash_inr": 0.05},
         "client": {
@@ -281,12 +282,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_largecap_growth", "desk_id": "desk_equity",
-        "name": "Large-Cap Equity Growth Fund", "base_ccy": "INR",
+        "name": "Large-Cap Equity Growth Portfolio", "base_ccy": "INR",
         "risk_driver": "Broad market beta, large-cap concentration",
         "mandate": "Core Nifty-heavyweight exposure across financials, energy, IT, and consumer names for long-term capital growth.",
         "manager_name": "Aarav Mehta",
         "manager_bio": "Bullish on capex-led industrials and financials, cautious on IT services margins given global client budget pressure.",
-        "nav": 30_000_000_000,
+        "nav": 26_000_000,
         # Active large-cap fund: ~22 names, overweight financials and capex vs
         # the index, underweight IT, with conviction-sized but non-round weights.
         "holdings": {
@@ -305,12 +306,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_banking_financials", "desk_id": "desk_equity",
-        "name": "Banking & Financials Concentrated Fund", "base_ccy": "INR",
+        "name": "Banking & Financials Concentrated Portfolio", "base_ccy": "INR",
         "risk_driver": "Financial-sector concentration, credit cycle & NIM sensitivity",
         "mandate": "High-conviction, concentrated bets on India's private and public banks plus leading NBFCs.",
         "manager_name": "Meera Nair",
         "manager_bio": "Former credit analyst, deliberately concentrated. Believes India's private banks are underappreciated versus global peers.",
-        "nav": 15_000_000_000,
+        "nav": 135_000_000,
         "holdings": {"sec_hdfcbank": 21.4, "sec_icicibank": 19.6, "sec_axisbank": 12.8,
                      "sec_kotakbank": 11.2, "sec_sbin": 10.7, "sec_bajfinance": 9.3,
                      "sec_bajajfinsv": 7.6, "sec_jiofin": 4.2, "sec_shriramfin": 3.2},
@@ -323,12 +324,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_it_services", "desk_id": "desk_equity",
-        "name": "IT & Technology Services Fund", "base_ccy": "INR",
+        "name": "IT & Technology Services Portfolio", "base_ccy": "INR",
         "risk_driver": "Export/currency sensitivity, US & EU client discretionary IT spend",
         "mandate": "Concentrated exposure to India's IT services exporters; returns depend heavily on US/EU enterprise tech budgets and INR/USD movement.",
         "manager_name": "Vikram Rao",
         "manager_bio": "Ex-IT-sector research analyst. Watches US mega-cap tech earnings closely, since client-budget commentary from firms like Microsoft foreshadows Indian IT services demand.",
-        "nav": 18_000_000_000,
+        "nav": 15_500_000,
         "holdings": {"sec_tcs": 24.3, "sec_infosys": 21.7, "sec_hcltech": 15.2,
                      "sec_wipro": 11.4, "sec_techm": 10.6, "sec_ltim": 9.1, "sec_coforge": 7.7},
         "client": {
@@ -340,12 +341,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_gold_hedge", "desk_id": "desk_real",
-        "name": "Gold & Inflation Hedge Fund", "base_ccy": "INR",
+        "name": "Gold & Inflation Hedge Portfolio", "base_ccy": "INR",
         "risk_driver": "Real rates, inflation, INR depreciation",
         "mandate": "Physical-gold-linked exposure via ETFs and Sovereign Gold Bonds, held as a portfolio-level inflation and currency hedge.",
         "manager_name": "Ananya Krishnan",
         "manager_bio": "Manages the firm's only non-equity, non-debt sleeve. Treats the gold allocation as insurance, not a return driver.",
-        "nav": 6_000_000_000,
+        "nav": 54_000_000,
         "holdings": {"sec_gold_etf": 0.55, "sec_sgb": 0.35, "sec_cash_inr": 0.10},
         "client": {
             "name": "Kamala Devi", "age": 58, "occupation": "Homemaker",
@@ -356,12 +357,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_smallcap_value", "desk_id": "desk_equity",
-        "name": "Small & Midcap Value Fund", "base_ccy": "INR",
+        "name": "Small & Midcap Value Portfolio", "base_ccy": "INR",
         "risk_driver": "Small/midcap liquidity & earnings volatility",
         "mandate": "Higher-risk, higher-reward bets on midcap IT, industrials, and engineering names below the large-cap universe.",
         "manager_name": "Devika Menon",
         "manager_bio": "Youngest PM on the desk, explicitly mandated to take more risk than the rest of the book for higher return potential.",
-        "nav": 9_000_000_000,
+        "nav": 3_800_000,
         "holdings": {"sec_dixon": 19.2, "sec_persistent": 17.6, "sec_kpit": 16.3,
                      "sec_coforge": 15.1, "sec_cumminsind": 16.8, "sec_voltas": 15.0},
         "client": {
@@ -373,12 +374,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_reit_income", "desk_id": "desk_real",
-        "name": "Real Estate & REIT Income Fund", "base_ccy": "INR",
+        "name": "Real Estate & REIT Income Portfolio", "base_ccy": "INR",
         "risk_driver": "Office real estate demand, rate sensitivity via yield competition",
         "mandate": "Income-focused exposure to listed Indian REITs (office/commercial real estate) for stable distributions.",
         "manager_name": "Sanjay Bhatt",
         "manager_bio": "Real-assets specialist. Watches commercial office leasing and vacancy trends closely, since REIT yields compete directly with bond yields.",
-        "nav": 5_000_000_000,
+        "nav": 31_000_000,
         "holdings": {"sec_embassy_reit": 0.60, "sec_mindspace_reit": 0.40},
         "client": {
             "name": "Deepak & Ritu Kapoor", "age": 41, "occupation": "Dual-income couple (marketing exec + doctor)",
@@ -389,12 +390,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_nifty_index", "desk_id": "desk_equity",
-        "name": "Nifty 50 Index Fund", "base_ccy": "INR",
+        "name": "Nifty 50 Index Portfolio", "base_ccy": "INR",
         "risk_driver": "Broad market beta, no active stock selection",
         "mandate": "Passive, broadly diversified exposure across large-cap India equity at index-like weights. No concentrated bets, no active selection — designed to track the market, not beat it.",
         "manager_name": "Ishaan Kapoor",
         "manager_bio": "Runs the passive sleeve. Believes most active managers don't beat the index after fees, and built this fund to prove it.",
-        "nav": 25_000_000_000,
+        "nav": 10_500_000,
         # ~49 Nifty 50 constituents at approximate real index weights (raw,
         # normalized at build time). HDFC Bank is the largest post-merger, then
         # Reliance and ICICI; a genuine long tail below the megacaps.
@@ -419,12 +420,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_balanced_hybrid", "desk_id": "desk_equity",
-        "name": "Balanced Advantage Hybrid Fund", "base_ccy": "INR",
+        "name": "Balanced Advantage Hybrid Portfolio", "base_ccy": "INR",
         "risk_driver": "Blended equity/debt allocation, moderate volatility by design",
         "mandate": "A single all-weather blend of large-cap equity and high-grade debt, roughly 65/35, designed so the client never has to think about rebalancing between asset classes themselves.",
         "manager_name": "Farah Sheikh",
         "manager_bio": "Manages the firm's all-weather blended fund. Rebalances mechanically on a schedule, not on emotion or market calls.",
-        "nav": 14_000_000_000,
+        "nav": 18_500_000,
         "holdings": {"sec_corp_bond_aaa": 19.6, "sec_gsec_10y": 15.4, "sec_hdfcbank": 12.3,
                      "sec_reliance": 9.8, "sec_icicibank": 8.1, "sec_infosys": 7.4, "sec_lt": 6.9,
                      "sec_tcs": 6.2, "sec_hindunilvr": 4.8, "sec_gsec_5y": 9.5},
@@ -442,7 +443,7 @@ PORTFOLIOS = [
         "mandate": "Long-horizon, blue-chip-only exposure for an overseas client planning an eventual return to India; prioritizes liquidity and stability over short-term alpha, mindful of eventual repatriation needs.",
         "manager_name": "Rajesh Iyer",
         "manager_bio": "Specializes in NRI-focused mandates. Prioritizes liquidity and blue-chip stability given clients' long-distance, lower-touch relationship with the market.",
-        "nav": 11_000_000_000,
+        "nav": 72_000_000,
         "holdings": {"sec_hdfcbank": 16.8, "sec_reliance": 14.2, "sec_tcs": 12.6,
                      "sec_icicibank": 11.3, "sec_infosys": 9.7, "sec_hindunilvr": 8.4,
                      "sec_itc": 7.9, "sec_lt": 7.1, "sec_asianpaint": 6.5, "sec_titan": 5.5},
@@ -455,12 +456,12 @@ PORTFOLIOS = [
     },
     {
         "portfolio_id": "pf_retirement_income", "desk_id": "desk_income",
-        "name": "Retirement Income (SWP) Fund", "base_ccy": "INR",
+        "name": "Retirement Income (SWP) Portfolio", "base_ccy": "INR",
         "risk_driver": "Dividend/income stability, sequence-of-return risk in retirement",
         "mandate": "Income-first allocation blending dividend-paying equity, high-grade debt, and REIT distributions to support a monthly systematic withdrawal without eroding capital in a downturn.",
         "manager_name": "Sunita Ramesh",
         "manager_bio": "Manages income-focused retirement mandates. Obsessive about downside protection since these clients can't simply wait out a bad year.",
-        "nav": 10_000_000_000,
+        "nav": 24_000_000,
         "holdings": {"sec_itc": 0.15, "sec_hdfcbank": 0.10, "sec_corp_bond_aaa": 0.25,
                      "sec_gsec_10y": 0.20, "sec_psu_bond": 0.15, "sec_embassy_reit": 0.15},
         "client": {

@@ -6,13 +6,10 @@ import NumberFlow from "@number-flow/react";
 import { getClients } from "@/lib/api";
 import { ClientAccount } from "@/lib/types";
 import { avatarColor, initials, severityColor } from "@/lib/colors";
+import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 
 const RISK_TIERS = ["All", "Low", "Moderate", "Elevated", "High", "Very High"] as const;
-
-function croreValue(v: number): number {
-  return Math.round((v / 1e7) * 10) / 10;
-}
 
 export default function ClientsPage() {
   const router = useRouter();
@@ -72,7 +69,7 @@ export default function ClientsPage() {
               </div>
               <div className="stat-tile">
                 <div className="v">
-                  <NumberFlow value={croreValue(totalAum)} prefix="₹" suffix=" Cr" />
+                  <NumberFlow value={crValue(totalAum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
                 </div>
                 <div className="l">Total AUM</div>
               </div>
@@ -187,7 +184,7 @@ export default function ClientsPage() {
                       </span>
                     </td>
                     <td>{c.client.aum_fee_pct}%</td>
-                    <td className="num">₹{croreValue(c.aum).toLocaleString("en-IN")} Cr</td>
+                    <td className="num">{inr(c.aum)}</td>
                   </tr>
                 );
               })}
