@@ -103,6 +103,21 @@ def test_clients_endpoint_includes_contact_and_contract_info():
         assert c["client"]["risk_mandate"]
 
 
+def test_clients_endpoint_has_performance_and_suitability():
+    clients = client.get("/clients").json()
+    for c in clients:
+        p = c["performance"]
+        assert p["one_year_pct"] is not None
+        assert p["vs_benchmark_1y"] == pytest.approx(p["one_year_pct"] - p["benchmark_one_year_pct"], abs=0.15)
+        assert c["suitability"]["status"] in ("matched", "aggressive", "conservative", "unknown")
+
+
+def test_overview_book_performance_present():
+    perf = client.get("/overview").json()["performance"]
+    assert perf["book_one_year_pct"] is not None
+    assert perf["best"]["one_year_pct"] >= perf["worst"]["one_year_pct"]
+
+
 def test_clients_endpoint_sector_breakdown_sums_to_100():
     response = client.get("/clients")
     clients = response.json()

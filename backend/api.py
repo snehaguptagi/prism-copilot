@@ -132,6 +132,62 @@ def portfolio_insights(portfolio_id, data, risk_block, holdings_out, breakdown):
     }
 
 
+def build_performance(perf, aum, benchmark):
+    """Attach the trailing-return figures plus the rupee gain over the last year
+    (derived from current AUM and the 1-year return) and the delta versus the
+    Nifty 50 benchmark. All arithmetic, no model."""
+    if not perf:
+        return None
+    one_yr = perf.get("one_year_pct", 0.0)
+    # value a year ago implied by the 1-year return, so 1y gain in rupees is exact
+    value_year_ago = aum / (1 + one_yr / 100) if one_yr > -100 else aum
+    gain_1y = aum - value_year_ago
+    bench_1y = (benchmark or {}).get("one_year_pct")
+    return {
+        "ytd_pct": perf.get("ytd_pct"),
+        "one_year_pct": one_yr,
+        "three_year_cagr_pct": perf.get("three_year_cagr_pct"),
+        "since_inception_cagr_pct": perf.get("since_inception_cagr_pct"),
+        "gain_1y": round(gain_1y, 2),
+        "benchmark_one_year_pct": bench_1y,
+        "vs_benchmark_1y": round(one_yr - bench_1y, 1) if bench_1y is not None else None,
+    }
+
+
+# Which risk tiers are appropriate for each mandate keyword. Used to flag a
+# book that has drifted more aggressive or more conservative than the client
+# actually signed up for, a genuine suitability / compliance check.
+_TIER_RANK = {"Low": 0, "Moderate": 1, "Elevated": 2, "High": 3, "Very High": 4}
+_MANDATE_MAX_TIER = {
+    "conservative": 1, "conservative-moderate": 2, "moderate": 2, "moderate-income": 2,
+    "moderate-growth": 3, "growth-stable": 3, "growth-concentrated": 4,
+    "aggressive": 4, "aggressive-concentrated": 4,
+}
+_MANDATE_MIN_TIER = {
+    "conservative": 0, "conservative-moderate": 0, "moderate": 1, "moderate-income": 1,
+    "moderate-growth": 2, "growth-stable": 2, "growth-concentrated": 3,
+    "aggressive": 3, "aggressive-concentrated": 4,
+}
+
+
+def check_suitability(mandate, tier):
+    """Compare the portfolio's actual risk tier against the client's stated risk
+    mandate, and flag mismatches. Deterministic."""
+    if not mandate or not tier or tier not in _TIER_RANK:
+        return {"status": "unknown", "label": "Not assessed"}
+    key = mandate.strip().lower()
+    lo = _MANDATE_MIN_TIER.get(key)
+    hi = _MANDATE_MAX_TIER.get(key)
+    rank = _TIER_RANK[tier]
+    if lo is None or hi is None:
+        return {"status": "unknown", "label": "Not assessed"}
+    if rank > hi:
+        return {"status": "aggressive", "label": "More aggressive than mandate", "detail": f"Book is {tier} risk versus a {mandate} mandate. Worth a suitability review."}
+    if rank < lo:
+        return {"status": "conservative", "label": "More conservative than mandate", "detail": f"Book is {tier} risk versus a {mandate} mandate. May be underinvested for the goal."}
+    return {"status": "matched", "label": "Well matched", "detail": f"{tier} risk fits the {mandate} mandate."}
+
+
 # Sectors that have a live market-research lens (i.e. real equities/commodities
 # to search on). Cash/Fixed Income holdings don't have a meaningful company-news
 # lens, so the analysis flow defaults to the top *researchable* sector.
@@ -213,6 +269,8 @@ def get_clients():
             None,
         )
         insights = portfolio_insights(pid, data, r, holdings_out, breakdown)
+        perf = build_performance(p.get("performance"), aum, data.get("benchmark"))
+        suitability = check_suitability(p["client"].get("risk_mandate"), r.get("risk_tier"))
         out.append({
             "portfolio_id": pid,
             "portfolio_name": p["name"],
@@ -226,6 +284,8 @@ def get_clients():
             "sector_breakdown": breakdown,
             "suggested_sector": suggested,
             "insights": insights,
+            "performance": perf,
+            "suitability": suitability,
         })
     return out
 
@@ -355,6 +415,25 @@ def get_overview():
         prio_rank.get(a["priority"], 1),
     ))
 
+    # book performance: AUM-weighted 1-year return, plus best and worst books
+    perf_rows = []
+    weighted_1y = 0.0
+    for p in client_portfolios:
+        perf = p.get("performance")
+        w = aum_by_portfolio.get(p["portfolio_id"], 0.0)
+        if not perf:
+            continue
+        weighted_1y += perf["one_year_pct"] * w
+        perf_rows.append({
+            "portfolio_id": p["portfolio_id"],
+            "client_name": p["client"]["name"],
+            "portfolio_name": p["name"],
+            "one_year_pct": perf["one_year_pct"],
+        })
+    book_1y = round(weighted_1y / total_aum, 1) if total_aum else 0.0
+    perf_sorted = sorted(perf_rows, key=lambda x: x["one_year_pct"], reverse=True)
+    bench = data.get("benchmark", {})
+
     return {
         "kpis": {
             "total_aum": total_aum,
@@ -363,6 +442,14 @@ def get_overview():
             "distinct_securities": len(by_security),
             "blended_fee_pct": blended_fee,
             "annual_fee_revenue": annual_fee_revenue,
+        },
+        "performance": {
+            "book_one_year_pct": book_1y,
+            "benchmark_name": bench.get("name", "Nifty 50"),
+            "benchmark_one_year_pct": bench.get("one_year_pct"),
+            "vs_benchmark_1y": round(book_1y - bench.get("one_year_pct", 0), 1) if bench.get("one_year_pct") is not None else None,
+            "best": perf_sorted[0] if perf_sorted else None,
+            "worst": perf_sorted[-1] if perf_sorted else None,
         },
         "action_items": action_items,
         "risk_distribution": risk_distribution,

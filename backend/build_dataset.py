@@ -778,6 +778,29 @@ COMMUNICATIONS = {
 }
 
 
+# Demo performance per portfolio, keyed by portfolio_id: total returns for
+# YTD, trailing 1 year, trailing 3-year CAGR, and since-inception CAGR. Numbers
+# are illustrative but chosen to be realistic for each strategy in the current
+# India market (cash near T-bill yields, IT soft, gold and smallcaps strong).
+# The Nifty 50 benchmark is the yardstick shown next to each equity book.
+NIFTY_BENCHMARK = {"ytd_pct": 8.4, "one_year_pct": 14.2, "three_year_cagr_pct": 13.8}
+
+PERFORMANCE = {
+    "pf_cap_preservation": {"ytd_pct": 3.8, "one_year_pct": 6.8, "three_year_cagr_pct": 6.5, "since_inception_cagr_pct": 6.6},
+    "pf_bond_ladder": {"ytd_pct": 4.5, "one_year_pct": 8.2, "three_year_cagr_pct": 7.4, "since_inception_cagr_pct": 7.8},
+    "pf_largecap_growth": {"ytd_pct": 9.2, "one_year_pct": 16.8, "three_year_cagr_pct": 15.2, "since_inception_cagr_pct": 14.5},
+    "pf_banking_financials": {"ytd_pct": 11.4, "one_year_pct": 22.3, "three_year_cagr_pct": 18.6, "since_inception_cagr_pct": 17.2},
+    "pf_it_services": {"ytd_pct": 2.1, "one_year_pct": 4.6, "three_year_cagr_pct": 9.8, "since_inception_cagr_pct": 12.4},
+    "pf_gold_hedge": {"ytd_pct": 14.7, "one_year_pct": 26.5, "three_year_cagr_pct": 14.2, "since_inception_cagr_pct": 11.8},
+    "pf_smallcap_value": {"ytd_pct": 13.5, "one_year_pct": 31.2, "three_year_cagr_pct": 24.8, "since_inception_cagr_pct": 21.5},
+    "pf_reit_income": {"ytd_pct": 5.8, "one_year_pct": 11.2, "three_year_cagr_pct": 8.6, "since_inception_cagr_pct": 9.1},
+    "pf_nifty_index": {"ytd_pct": 8.3, "one_year_pct": 14.0, "three_year_cagr_pct": 13.6, "since_inception_cagr_pct": 13.1},
+    "pf_balanced_hybrid": {"ytd_pct": 6.2, "one_year_pct": 11.6, "three_year_cagr_pct": 10.4, "since_inception_cagr_pct": 10.8},
+    "pf_nri_growth": {"ytd_pct": 7.8, "one_year_pct": 14.8, "three_year_cagr_pct": 13.2, "since_inception_cagr_pct": 12.9},
+    "pf_retirement_income": {"ytd_pct": 5.1, "one_year_pct": 9.4, "three_year_cagr_pct": 8.2, "since_inception_cagr_pct": 8.6},
+}
+
+
 def main():
     holdings, risk = build_holdings_and_risk()
     portfolios_out = []
@@ -797,6 +820,9 @@ def main():
                 client["communications"] = comm.get("history", [])
                 client["next_action"] = comm.get("next_action")
             entry["client"] = client
+        perf = PERFORMANCE.get(p["portfolio_id"])
+        if perf:
+            entry["performance"] = perf
         portfolios_out.append(entry)
     data = {
         "desks": DESKS,
@@ -804,6 +830,7 @@ def main():
         "securities": SECURITIES,
         "holdings": holdings,
         "risk": risk,
+        "benchmark": {"name": "Nifty 50", **NIFTY_BENCHMARK},
     }
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

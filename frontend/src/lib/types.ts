@@ -107,6 +107,22 @@ export interface Client {
   next_action?: NextAction;
 }
 
+export interface Performance {
+  ytd_pct: number;
+  one_year_pct: number;
+  three_year_cagr_pct: number;
+  since_inception_cagr_pct: number;
+  gain_1y: number;
+  benchmark_one_year_pct: number | null;
+  vs_benchmark_1y: number | null;
+}
+
+export interface Suitability {
+  status: "matched" | "aggressive" | "conservative" | "unknown";
+  label: string;
+  detail?: string;
+}
+
 export interface PortfolioInsights {
   num_holdings: number;
   num_sectors: number;
@@ -153,6 +169,14 @@ export interface Overview {
     annual_fee_revenue: number;
   };
   action_items: ActionItem[];
+  performance: {
+    book_one_year_pct: number;
+    benchmark_name: string;
+    benchmark_one_year_pct: number | null;
+    vs_benchmark_1y: number | null;
+    best: { portfolio_id: string; client_name: string; portfolio_name: string; one_year_pct: number } | null;
+    worst: { portfolio_id: string; client_name: string; portfolio_name: string; one_year_pct: number } | null;
+  };
   risk_distribution: { tier: RiskTier; count: number; aum: number }[];
   asset_class_allocation: { asset_class: string; value: number; pct: number }[];
   sector_allocation: { sector: string; value: number; pct: number }[];
@@ -184,6 +208,8 @@ export interface ClientAccount {
   aum: number;
   client: Client;
   insights?: PortfolioInsights;
+  performance?: Performance;
+  suitability?: Suitability;
   holdings: ClientHolding[];
   sector_breakdown: SectorWeight[];
   suggested_sector: string | null;

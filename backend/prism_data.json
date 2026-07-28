@@ -83,6 +83,12 @@
           "action": "Monthly reassurance call",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 3.8,
+        "one_year_pct": 6.8,
+        "three_year_cagr_pct": 6.5,
+        "since_inception_cagr_pct": 6.6
       }
     },
     {
@@ -146,6 +152,12 @@
           "action": "Next quarterly review",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 4.5,
+        "one_year_pct": 8.2,
+        "three_year_cagr_pct": 7.4,
+        "since_inception_cagr_pct": 7.8
       }
     },
     {
@@ -203,6 +215,12 @@
           "action": "Quarterly check-in",
           "priority": "Low"
         }
+      },
+      "performance": {
+        "ytd_pct": 9.2,
+        "one_year_pct": 16.8,
+        "three_year_cagr_pct": 15.2,
+        "since_inception_cagr_pct": 14.5
       }
     },
     {
@@ -266,6 +284,12 @@
           "action": "Weekly banking-sector catch-up call",
           "priority": "High"
         }
+      },
+      "performance": {
+        "ytd_pct": 11.4,
+        "one_year_pct": 22.3,
+        "three_year_cagr_pct": 18.6,
+        "since_inception_cagr_pct": 17.2
       }
     },
     {
@@ -323,6 +347,12 @@
           "action": "Reply with Infosys guidance deep-dive",
           "priority": "High"
         }
+      },
+      "performance": {
+        "ytd_pct": 2.1,
+        "one_year_pct": 4.6,
+        "three_year_cagr_pct": 9.8,
+        "since_inception_cagr_pct": 12.4
       }
     },
     {
@@ -380,6 +410,12 @@
           "action": "Monthly call via son",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 14.7,
+        "one_year_pct": 26.5,
+        "three_year_cagr_pct": 14.2,
+        "since_inception_cagr_pct": 11.8
       }
     },
     {
@@ -443,6 +479,12 @@
           "action": "Discuss position-sizing discipline",
           "priority": "High"
         }
+      },
+      "performance": {
+        "ytd_pct": 13.5,
+        "one_year_pct": 31.2,
+        "three_year_cagr_pct": 24.8,
+        "since_inception_cagr_pct": 21.5
       }
     },
     {
@@ -500,6 +542,12 @@
           "action": "Quarterly distribution review",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 5.8,
+        "one_year_pct": 11.2,
+        "three_year_cagr_pct": 8.6,
+        "since_inception_cagr_pct": 9.1
       }
     },
     {
@@ -557,6 +605,12 @@
           "action": "Quarterly index review",
           "priority": "Low"
         }
+      },
+      "performance": {
+        "ytd_pct": 8.3,
+        "one_year_pct": 14.0,
+        "three_year_cagr_pct": 13.6,
+        "since_inception_cagr_pct": 13.1
       }
     },
     {
@@ -614,6 +668,12 @@
           "action": "Pre-festival-season liquidity check",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 6.2,
+        "one_year_pct": 11.6,
+        "three_year_cagr_pct": 10.4,
+        "since_inception_cagr_pct": 10.8
       }
     },
     {
@@ -671,6 +731,12 @@
           "action": "Monthly NRI review and FX update",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 7.8,
+        "one_year_pct": 14.8,
+        "three_year_cagr_pct": 13.2,
+        "since_inception_cagr_pct": 12.9
       }
     },
     {
@@ -728,6 +794,12 @@
           "action": "Monthly SWP payout confirmation",
           "priority": "Normal"
         }
+      },
+      "performance": {
+        "ytd_pct": 5.1,
+        "one_year_pct": 9.4,
+        "three_year_cagr_pct": 8.2,
+        "since_inception_cagr_pct": 8.6
       }
     },
     {
@@ -2690,7 +2762,7 @@
       "holding_id": "hld_0050",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_dixon",
-      "weight": 0.19200000000000003,
+      "weight": 0.192,
       "market_value": 1728000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2698,7 +2770,7 @@
       "holding_id": "hld_0051",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_persistent",
-      "weight": 0.17600000000000005,
+      "weight": 0.17600000000000002,
       "market_value": 1584000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2706,7 +2778,7 @@
       "holding_id": "hld_0052",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_kpit",
-      "weight": 0.16300000000000003,
+      "weight": 0.163,
       "market_value": 1467000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2714,7 +2786,7 @@
       "holding_id": "hld_0053",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_coforge",
-      "weight": 0.15100000000000002,
+      "weight": 0.151,
       "market_value": 1359000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2722,7 +2794,7 @@
       "holding_id": "hld_0054",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_cumminsind",
-      "weight": 0.16800000000000004,
+      "weight": 0.168,
       "market_value": 1512000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2730,7 +2802,7 @@
       "holding_id": "hld_0055",
       "portfolio_id": "pf_smallcap_value",
       "security_id": "sec_voltas",
-      "weight": 0.15000000000000002,
+      "weight": 0.15,
       "market_value": 1350000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -2754,7 +2826,7 @@
       "holding_id": "hld_0058",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hdfcbank",
-      "weight": 0.12584053794428432,
+      "weight": 0.12584053794428435,
       "market_value": 3146013448.61,
       "as_of_date": "2026-07-23"
     },
@@ -2770,7 +2842,7 @@
       "holding_id": "hld_0060",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_icicibank",
-      "weight": 0.07973102785782901,
+      "weight": 0.07973102785782903,
       "market_value": 1993275696.45,
       "as_of_date": "2026-07-23"
     },
@@ -2778,7 +2850,7 @@
       "holding_id": "hld_0061",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_infosys",
-      "weight": 0.05379442843419788,
+      "weight": 0.053794428434197884,
       "market_value": 1344860710.85,
       "as_of_date": "2026-07-23"
     },
@@ -2786,7 +2858,7 @@
       "holding_id": "hld_0062",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_itc",
-      "weight": 0.03938520653218059,
+      "weight": 0.0393852065321806,
       "market_value": 984630163.3,
       "as_of_date": "2026-07-23"
     },
@@ -2794,7 +2866,7 @@
       "holding_id": "hld_0063",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tcs",
-      "weight": 0.03842459173871277,
+      "weight": 0.03842459173871278,
       "market_value": 960614793.47,
       "as_of_date": "2026-07-23"
     },
@@ -2818,7 +2890,7 @@
       "holding_id": "hld_0066",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_axisbank",
-      "weight": 0.0297790585975024,
+      "weight": 0.029779058597502402,
       "market_value": 744476464.94,
       "as_of_date": "2026-07-23"
     },
@@ -2826,7 +2898,7 @@
       "holding_id": "hld_0067",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_kotakbank",
-      "weight": 0.02785782901056676,
+      "weight": 0.027857829010566763,
       "market_value": 696445725.26,
       "as_of_date": "2026-07-23"
     },
@@ -2834,7 +2906,7 @@
       "holding_id": "hld_0068",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sbin",
-      "weight": 0.02689721421709894,
+      "weight": 0.026897214217098942,
       "market_value": 672430355.43,
       "as_of_date": "2026-07-23"
     },
@@ -2842,7 +2914,7 @@
       "holding_id": "hld_0069",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_mm",
-      "weight": 0.022094140249759843,
+      "weight": 0.022094140249759846,
       "market_value": 552353506.24,
       "as_of_date": "2026-07-23"
     },
@@ -2850,7 +2922,7 @@
       "holding_id": "hld_0070",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajfinance",
-      "weight": 0.022094140249759843,
+      "weight": 0.022094140249759846,
       "market_value": 552353506.24,
       "as_of_date": "2026-07-23"
     },
@@ -2858,7 +2930,7 @@
       "holding_id": "hld_0071",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hindunilvr",
-      "weight": 0.021133525456292025,
+      "weight": 0.02113352545629203,
       "market_value": 528338136.41,
       "as_of_date": "2026-07-23"
     },
@@ -2866,7 +2938,7 @@
       "holding_id": "hld_0072",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_maruti",
-      "weight": 0.019212295869356386,
+      "weight": 0.01921229586935639,
       "market_value": 480307396.73,
       "as_of_date": "2026-07-23"
     },
@@ -2874,7 +2946,7 @@
       "holding_id": "hld_0073",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tatamotors",
-      "weight": 0.018251681075888565,
+      "weight": 0.01825168107588857,
       "market_value": 456292026.9,
       "as_of_date": "2026-07-23"
     },
@@ -2882,7 +2954,7 @@
       "holding_id": "hld_0074",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sunpharma",
-      "weight": 0.017291066282420747,
+      "weight": 0.01729106628242075,
       "market_value": 432276657.06,
       "as_of_date": "2026-07-23"
     },
@@ -2898,7 +2970,7 @@
       "holding_id": "hld_0076",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hcltech",
-      "weight": 0.01536983669548511,
+      "weight": 0.015369836695485112,
       "market_value": 384245917.39,
       "as_of_date": "2026-07-23"
     },
@@ -2906,7 +2978,7 @@
       "holding_id": "hld_0077",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_titan",
-      "weight": 0.01344860710854947,
+      "weight": 0.013448607108549471,
       "market_value": 336215177.71,
       "as_of_date": "2026-07-23"
     },
@@ -2914,7 +2986,7 @@
       "holding_id": "hld_0078",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_ultracemco",
-      "weight": 0.012487992315081652,
+      "weight": 0.012487992315081653,
       "market_value": 312199807.88,
       "as_of_date": "2026-07-23"
     },
@@ -2922,7 +2994,7 @@
       "holding_id": "hld_0079",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_powergrid",
-      "weight": 0.012487992315081652,
+      "weight": 0.012487992315081653,
       "market_value": 312199807.88,
       "as_of_date": "2026-07-23"
     },
@@ -2930,7 +3002,7 @@
       "holding_id": "hld_0080",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tatasteel",
-      "weight": 0.012487992315081652,
+      "weight": 0.012487992315081653,
       "market_value": 312199807.88,
       "as_of_date": "2026-07-23"
     },
@@ -2938,7 +3010,7 @@
       "holding_id": "hld_0081",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_asianpaint",
-      "weight": 0.011527377521613832,
+      "weight": 0.011527377521613834,
       "market_value": 288184438.04,
       "as_of_date": "2026-07-23"
     },
@@ -2946,7 +3018,7 @@
       "holding_id": "hld_0082",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajajfinsv",
-      "weight": 0.011527377521613832,
+      "weight": 0.011527377521613834,
       "market_value": 288184438.04,
       "as_of_date": "2026-07-23"
     },
@@ -2954,7 +3026,7 @@
       "holding_id": "hld_0083",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_nestle",
-      "weight": 0.010566762728146013,
+      "weight": 0.010566762728146014,
       "market_value": 264169068.2,
       "as_of_date": "2026-07-23"
     },
@@ -2962,7 +3034,7 @@
       "holding_id": "hld_0084",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_adaniports",
-      "weight": 0.010566762728146013,
+      "weight": 0.010566762728146014,
       "market_value": 264169068.2,
       "as_of_date": "2026-07-23"
     },
@@ -2970,7 +3042,7 @@
       "holding_id": "hld_0085",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_coalindia",
-      "weight": 0.010566762728146013,
+      "weight": 0.010566762728146014,
       "market_value": 264169068.2,
       "as_of_date": "2026-07-23"
     },
@@ -2978,7 +3050,7 @@
       "holding_id": "hld_0086",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hindalco",
-      "weight": 0.009606147934678193,
+      "weight": 0.009606147934678195,
       "market_value": 240153698.37,
       "as_of_date": "2026-07-23"
     },
@@ -2986,7 +3058,7 @@
       "holding_id": "hld_0087",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_grasim",
-      "weight": 0.009606147934678193,
+      "weight": 0.009606147934678195,
       "market_value": 240153698.37,
       "as_of_date": "2026-07-23"
     },
@@ -2994,7 +3066,7 @@
       "holding_id": "hld_0088",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_hdfclife",
-      "weight": 0.009606147934678193,
+      "weight": 0.009606147934678195,
       "market_value": 240153698.37,
       "as_of_date": "2026-07-23"
     },
@@ -3002,7 +3074,7 @@
       "holding_id": "hld_0089",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_jswsteel",
-      "weight": 0.009606147934678193,
+      "weight": 0.009606147934678195,
       "market_value": 240153698.37,
       "as_of_date": "2026-07-23"
     },
@@ -3010,7 +3082,7 @@
       "holding_id": "hld_0090",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_techm",
-      "weight": 0.009606147934678193,
+      "weight": 0.009606147934678195,
       "market_value": 240153698.37,
       "as_of_date": "2026-07-23"
     },
@@ -3018,7 +3090,7 @@
       "holding_id": "hld_0091",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_ongc",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3026,7 +3098,7 @@
       "holding_id": "hld_0092",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_sbilife",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3034,7 +3106,7 @@
       "holding_id": "hld_0093",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_wipro",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3042,7 +3114,7 @@
       "holding_id": "hld_0094",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_trent",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3050,7 +3122,7 @@
       "holding_id": "hld_0095",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bel",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3058,7 +3130,7 @@
       "holding_id": "hld_0096",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_adanient",
-      "weight": 0.008645533141210374,
+      "weight": 0.008645533141210375,
       "market_value": 216138328.53,
       "as_of_date": "2026-07-23"
     },
@@ -3066,7 +3138,7 @@
       "holding_id": "hld_0097",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bajajauto",
-      "weight": 0.007684918347742555,
+      "weight": 0.007684918347742556,
       "market_value": 192122958.69,
       "as_of_date": "2026-07-23"
     },
@@ -3074,7 +3146,7 @@
       "holding_id": "hld_0098",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_drreddy",
-      "weight": 0.007684918347742555,
+      "weight": 0.007684918347742556,
       "market_value": 192122958.69,
       "as_of_date": "2026-07-23"
     },
@@ -3082,7 +3154,7 @@
       "holding_id": "hld_0099",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_cipla",
-      "weight": 0.007684918347742555,
+      "weight": 0.007684918347742556,
       "market_value": 192122958.69,
       "as_of_date": "2026-07-23"
     },
@@ -3090,7 +3162,7 @@
       "holding_id": "hld_0100",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_shriramfin",
-      "weight": 0.007684918347742555,
+      "weight": 0.007684918347742556,
       "market_value": 192122958.69,
       "as_of_date": "2026-07-23"
     },
@@ -3098,7 +3170,7 @@
       "holding_id": "hld_0101",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_apollohosp",
-      "weight": 0.006724303554274735,
+      "weight": 0.0067243035542747355,
       "market_value": 168107588.86,
       "as_of_date": "2026-07-23"
     },
@@ -3106,7 +3178,7 @@
       "holding_id": "hld_0102",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_britannia",
-      "weight": 0.006724303554274735,
+      "weight": 0.0067243035542747355,
       "market_value": 168107588.86,
       "as_of_date": "2026-07-23"
     },
@@ -3114,7 +3186,7 @@
       "holding_id": "hld_0103",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_eichermot",
-      "weight": 0.006724303554274735,
+      "weight": 0.0067243035542747355,
       "market_value": 168107588.86,
       "as_of_date": "2026-07-23"
     },
@@ -3122,7 +3194,7 @@
       "holding_id": "hld_0104",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_tataconsum",
-      "weight": 0.006724303554274735,
+      "weight": 0.0067243035542747355,
       "market_value": 168107588.86,
       "as_of_date": "2026-07-23"
     },
@@ -3130,7 +3202,7 @@
       "holding_id": "hld_0105",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_herohonda",
-      "weight": 0.005763688760806916,
+      "weight": 0.005763688760806917,
       "market_value": 144092219.02,
       "as_of_date": "2026-07-23"
     },
@@ -3138,7 +3210,7 @@
       "holding_id": "hld_0106",
       "portfolio_id": "pf_nifty_index",
       "security_id": "sec_bpcl",
-      "weight": 0.005763688760806916,
+      "weight": 0.005763688760806917,
       "market_value": 144092219.02,
       "as_of_date": "2026-07-23"
     },
@@ -3226,7 +3298,7 @@
       "holding_id": "hld_0117",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_hdfcbank",
-      "weight": 0.16799999999999998,
+      "weight": 0.168,
       "market_value": 1848000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3234,7 +3306,7 @@
       "holding_id": "hld_0118",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_reliance",
-      "weight": 0.14199999999999996,
+      "weight": 0.142,
       "market_value": 1562000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3242,7 +3314,7 @@
       "holding_id": "hld_0119",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_tcs",
-      "weight": 0.12599999999999997,
+      "weight": 0.126,
       "market_value": 1386000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3250,7 +3322,7 @@
       "holding_id": "hld_0120",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_icicibank",
-      "weight": 0.11299999999999999,
+      "weight": 0.113,
       "market_value": 1243000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3258,7 +3330,7 @@
       "holding_id": "hld_0121",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_infosys",
-      "weight": 0.09699999999999998,
+      "weight": 0.09699999999999999,
       "market_value": 1067000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3266,7 +3338,7 @@
       "holding_id": "hld_0122",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_hindunilvr",
-      "weight": 0.08399999999999999,
+      "weight": 0.084,
       "market_value": 924000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3274,7 +3346,7 @@
       "holding_id": "hld_0123",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_itc",
-      "weight": 0.07899999999999999,
+      "weight": 0.079,
       "market_value": 869000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3282,7 +3354,7 @@
       "holding_id": "hld_0124",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_lt",
-      "weight": 0.07099999999999998,
+      "weight": 0.071,
       "market_value": 781000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3290,7 +3362,7 @@
       "holding_id": "hld_0125",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_asianpaint",
-      "weight": 0.06499999999999999,
+      "weight": 0.065,
       "market_value": 715000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3298,7 +3370,7 @@
       "holding_id": "hld_0126",
       "portfolio_id": "pf_nri_growth",
       "security_id": "sec_titan",
-      "weight": 0.05499999999999999,
+      "weight": 0.055,
       "market_value": 605000000.0,
       "as_of_date": "2026-07-23"
     },
@@ -3354,7 +3426,7 @@
       "holding_id": "hld_0133",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_hdfcbank",
-      "weight": 0.0929678188319428,
+      "weight": 0.09296781883194279,
       "market_value": 1859356376.64,
       "as_of_date": "2026-07-23"
     },
@@ -3362,7 +3434,7 @@
       "holding_id": "hld_0134",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_reliance",
-      "weight": 0.060786650774731825,
+      "weight": 0.06078665077473182,
       "market_value": 1215733015.49,
       "as_of_date": "2026-07-23"
     },
@@ -3370,7 +3442,7 @@
       "holding_id": "hld_0135",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_icicibank",
-      "weight": 0.0595947556615018,
+      "weight": 0.05959475566150178,
       "market_value": 1191895113.23,
       "as_of_date": "2026-07-23"
     },
@@ -3378,7 +3450,7 @@
       "holding_id": "hld_0136",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_infosys",
-      "weight": 0.04052443384982122,
+      "weight": 0.04052443384982121,
       "market_value": 810488677.0,
       "as_of_date": "2026-07-23"
     },
@@ -3386,7 +3458,7 @@
       "holding_id": "hld_0137",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_tcs",
-      "weight": 0.02860548271752086,
+      "weight": 0.028605482717520857,
       "market_value": 572109654.35,
       "as_of_date": "2026-07-23"
     },
@@ -3394,7 +3466,7 @@
       "holding_id": "hld_0138",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_lt",
-      "weight": 0.027413587604290822,
+      "weight": 0.02741358760429082,
       "market_value": 548271752.09,
       "as_of_date": "2026-07-23"
     },
@@ -3402,7 +3474,7 @@
       "holding_id": "hld_0139",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_bhartiartl",
-      "weight": 0.023837902264600717,
+      "weight": 0.023837902264600714,
       "market_value": 476758045.29,
       "as_of_date": "2026-07-23"
     },
@@ -3410,7 +3482,7 @@
       "holding_id": "hld_0140",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_itc",
-      "weight": 0.0297973778307509,
+      "weight": 0.02979737783075089,
       "market_value": 595947556.62,
       "as_of_date": "2026-07-23"
     },
@@ -3418,7 +3490,7 @@
       "holding_id": "hld_0141",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_sbin",
-      "weight": 0.02026221692491061,
+      "weight": 0.020262216924910606,
       "market_value": 405244338.5,
       "as_of_date": "2026-07-23"
     },
@@ -3426,7 +3498,7 @@
       "holding_id": "hld_0142",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_mm",
-      "weight": 0.0166865315852205,
+      "weight": 0.016686531585220498,
       "market_value": 333730631.7,
       "as_of_date": "2026-07-23"
     },
@@ -3434,7 +3506,7 @@
       "holding_id": "hld_0143",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_axisbank",
-      "weight": 0.02264600715137068,
+      "weight": 0.022646007151370676,
       "market_value": 452920143.03,
       "as_of_date": "2026-07-23"
     },
@@ -3442,7 +3514,7 @@
       "holding_id": "hld_0144",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_hindunilvr",
-      "weight": 0.015494636471990467,
+      "weight": 0.015494636471990465,
       "market_value": 309892729.44,
       "as_of_date": "2026-07-23"
     },
@@ -3450,7 +3522,7 @@
       "holding_id": "hld_0145",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_maruti",
-      "weight": 0.01430274135876043,
+      "weight": 0.014302741358760428,
       "market_value": 286054827.18,
       "as_of_date": "2026-07-23"
     },
@@ -3458,7 +3530,7 @@
       "holding_id": "hld_0146",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_sunpharma",
-      "weight": 0.013110846245530395,
+      "weight": 0.013110846245530394,
       "market_value": 262216924.91,
       "as_of_date": "2026-07-23"
     },
@@ -3466,7 +3538,7 @@
       "holding_id": "hld_0147",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_ntpc",
-      "weight": 0.011918951132300359,
+      "weight": 0.011918951132300357,
       "market_value": 238379022.65,
       "as_of_date": "2026-07-23"
     },
@@ -3474,7 +3546,7 @@
       "holding_id": "hld_0148",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_titan",
-      "weight": 0.010727056019070324,
+      "weight": 0.010727056019070322,
       "market_value": 214541120.38,
       "as_of_date": "2026-07-23"
     },
@@ -3482,7 +3554,7 @@
       "holding_id": "hld_0149",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_ultracemco",
-      "weight": 0.009535160905840287,
+      "weight": 0.009535160905840286,
       "market_value": 190703218.12,
       "as_of_date": "2026-07-23"
     },
@@ -3490,7 +3562,7 @@
       "holding_id": "hld_0150",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_asianpaint",
-      "weight": 0.00834326579261025,
+      "weight": 0.008343265792610249,
       "market_value": 166865315.85,
       "as_of_date": "2026-07-23"
     },
@@ -3498,7 +3570,7 @@
       "holding_id": "hld_0151",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_bajfinance",
-      "weight": 0.0166865315852205,
+      "weight": 0.016686531585220498,
       "market_value": 333730631.7,
       "as_of_date": "2026-07-23"
     },
@@ -3506,7 +3578,7 @@
       "holding_id": "hld_0152",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_gsec_10y",
-      "weight": 0.1787842669845054,
+      "weight": 0.17878426698450536,
       "market_value": 3575685339.69,
       "as_of_date": "2026-07-23"
     },
@@ -3514,7 +3586,7 @@
       "holding_id": "hld_0153",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_corp_bond_aaa",
-      "weight": 0.16686531585220502,
+      "weight": 0.166865315852205,
       "market_value": 3337306317.04,
       "as_of_date": "2026-07-23"
     },
@@ -3522,7 +3594,7 @@
       "holding_id": "hld_0154",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_gsec_5y",
-      "weight": 0.09535160905840287,
+      "weight": 0.09535160905840286,
       "market_value": 1907032181.17,
       "as_of_date": "2026-07-23"
     },
@@ -3530,7 +3602,7 @@
       "holding_id": "hld_0155",
       "portfolio_id": "pf_reference_balanced",
       "security_id": "sec_psu_bond",
-      "weight": 0.03575685339690108,
+      "weight": 0.03575685339690107,
       "market_value": 715137067.94,
       "as_of_date": "2026-07-23"
     }
@@ -3764,5 +3836,11 @@
       "wtd_beta": 0.51,
       "num_holdings": 23
     }
+  },
+  "benchmark": {
+    "name": "Nifty 50",
+    "ytd_pct": 8.4,
+    "one_year_pct": 14.2,
+    "three_year_cagr_pct": 13.8
   }
 }

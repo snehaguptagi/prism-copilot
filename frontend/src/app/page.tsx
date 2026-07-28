@@ -81,6 +81,45 @@ export default function OverviewPage() {
               </div>
             </div>
 
+            {/* Book performance vs benchmark */}
+            {data.performance && (
+              <div className="perf-banner">
+                <div className="perf-banner-main">
+                  <div className="perf-banner-label">Book return, trailing 1 year</div>
+                  <div className="perf-banner-row">
+                    <span className="perf-banner-v" style={{ color: data.performance.book_one_year_pct >= 0 ? "var(--positive)" : "var(--negative)" }}>
+                      +{data.performance.book_one_year_pct}%
+                    </span>
+                    {data.performance.vs_benchmark_1y != null && (
+                      <span
+                        className="chip"
+                        style={{
+                          background: data.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, white)" : "color-mix(in srgb, var(--negative) 12%, white)",
+                          color: data.performance.vs_benchmark_1y >= 0 ? "var(--positive)" : "var(--negative)",
+                        }}
+                      >
+                        {data.performance.vs_benchmark_1y >= 0 ? "+" : ""}{data.performance.vs_benchmark_1y}% vs {data.performance.benchmark_name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {data.performance.best && data.performance.worst && (
+                  <div className="perf-banner-bw">
+                    <button className="perf-bw-item" onClick={() => router.push(`/clients/${data.performance.best!.portfolio_id}`)}>
+                      <span className="perf-bw-label">Best</span>
+                      <span className="perf-bw-name">{data.performance.best.client_name}</span>
+                      <span className="perf-bw-val up">+{data.performance.best.one_year_pct}%</span>
+                    </button>
+                    <button className="perf-bw-item" onClick={() => router.push(`/clients/${data.performance.worst!.portfolio_id}`)}>
+                      <span className="perf-bw-label">Lagging</span>
+                      <span className="perf-bw-name">{data.performance.worst.client_name}</span>
+                      <span className="perf-bw-val">+{data.performance.worst.one_year_pct}%</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Action items: what needs attention */}
             {data.action_items.length > 0 && (
               <>

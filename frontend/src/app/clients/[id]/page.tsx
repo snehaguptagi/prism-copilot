@@ -167,6 +167,54 @@ export default function ClientDetailPage() {
 
         {tab === "Portfolio" && ins && (
           <div className="stagger">
+            {/* performance */}
+            {account.performance && (
+              <div className="panel">
+                <div className="panel-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>Performance</span>
+                  {account.performance.vs_benchmark_1y != null && (
+                    <span
+                      className="chip"
+                      style={{
+                        background: account.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, white)" : "color-mix(in srgb, var(--negative) 12%, white)",
+                        color: account.performance.vs_benchmark_1y >= 0 ? "var(--positive)" : "var(--negative)",
+                      }}
+                    >
+                      {account.performance.vs_benchmark_1y >= 0 ? "+" : ""}{account.performance.vs_benchmark_1y}% vs Nifty (1Y)
+                    </span>
+                  )}
+                </div>
+                <div className="perf-row">
+                  <PerfCell v={account.performance.ytd_pct} l="YTD" />
+                  <PerfCell v={account.performance.one_year_pct} l="1 year" />
+                  <PerfCell v={account.performance.three_year_cagr_pct} l="3Y CAGR" />
+                  <PerfCell v={account.performance.since_inception_cagr_pct} l="Since inception" />
+                </div>
+                <div className="perf-gain">
+                  1-year gain <b>{formatCrore(account.performance.gain_1y)}</b>
+                  {account.performance.benchmark_one_year_pct != null && (
+                    <span className="perf-bench"> · Nifty 50 returned {account.performance.benchmark_one_year_pct}% over the same period</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* suitability */}
+            {account.suitability && account.suitability.status !== "unknown" && (
+              <div
+                className="panel suitability"
+                style={{ borderLeft: `3px solid ${account.suitability.status === "matched" ? "var(--positive)" : "var(--sev-high)"}` }}
+              >
+                <div className="suit-head">
+                  <span className="suit-icon" style={{ color: account.suitability.status === "matched" ? "var(--positive)" : "var(--sev-high)" }}>
+                    {account.suitability.status === "matched" ? "✓" : "!"}
+                  </span>
+                  <span className="suit-label">{account.suitability.label}</span>
+                </div>
+                {account.suitability.detail && <p className="suit-detail">{account.suitability.detail}</p>}
+              </div>
+            )}
+
             <div className="metric-row">
               <Metric v={`${ins.est_vol ?? "n/a"}%`} l="Est. volatility" />
               <Metric v={ins.wtd_beta != null ? ins.wtd_beta.toFixed(2) : "n/a"} l="Weighted beta" />
@@ -308,6 +356,16 @@ function PsyItem({ label, value }: { label: string; value: string }) {
     <div className="psy-item">
       <div className="psy-label">{label}</div>
       <div className="psy-value">{value}</div>
+    </div>
+  );
+}
+
+function PerfCell({ v, l }: { v: number; l: string }) {
+  const color = v > 0 ? "var(--positive)" : v < 0 ? "var(--negative)" : "var(--text)";
+  return (
+    <div className="perf-cell">
+      <div className="perf-v" style={{ color }}>{v > 0 ? "+" : ""}{v}%</div>
+      <div className="perf-l">{l}</div>
     </div>
   );
 }
