@@ -147,7 +147,7 @@ export default function AnalysisPage() {
           </p>
         </header>
 
-        {/* Step 1 — pick a portfolio */}
+        {/* Step 1 - pick a portfolio */}
         <div className="step-head">
           <span className="step-num">1</span>
           <span>Select a portfolio</span>
@@ -202,7 +202,7 @@ export default function AnalysisPage() {
           })}
         </div>
 
-        {/* Step 2 — run analysis */}
+        {/* Step 2 - run analysis */}
         {selected && (
           <div className="fade-in">
             <div className="step-head">
@@ -279,7 +279,7 @@ export default function AnalysisPage() {
           </div>
         )}
 
-        {/* Step 3 — results & suggestions */}
+        {/* Step 3 - results & suggestions */}
         {result && (
           <div className="fade-in">
             <div className="step-head">
