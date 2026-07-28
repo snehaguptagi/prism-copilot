@@ -273,6 +273,31 @@ def test_news_feed_rejects_unknown_category():
 # covered by manual runs, same reasoning as /lens/run and /news/feed above)
 # ---------------------------------------------------------------------------
 
+def test_product_suggestions_are_suitable_and_unheld():
+    """Cross-sell suggestions must never include a name the client already holds,
+    never exceed the client's mandate risk ceiling, and never be cash."""
+    from api import load_data, suggest_products, _vol_band_rank, _MANDATE_MAX_TIER
+    data = load_data()
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    for p in data["portfolios"]:
+        if not p.get("client") or p.get("is_reference"):
+            continue
+        held = {h["security_id"] for h in data["holdings"] if h["portfolio_id"] == p["portfolio_id"]}
+        mandate = (p["client"]["risk_mandate"] or "").strip().lower()
+        max_band = _MANDATE_MAX_TIER.get(mandate, 2)
+        suggestions = suggest_products(data, p)
+        assert len(suggestions) <= 3
+        seen = set()
+        for item in suggestions:
+            assert item["security_id"] not in held  # never already held
+            assert item["security_id"] not in seen  # no duplicates
+            seen.add(item["security_id"])
+            s = sec_by_id[item["security_id"]]
+            assert _vol_band_rank(s.get("vol")) <= max_band  # within the mandate ceiling
+            assert s["asset_class"] != "Cash"
+            assert item["rationale"]
+
+
 def test_talking_points_rejects_unknown_portfolio():
     response = client.post("/talking-points", json={"portfolio_id": "not-a-real-portfolio", "sector": "Financials"})
     assert response.status_code == 404

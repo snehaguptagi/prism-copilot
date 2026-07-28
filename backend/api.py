@@ -190,6 +190,115 @@ def check_suitability(mandate, tier):
     return {"status": "matched", "label": "Well matched", "detail": f"{tier} risk fits the {mandate} mandate."}
 
 
+# ---------------------------------------------------------------------------
+# Product cross-sell: which sellable securities suit a client and fill a gap.
+# Deterministic and suitability-first. This is sales enablement for the RM
+# (what fits and is worth raising), NOT advice: it never times the market and
+# never tells the client to buy. Same division of labor as everything else.
+# ---------------------------------------------------------------------------
+_ASSET_CLASS_LABEL = {
+    "Equity": "equity",
+    "Fixed Income": "fixed income",
+    "Commodity": "gold and commodities",
+    "Real Estate": "real estate (REIT)",
+    "Cash": "cash",
+}
+
+
+def _vol_band_rank(vol):
+    """Map a security's volatility to the same 0 to 4 risk ladder used for
+    portfolios, so a product can be checked against a client's mandate ceiling."""
+    if vol is None:
+        return 1
+    if vol < 5:
+        return 0   # Low
+    if vol < 12:
+        return 1   # Moderate
+    if vol < 20:
+        return 2   # Elevated
+    if vol < 28:
+        return 3   # High
+    return 4       # Very High
+
+
+def suggest_products(data, portfolio, max_n=3):
+    """Sellable securities the client does not already hold that (a) fit their
+    stated risk mandate and (b) help fill an asset-class gap in the book. Ranked
+    gap-first, then by how established the name is across the book. Returns a
+    short list, each with a plain suitability rationale. Fully deterministic."""
+    client = portfolio.get("client", {})
+    mandate = (client.get("risk_mandate") or "").strip()
+    max_band = _MANDATE_MAX_TIER.get(mandate.lower(), 2)
+
+    pid = portfolio["portfolio_id"]
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    held = {h["security_id"] for h in data["holdings"] if h["portfolio_id"] == pid}
+
+    class_weight = {}
+    for h in data["holdings"]:
+        if h["portfolio_id"] != pid:
+            continue
+        s = sec_by_id.get(h["security_id"])
+        if s:
+            class_weight[s["asset_class"]] = class_weight.get(s["asset_class"], 0.0) + h["weight"]
+
+    client_pids = {p["portfolio_id"] for p in data["portfolios"] if p.get("client") and not p.get("is_reference")}
+    held_count = {}
+    for h in data["holdings"]:
+        if h["portfolio_id"] in client_pids:
+            held_count[h["security_id"]] = held_count.get(h["security_id"], 0) + 1
+
+    candidates = []
+    for s in data["securities"]:
+        sid = s["security_id"]
+        if sid in held:
+            continue
+        if s["asset_class"] == "Cash" or s.get("instrument_type") == "cash":
+            continue  # cash is not a product to cross-sell
+        if _vol_band_rank(s.get("vol")) > max_band:
+            continue  # too risky for this client's mandate
+        gap = class_weight.get(s["asset_class"], 0.0)
+        candidates.append((gap, -held_count.get(sid, 0), s))
+
+    candidates.sort(key=lambda t: (t[0], t[1]))  # gap first, then most established
+
+    article = "an" if mandate[:1].lower() in "aeiou" else "a"
+
+    def _entry(s):
+        label = _ASSET_CLASS_LABEL.get(s["asset_class"], s["asset_class"].lower())
+        gap = class_weight.get(s["asset_class"], 0.0)
+        if gap <= 0.001:
+            why = f"Adds {label} exposure the book currently lacks, and fits {article} {mandate} mandate."
+        else:
+            why = f"Deepens {label} exposure the book is light on, and fits {article} {mandate} mandate."
+        return {
+            "security_id": s["security_id"],
+            "name": s["name"],
+            "ticker": s["primary_ticker"],
+            "sector": s["sector"],
+            "asset_class": s["asset_class"],
+            "instrument_type": s["instrument_type"],
+            "rationale": why,
+        }
+
+    out, seen_classes = [], set()
+    for _gap, _neg, s in candidates:  # first pass: one per asset class for variety
+        if s["asset_class"] in seen_classes:
+            continue
+        seen_classes.add(s["asset_class"])
+        out.append(_entry(s))
+        if len(out) >= max_n:
+            return out
+    picked = {o["security_id"] for o in out}
+    for _gap, _neg, s in candidates:  # second pass: fill remaining slots
+        if s["security_id"] in picked:
+            continue
+        out.append(_entry(s))
+        if len(out) >= max_n:
+            break
+    return out
+
+
 # Sectors that have a live market-research lens (i.e. real equities/commodities
 # to search on). Cash/Fixed Income holdings don't have a meaningful company-news
 # lens, so the analysis flow defaults to the top *researchable* sector.
@@ -768,5 +877,6 @@ def talking_points(req: TalkingPointsRequest):
         "impact": impact_entry,
         "factor_impact": factor_entry,
         "points": tp["points"],
+        "product_suggestions": suggest_products(data, portfolio),
         "note": "Observational output only. No buy/sell/hold guidance is generated at any stage.",
     }

@@ -264,6 +264,16 @@ export interface Products {
   groups: { asset_class: string; count: number; items: ProductItem[] }[];
 }
 
+export interface ProductSuggestion {
+  security_id: string;
+  name: string;
+  ticker: string;
+  sector: string;
+  asset_class: string;
+  instrument_type: string;
+  rationale: string;
+}
+
 export interface TalkingPointsResult {
   portfolio_id: string;
   portfolio_name: string;
@@ -274,5 +284,6 @@ export interface TalkingPointsResult {
   impact: PortfolioImpact | null;
   factor_impact: FactorImpact | null;
   points: string[];
+  product_suggestions?: ProductSuggestion[];
   note: string;
 }

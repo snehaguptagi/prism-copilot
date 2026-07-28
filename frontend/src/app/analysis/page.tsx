@@ -11,7 +11,8 @@ import ComparisonBar from "@/components/ComparisonBar";
 // A run is one live research call per (client, sector), so cache each result on
 // the device and let the user Refresh on demand. Anything older than 12 hours
 // re-runs automatically. Mirrors the News Feed's caching model.
-const ANALYSIS_STORE_KEY = "prism_analysis_cache_v1";
+// v2: results now carry product_suggestions; bump to discard v1 caches on load.
+const ANALYSIS_STORE_KEY = "prism_analysis_cache_v2";
 const STALE_AFTER_MS = 12 * 60 * 60 * 1000; // 12 hours
 
 type StoredRun = { result: TalkingPointsResult; fetchedAt: number };
@@ -384,6 +385,41 @@ export default function AnalysisPage() {
                 ))}
               </ul>
             </div>
+
+            {result.product_suggestions && result.product_suggestions.length > 0 && (
+              <>
+                <div className="step-head" style={{ marginTop: 26 }}>
+                  <span className="step-num">5</span>
+                  <span>Products that fit {result.client_name}</span>
+                </div>
+                <div className="panel">
+                  <p className="cross-sell-note">
+                    Suitability-matched ideas to raise in conversation, drawn from the sellable universe.
+                    Not a recommendation to buy.
+                  </p>
+                  <div className="cross-sell-grid stagger">
+                    {result.product_suggestions.map((p) => (
+                      <div key={p.security_id} className="cross-sell-card">
+                        <div className="cross-sell-head">
+                          <span className="cross-sell-name">{p.name}</span>
+                          <span className="cross-sell-tkr">{p.ticker}</span>
+                        </div>
+                        <div className="cross-sell-tags">
+                          <span
+                            className="chip"
+                            style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, white)`, color: sectorColor(p.sector) }}
+                          >
+                            {p.asset_class}
+                          </span>
+                          <span className="cross-sell-instrument">{p.instrument_type}</span>
+                        </div>
+                        <p className="cross-sell-why">{p.rationale}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="shead">Sources ({result.citations.length})</div>
             <div className="panel stagger">
