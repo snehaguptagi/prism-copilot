@@ -191,35 +191,74 @@ export default function AnalysisPage() {
               <span>What it means for this book</span>
             </div>
 
-            <div className="result-grid">
-              <div className="panel">
-                <h3>Exposure vs. a normal book</h3>
-                {result.impact ? (
-                  <ComparisonBar impact={result.impact} />
-                ) : (
-                  <p>No held security in this book was directly named in today&apos;s {result.sector} research.</p>
-                )}
-              </div>
-              {result.factor_impact && (
-                <div className="panel">
-                  <h3>Factor exposure</h3>
-                  <div className="factor-split">
+            {(() => {
+              const tw = result.factor_impact?.tailwind_pct ?? 0;
+              const hw = result.factor_impact?.headwind_pct ?? 0;
+              const net = tw - hw;
+              const touched = result.impact?.pct_nav_touched ?? 0;
+              const verdict =
+                touched === 0 && tw === 0 && hw === 0
+                  ? { label: "Quiet for this book", color: "var(--text-secondary)", detail: "Today's research does not touch this portfolio, directly or through macro factors." }
+                  : net > 5
+                  ? { label: "Net tailwind", color: "var(--tailwind)", detail: `About ${tw}% of NAV benefits from today's macro read; little on the other side.` }
+                  : net < -5
+                  ? { label: "Net headwind", color: "var(--headwind)", detail: `About ${hw}% of NAV faces pressure from today's macro read.` }
+                  : touched > 0
+                  ? { label: "Direct exposure", color: "var(--accent)", detail: `${touched}% of NAV sits in names in today's research.` }
+                  : { label: "Mixed / mild", color: "var(--sev-elevated)", detail: "Small and offsetting effects, nothing decisive for this book today." };
+
+              return (
+                <>
+                  {/* verdict banner */}
+                  <div className="verdict-banner" style={{ borderLeftColor: verdict.color }}>
+                    <span className="verdict-dot" style={{ background: verdict.color }} />
                     <div>
-                      <div className="factor-v" style={{ color: "var(--tailwind)" }}>
-                        {result.factor_impact.tailwind_pct}%
-                      </div>
-                      <div className="factor-l">tailwind</div>
-                    </div>
-                    <div>
-                      <div className="factor-v" style={{ color: "var(--headwind)" }}>
-                        {result.factor_impact.headwind_pct}%
-                      </div>
-                      <div className="factor-l">headwind</div>
+                      <div className="verdict-label" style={{ color: verdict.color }}>{verdict.label}</div>
+                      <div className="verdict-detail">{verdict.detail}</div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+
+                  {/* at-a-glance stat gauges */}
+                  <div className="gauge-row">
+                    <Gauge value={touched} label="of NAV in named holdings" color="var(--accent)" />
+                    <Gauge value={tw} label="of NAV a tailwind" color="var(--tailwind)" />
+                    <Gauge value={hw} label="of NAV a headwind" color="var(--headwind)" />
+                  </div>
+
+                  <div className="result-grid">
+                    <div className="panel">
+                      <div className="panel-title">Exposure vs. a normal book</div>
+                      {result.impact ? (
+                        <ComparisonBar impact={result.impact} />
+                      ) : (
+                        <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.55 }}>
+                          No individual company in this book was named in today&apos;s research. That is
+                          expected for a cash and short-term-debt book, its exposure comes through interest
+                          rates, shown in the factor read, not single stocks.
+                        </p>
+                      )}
+                    </div>
+                    <div className="panel">
+                      <div className="panel-title">Tailwind vs. headwind</div>
+                      {tw === 0 && hw === 0 ? (
+                        <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>No material macro-factor effect on this book today.</p>
+                      ) : (
+                        <>
+                          <div className="tw-hw-bar">
+                            <span className="tw-seg" style={{ flex: Math.max(tw, 0.5) }} />
+                            <span className="hw-seg" style={{ flex: Math.max(hw, 0.5) }} />
+                          </div>
+                          <div className="tw-hw-legend">
+                            <span><span className="dot" style={{ background: "var(--tailwind)" }} />Tailwind {tw}%</span>
+                            <span><span className="dot" style={{ background: "var(--headwind)" }} />Headwind {hw}%</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
 
             {result.market_insights.length > 0 && (
               <div className="panel">
@@ -275,5 +314,27 @@ export default function AnalysisPage() {
         </footer>
       </div>
     </>
+  );
+}
+
+function Gauge({ value, label, color }: { value: number; label: string; color: string }) {
+  const pct = Math.min(Math.max(value, 0), 100);
+  const R = 26;
+  const C = 2 * Math.PI * R;
+  const dash = (pct / 100) * C;
+  return (
+    <div className="gauge">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r={R} fill="none" stroke="var(--border)" strokeWidth="7" />
+        <circle
+          cx="32" cy="32" r={R} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
+          strokeDasharray={`${dash} ${C - dash}`} transform="rotate(-90 32 32)"
+        />
+        <text x="32" y="36" textAnchor="middle" className="gauge-num" fill="var(--text)">
+          {Math.round(value)}%
+        </text>
+      </svg>
+      <div className="gauge-label">{label}</div>
+    </div>
   );
 }

@@ -95,10 +95,13 @@ def run_search(sector, company_names):
     client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
     company_list = ", ".join(company_names) if company_names else "no specific names on file"
     user_prompt = (
-        f"Research recent developments (last 1-2 weeks if possible) in the "
-        f"{sector} sector, with particular attention to any of these companies "
-        f"if relevant: {company_list}. Cover a genuinely varied set of angles: "
-        f"do not let one story or one outlet dominate all your findings."
+        f"Research recent developments (last 1 to 2 weeks if possible) in the INDIAN "
+        f"{sector} market specifically, with particular attention to any of these India-listed "
+        f"companies if relevant: {company_list}. "
+        f"Focus on India: Indian companies, the RBI, Indian government bonds and G-secs, the NSE/BSE, "
+        f"SEBI, and the rupee. If you cite a global development (Fed, US Treasuries, oil, global rates), "
+        f"only do so through its read-through to Indian markets, and never let US or global-only stories "
+        f"dominate the findings. Cover a genuinely varied set of angles and outlets."
     )
 
     response = client.messages.create(
