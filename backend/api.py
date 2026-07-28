@@ -526,22 +526,25 @@ def get_overview():
         prio_rank.get(a["priority"], 1),
     ))
 
-    # book performance: AUM-weighted 1-year return, plus best and worst books
+    # book performance: AUM-weighted returns across horizons, plus best/worst books
     perf_rows = []
-    weighted_1y = 0.0
+    weighted = {"ytd_pct": 0.0, "one_year_pct": 0.0, "three_year_cagr_pct": 0.0}
     for p in client_portfolios:
         perf = p.get("performance")
         w = aum_by_portfolio.get(p["portfolio_id"], 0.0)
         if not perf:
             continue
-        weighted_1y += perf["one_year_pct"] * w
+        for k in weighted:
+            weighted[k] += (perf.get(k) or 0.0) * w
         perf_rows.append({
             "portfolio_id": p["portfolio_id"],
             "client_name": p["client"]["name"],
             "portfolio_name": p["name"],
             "one_year_pct": perf["one_year_pct"],
         })
-    book_1y = round(weighted_1y / total_aum, 1) if total_aum else 0.0
+    book_ytd = round(weighted["ytd_pct"] / total_aum, 1) if total_aum else 0.0
+    book_1y = round(weighted["one_year_pct"] / total_aum, 1) if total_aum else 0.0
+    book_3y = round(weighted["three_year_cagr_pct"] / total_aum, 1) if total_aum else 0.0
     perf_sorted = sorted(perf_rows, key=lambda x: x["one_year_pct"], reverse=True)
     bench = data.get("benchmark", {})
 
@@ -555,10 +558,19 @@ def get_overview():
             "annual_fee_revenue": annual_fee_revenue,
         },
         "performance": {
+            "book_ytd_pct": book_ytd,
             "book_one_year_pct": book_1y,
+            "book_three_year_cagr_pct": book_3y,
             "benchmark_name": bench.get("name", "Nifty 50"),
+            "benchmark_ytd_pct": bench.get("ytd_pct"),
             "benchmark_one_year_pct": bench.get("one_year_pct"),
+            "benchmark_three_year_cagr_pct": bench.get("three_year_cagr_pct"),
             "vs_benchmark_1y": round(book_1y - bench.get("one_year_pct", 0), 1) if bench.get("one_year_pct") is not None else None,
+            "horizons": [
+                {"label": "YTD", "book": book_ytd, "benchmark": bench.get("ytd_pct")},
+                {"label": "1Y", "book": book_1y, "benchmark": bench.get("one_year_pct")},
+                {"label": "3Y", "book": book_3y, "benchmark": bench.get("three_year_cagr_pct")},
+            ],
             "best": perf_sorted[0] if perf_sorted else None,
             "worst": perf_sorted[-1] if perf_sorted else None,
         },

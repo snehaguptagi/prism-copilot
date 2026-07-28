@@ -126,6 +126,16 @@ def test_overview_book_performance_present():
     assert perf["best"]["one_year_pct"] >= perf["worst"]["one_year_pct"]
 
 
+def test_overview_book_performance_has_horizons():
+    perf = client.get("/overview").json()["performance"]
+    assert perf["book_ytd_pct"] is not None
+    assert perf["book_three_year_cagr_pct"] is not None
+    labels = [h["label"] for h in perf["horizons"]]
+    assert labels == ["YTD", "1Y", "3Y"]
+    for h in perf["horizons"]:
+        assert h["book"] is not None and h["benchmark"] is not None
+
+
 def test_clients_endpoint_sector_breakdown_sums_to_100():
     response = client.get("/clients")
     clients = response.json()

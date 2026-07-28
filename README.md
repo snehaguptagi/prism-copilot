@@ -1,5 +1,7 @@
 # PRISM - Investment Research & Portfolio Insight Copilot
 
+[![CI](https://github.com/snehaguptagi/prism-copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/snehaguptagi/prism-copilot/actions/workflows/ci.yml)
+
 A portfolio-aware research assistant for buy-side relationship managers, focused on the
 Indian market. It turns live market news into cited, book-specific insight: which of your
 clients a development actually touches, by how much, and what to tell them.

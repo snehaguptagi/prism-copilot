@@ -26,6 +26,26 @@ jobs:
       - name: Run pytest
         run: python -m pytest -q
 
+  # Type-checks and production-builds the Next.js app on every push and PR.
+  # Catches type errors and build breaks before they reach the repo. No API key.
+  frontend:
+    name: Frontend type-check and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Build (includes type-check)
+        run: npm run build
+
   # Optional live check that actually exercises the ANTHROPIC_API_KEY secret.
   # Manual-only (workflow_dispatch) so normal pushes never make paid API calls.
   # Skips itself gracefully if the secret has not been set on the repo.

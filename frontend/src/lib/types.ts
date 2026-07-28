@@ -170,10 +170,15 @@ export interface Overview {
   };
   action_items: ActionItem[];
   performance: {
+    book_ytd_pct: number;
     book_one_year_pct: number;
+    book_three_year_cagr_pct: number;
     benchmark_name: string;
+    benchmark_ytd_pct: number | null;
     benchmark_one_year_pct: number | null;
+    benchmark_three_year_cagr_pct: number | null;
     vs_benchmark_1y: number | null;
+    horizons: { label: string; book: number; benchmark: number | null }[];
     best: { portfolio_id: string; client_name: string; portfolio_name: string; one_year_pct: number } | null;
     worst: { portfolio_id: string; client_name: string; portfolio_name: string; one_year_pct: number } | null;
   };

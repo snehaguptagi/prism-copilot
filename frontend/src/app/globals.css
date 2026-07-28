@@ -981,6 +981,88 @@ tr.clickable:active td {
   line-height: 1;
 }
 
+/* book-vs-benchmark returns across horizons (mini grouped bars) */
+.perf-horizons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.perf-horizons-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  height: 56px;
+}
+
+.perf-h {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.perf-h-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 100%;
+}
+
+.perf-h-bar {
+  width: 9px;
+  border-radius: 3px 3px 0 0;
+  min-height: 3px;
+  transition: height 650ms var(--ease-out);
+}
+
+.perf-h-bar.book {
+  background: var(--accent);
+}
+
+.perf-h-bar.bench {
+  background: var(--text-faint);
+  opacity: 0.55;
+}
+
+.perf-h-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+
+.perf-h-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--positive);
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-horizons-legend {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.perf-horizons-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.perf-horizons-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
 .perf-banner-bw {
   display: flex;
   gap: 10px;
@@ -1479,18 +1561,35 @@ tr.clickable:active td {
 }
 
 .kpi {
+  position: relative;
   background: var(--surface);
   padding: 16px 18px;
   transition: background 140ms var(--ease-out);
+  overflow: hidden;
+}
+
+.kpi::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: var(--accent);
+  transition: width 220ms var(--ease-out);
 }
 
 .kpi:hover {
   background: var(--surface-2);
 }
 
+.kpi:hover::after {
+  width: 100%;
+}
+
 .kpi-v {
   font-family: var(--mono);
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 600;
   color: var(--text);
   font-variant-numeric: tabular-nums;
@@ -1527,6 +1626,15 @@ tr.clickable:active td {
 
 .donut {
   flex-shrink: 0;
+}
+
+.donut circle {
+  transition: filter 140ms var(--ease-out);
+}
+
+.donut circle:hover {
+  filter: brightness(1.08) saturate(1.08);
+  cursor: default;
 }
 
 .donut-center-top {
@@ -1652,6 +1760,19 @@ tr.clickable:active td {
   grid-template-columns: 130px 1fr 42px;
   align-items: center;
   gap: 10px;
+  cursor: default;
+}
+
+.sector-bar-row:hover .sector-bar-name {
+  color: var(--text);
+}
+
+.sector-bar-row:hover .sector-bar-fill {
+  filter: brightness(1.06) saturate(1.1);
+}
+
+.sector-bar-fill {
+  transition: width 650ms var(--ease-out), filter 140ms var(--ease-out);
 }
 
 .sector-bar-name {

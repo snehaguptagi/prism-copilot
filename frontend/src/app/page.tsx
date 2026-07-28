@@ -100,6 +100,40 @@ export default function OverviewPage() {
                     )}
                   </div>
                 </div>
+
+                {data.performance.horizons.length > 0 && (() => {
+                  const hs = data.performance.horizons;
+                  const max = Math.max(...hs.flatMap((h) => [h.book, h.benchmark ?? 0]), 1);
+                  return (
+                    <div className="perf-horizons">
+                      <div className="perf-horizons-chart">
+                        {hs.map((h) => (
+                          <div className="perf-h" key={h.label}>
+                            <div className="perf-h-bars">
+                              <span
+                                className="perf-h-bar book"
+                                style={{ height: `${(h.book / max) * 100}%` }}
+                                title={`Your book, ${h.label}: ${h.book}%`}
+                              />
+                              <span
+                                className="perf-h-bar bench"
+                                style={{ height: `${((h.benchmark ?? 0) / max) * 100}%` }}
+                                title={`${data.performance.benchmark_name}, ${h.label}: ${h.benchmark}%`}
+                              />
+                            </div>
+                            <div className="perf-h-label">{h.label}</div>
+                            <div className="perf-h-val">+{h.book}%</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="perf-horizons-legend">
+                        <span><span className="dot" style={{ background: "var(--accent)" }} />Your book</span>
+                        <span><span className="dot" style={{ background: "var(--text-faint)" }} />{data.performance.benchmark_name}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {data.performance.best && data.performance.worst && (
                   <div className="perf-banner-bw">
                     <button className="perf-bw-item" onClick={() => router.push(`/clients/${data.performance.best!.portfolio_id}`)}>
@@ -219,7 +253,11 @@ export default function OverviewPage() {
                 return (
                   <div className="sector-bars">
                     {sorted.map((s) => (
-                      <div key={s.sector} className="sector-bar-row">
+                      <div
+                        key={s.sector}
+                        className="sector-bar-row"
+                        title={`${s.sector}: ${s.pct}% of the book (${inr(s.value)})`}
+                      >
                         <span className="sector-bar-name">{s.sector}</span>
                         <span className="sector-bar-track">
                           <span
