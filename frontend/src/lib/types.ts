@@ -272,6 +272,27 @@ export interface Products {
   groups: { asset_class: string; count: number; items: ProductItem[] }[];
 }
 
+export interface GraphStatus {
+  enabled: boolean;
+  connected: boolean;
+}
+
+export interface GraphSuggestion {
+  security_id: string;
+  name: string;
+  ticker: string;
+  sector: string;
+  asset_class: string;
+  instrument_type: string;
+  peers: number;
+  rationale: string;
+}
+
+export interface GraphSuggestionsResult {
+  enabled: boolean;
+  suggestions: GraphSuggestion[];
+}
+
 export interface ProductSuggestion {
   security_id: string;
   name: string;

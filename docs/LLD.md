@@ -56,7 +56,7 @@ already-cited retrieval in a single call.
 - **Grounding**: citations come straight out of Claude's `web_search_result_location` content
   blocks. A market claim with no supporting citation is dropped, never shown.
 - **Cost and latency control**: web searches are capped (`MAX_SEARCHES = 4`), a cheaper model does
-  the classification pass, and results are cached (see section 7).
+  the classification pass, and results are cached (see section 8).
 
 ### Free market-data APIs (considered, not used)
 
@@ -151,7 +151,51 @@ functions after the search are pure and deterministic.
 Supporting engines: `detect_cross_desk_contradictions` (flags two books with opposing exposure to
 the same factor) and `compute_scenario_impact` (mild/moderate/severe stress bands).
 
-## 6. HTTP API surface
+## 6. Product recommendation: rules and knowledge graph
+
+PRISM recommends products to cross-sell in two layers, the second optional and additive to
+the first.
+
+**Layer 1: the rule-based recommender (`api.suggest_products`, always on).** Deterministic
+Python. `_preference_profile` turns a client's stated goal, time horizon, loss aversion, and
+life stage into a per-asset-class affinity score via keyword rules (e.g. "income" or
+"withdraw" in the goal bumps Fixed Income; "inflation" or "gold" bumps Commodity). Candidates
+are securities the client does not already hold, filtered to their mandate's risk-band
+ceiling, ranked by affinity with a gap bonus toward asset classes the book lacks, capped at
+two picks per asset class for variety. Every client is guaranteed at least one
+preference-matched suggestion (enforced by a test). This layer has no external dependency and
+is what ships by default.
+
+**Layer 2: the Neo4j knowledge graph (`graph.py`, optional).** The same idea, but reasoned
+over a graph instead of in-process Python, which is a more natural fit for "what do clients
+like this one hold" (collaborative filtering) and multi-hop queries. The graph is populated by
+`build_graph.py` from `prism_data.json`:
+
+```
+(:Client {portfolio_id, risk_tier, max_band, life_stage, time_horizon, loss_aversion, ...})
+(:Product {security_id, name, asset_class, sector, band, ...})
+(:AssetClass {name})   (:Sector {name})
+
+(:Client)-[:HOLDS {weight}]->(:Product)
+(:Client)-[:PREFERS {score}]->(:AssetClass)   # same affinity scores as layer 1, as edges
+(:Product)-[:IN_CLASS]->(:AssetClass)
+(:Product)-[:IN_SECTOR]->(:Sector)
+```
+
+The recommendation query walks a client to the asset classes they `PREFERS`, to products
+there they do not `HOLD` and that fit their `max_band`, then ranks by how many *other* clients
+with the same `life_stage` or `risk_tier` hold each product (`peers` count), the
+collaborative-filtering signal a flat rule table cannot express. `graph.py` exposes
+`graph_enabled()`, `ping()`, and `recommend_products(portfolio_id)`.
+
+**Fully optional, fails closed.** `graph.graph_enabled()` checks for `NEO4J_URI` and
+`NEO4J_PASSWORD` in the environment; if unset, or if the database is unreachable,
+`recommend_products` returns `[]` and callers get exactly the same response shape they would
+with the graph configured, just empty. The rule-based recommender in layer 1 is completely
+unaffected either way. `GET /graph/status` reports `{enabled, connected}` so the frontend can
+decide whether to render the graph-powered section at all; it does not error or block on it.
+
+## 7. HTTP API surface
 
 `backend/api.py`, all JSON, no auth (single-RM demo).
 
@@ -167,8 +211,10 @@ the same factor) and `compute_scenario_impact` (mild/moderate/severe stress band
 | GET | `/news/feed?category=&force=` | Cached briefing: TL;DR, key points, key stats, affected clients with talking points, citations. |
 | POST | `/lens/run` | Run the research lens for a sector; returns narrative, citations, and all impact engines. |
 | POST | `/talking-points` | Talking points for one client + sector. |
+| GET | `/graph/status` | `{enabled, connected}` for the optional Neo4j knowledge graph. |
+| GET | `/clients/{portfolio_id}/graph-suggestions` | Graph-based product suggestions for one client; `{enabled: false, suggestions: []}` if the graph is not configured. |
 
-## 7. Caching
+## 8. Caching
 
 Both LLM-backed surfaces (News Feed and Analysis) follow the same cache-then-refresh model, so a
 repeat visit is instant while a manual control always forces a fresh live pull.
@@ -185,17 +231,20 @@ repeat visit is instant while a manual control always forces a fresh live pull.
   button re-runs live, and results older than 12 hours re-run on demand. A failed refresh keeps
   the cached result on screen.
 
-## 8. Tech stack and ops
+## 9. Tech stack and ops
 
-- **Backend**: Python 3.13, FastAPI, uvicorn, `anthropic` SDK, `python-dotenv`. A Streamlit
-  script (`app.py`) exists for a quick standalone view.
+- **Backend**: Python 3.13, FastAPI, uvicorn, `anthropic` SDK, `python-dotenv`, `neo4j` driver
+  (optional dependency, section 6). A Streamlit script (`app.py`) exists for a quick standalone
+  view.
 - **Frontend**: Next.js 16 (App Router, Turbopack), React 19, TypeScript 5, `@number-flow/react`
   for animated stats. Runs as a production build (`next build` + `next start`) for stability.
-- **Config**: single `ANTHROPIC_API_KEY` plus an optional `PM_NAME`, both from `backend/.env`.
-  `.env` is gitignored.
-- **Tests**: 88 pytest tests across the dataset, entity linker, extraction, impact engines, and
-  the API. The deterministic core is fully covered; live LLM calls are exercised by manual runs
-  rather than mocked.
+- **Config**: `ANTHROPIC_API_KEY` plus an optional `PM_NAME`, and optionally `NEO4J_URI` /
+  `NEO4J_USERNAME` / `NEO4J_PASSWORD` for the knowledge graph, all from `backend/.env`. `.env` is
+  gitignored; the public repo ships only `.env.example` with placeholders.
+- **Tests**: 95 pytest tests across the dataset, entity linker, extraction, impact engines, and
+  the API, including the graph endpoints' graceful-degradation path with no Neo4j configured. The
+  deterministic core is fully covered; live LLM calls and a real Neo4j connection are exercised by
+  manual runs rather than mocked.
 
 ### Running locally
 
@@ -203,8 +252,9 @@ repeat visit is instant while a manual control always forces a fresh live pull.
 # Backend
 cd backend
 pip install -r requirements.txt
-cp .env.example .env          # add ANTHROPIC_API_KEY
+cp .env.example .env          # add ANTHROPIC_API_KEY (and NEO4J_* if using the graph)
 python build_dataset.py       # generate prism_data.json
+python build_graph.py         # optional: populate Neo4j (needs NEO4J_* in .env)
 uvicorn api:app --port 8000
 
 # Frontend
@@ -213,19 +263,27 @@ npm install
 npm run build && npm run start   # http://localhost:3000
 ```
 
-## 9. Roadmap
+Omitting `NEO4J_*` and the `build_graph.py` step is fully supported: the app runs identically,
+just without the graph-powered "Similar clients also hold" section.
+
+## 10. Roadmap
 
 - **Real market data**: swap illustrative performance for live historical NAV via one of the free
   market-data APIs in section 2 (Finnhub / Marketaux / NewsAPI), reusing the existing linking and
   roll-up stages.
+- **Deepen the knowledge graph**: add `SIMILAR_TO` client-similarity edges precomputed offline
+  (rather than the on-query life-stage/risk-tier match), and a `CO_HELD_WITH` product-product edge
+  for "clients who hold X also hold Y" market-basket suggestions.
 - **Per-(client, sector) analysis cache** so repeated Analysis runs are instant.
 - **One-click meeting prep**: assemble a client's profile, performance, relevant news, and talking
   points into a single brief.
 - **Client-facing change alerts**: what moved in a client's book since last contact.
 
-## 10. Open questions
+## 11. Open questions
 
 - How much of the performance layer should be driven by real NAV history versus staying
   illustrative for the demo?
 - Should the "you vs a normal book" reference be the fixed 60/40, or a peer-group average?
 - What is the right cache TTL for live news given how fast the Indian market news cycle moves?
+- Should the graph's `PREFERS` affinity scores stay derived from the same rules as the Python
+  recommender, or should the graph eventually own a richer, independently-tunable scoring model?

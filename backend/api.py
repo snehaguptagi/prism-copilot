@@ -20,6 +20,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import graph
 from insight_lens import (
     NEWS_FEED_CATEGORIES,
     build_query_context,
@@ -698,6 +699,29 @@ def get_products():
     return {
         "total": sum(g["count"] for g in groups),
         "groups": groups,
+    }
+
+
+@app.get("/graph/status")
+def graph_status():
+    """Whether the Neo4j knowledge graph is configured and reachable, so the UI
+    can decide whether to show graph-powered suggestions."""
+    return {"enabled": graph.graph_enabled(), "connected": graph.ping()}
+
+
+@app.get("/clients/{portfolio_id}/graph-suggestions")
+def client_graph_suggestions(portfolio_id: str):
+    """Knowledge-graph product suggestions for one client: products in an asset
+    class they prefer, not already held, within their risk mandate, ranked by how
+    many similar clients hold each. Returns an empty list (never an error) when
+    the graph is not configured, so the page degrades gracefully."""
+    data = load_data()
+    portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
+    if not portfolio or not portfolio.get("client"):
+        raise HTTPException(status_code=404, detail=f"No client portfolio found for '{portfolio_id}'.")
+    return {
+        "enabled": graph.graph_enabled(),
+        "suggestions": graph.recommend_products(portfolio_id),
     }
 
 

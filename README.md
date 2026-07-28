@@ -33,6 +33,7 @@ The running system uses a single external API: the Anthropic Claude API, includi
 - **Portfolio Analysis** - pick a client's book, run live market analysis on its dominant exposure, get exposure vs. a normal book plus tailored talking points.
 - **News Feed** - categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and per-client talking points. Cached so it does not reload on its own; manual Reload button.
 - **Products** - the investable universe the desk can offer, grouped by asset class.
+- **Product recommendation** - each client gets suggestions matched to their stated preferences (goal, horizon, loss aversion, life stage) and risk mandate. An optional Neo4j knowledge graph adds a second, collaborative-filtering layer ("held by N clients with a similar profile"); the app works identically without it.
 
 ## Core design principles
 
@@ -50,6 +51,19 @@ pip install -r requirements.txt
 # copy .env.example to .env and add your ANTHROPIC_API_KEY
 python build_dataset.py          # generate the synthetic India dataset
 uvicorn api:app --port 8000
+```
+
+### Optional: Neo4j knowledge graph (product recommendation)
+
+Adds a second, graph-powered layer to product suggestions on top of the always-on rule-based
+recommender. Entirely optional; the app runs identically without it.
+
+```bash
+# in backend/.env, also set:
+#   NEO4J_URI=neo4j+s://<id>.databases.neo4j.io   (or bolt://localhost:7687 for local)
+#   NEO4J_USERNAME=neo4j
+#   NEO4J_PASSWORD=<your password>
+python build_graph.py            # populates the graph from prism_data.json
 ```
 
 ### Frontend

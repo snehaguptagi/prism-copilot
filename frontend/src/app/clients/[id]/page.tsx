@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getClients } from "@/lib/api";
-import { ClientAccount } from "@/lib/types";
+import { getClients, getGraphSuggestions } from "@/lib/api";
+import { ClientAccount, GraphSuggestion } from "@/lib/types";
 import { assetClassColor, avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
 import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
@@ -34,6 +34,8 @@ export default function ClientDetailPage() {
   const [account, setAccount] = useState<ClientAccount | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("Profile");
+  const [graphSuggestions, setGraphSuggestions] = useState<GraphSuggestion[] | null>(null);
+  const [graphEnabled, setGraphEnabled] = useState(false);
 
   useEffect(() => {
     getClients()
@@ -43,6 +45,19 @@ export default function ClientDetailPage() {
         else setAccount(found);
       })
       .catch((e) => setError(String(e)));
+
+    // Knowledge-graph suggestions are additive: if the graph is not configured
+    // this quietly returns { enabled: false, suggestions: [] } and the section
+    // simply does not render. Never blocks the rest of the page.
+    getGraphSuggestions(params.id)
+      .then((r) => {
+        setGraphEnabled(r.enabled);
+        setGraphSuggestions(r.suggestions);
+      })
+      .catch(() => {
+        setGraphEnabled(false);
+        setGraphSuggestions(null);
+      });
   }, [params.id]);
 
   if (error) {
@@ -340,6 +355,39 @@ export default function ClientDetailPage() {
                           {p.asset_class}
                         </span>
                         <span className="cross-sell-instrument">{p.instrument_type}</span>
+                      </div>
+                      <p className="cross-sell-why">{p.rationale}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {graphEnabled && graphSuggestions && graphSuggestions.length > 0 && (
+              <div className="panel">
+                <div className="panel-title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="graph-badge" title="Powered by the Neo4j knowledge graph">◈ Graph</span>
+                  Similar clients also hold
+                </div>
+                <p className="cross-sell-note">
+                  From the knowledge graph: products in an asset class {c.name.split(" ")[0]} prefers, within
+                  their mandate, ranked by how many clients with a similar profile already hold each.
+                </p>
+                <div className="cross-sell-grid stagger">
+                  {graphSuggestions.map((p) => (
+                    <div key={p.security_id} className="cross-sell-card">
+                      <div className="cross-sell-head">
+                        <span className="cross-sell-name">{p.name}</span>
+                        <span className="cross-sell-tkr">{p.ticker}</span>
+                      </div>
+                      <div className="cross-sell-tags">
+                        <span
+                          className="chip"
+                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, white)`, color: sectorColor(p.sector) }}
+                        >
+                          {p.asset_class}
+                        </span>
+                        {p.peers > 0 && <span className="cross-sell-instrument">{p.peers} similar client{p.peers !== 1 ? "s" : ""}</span>}
                       </div>
                       <p className="cross-sell-why">{p.rationale}</p>
                     </div>

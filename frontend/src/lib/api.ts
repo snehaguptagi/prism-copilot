@@ -1,4 +1,4 @@
-import { ClientAccount, LensResult, NewsFeedResult, Overview, Portfolio, Products, TalkingPointsResult } from "./types";
+import { ClientAccount, GraphStatus, GraphSuggestionsResult, LensResult, NewsFeedResult, Overview, Portfolio, Products, TalkingPointsResult } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
@@ -61,4 +61,12 @@ export function getNewsFeed(category: string, force = false): Promise<NewsFeedRe
 
 export function getTalkingPoints(portfolioId: string, sector: string): Promise<TalkingPointsResult> {
   return postJSON<TalkingPointsResult>("/talking-points", { portfolio_id: portfolioId, sector });
+}
+
+export function getGraphStatus(): Promise<GraphStatus> {
+  return getJSON<GraphStatus>("/graph/status");
+}
+
+export function getGraphSuggestions(portfolioId: string): Promise<GraphSuggestionsResult> {
+  return getJSON<GraphSuggestionsResult>(`/clients/${portfolioId}/graph-suggestions`);
 }

@@ -259,6 +259,28 @@ def test_news_categories_returns_expected_set():
     assert len(categories) >= 6
 
 
+def test_graph_status_shape():
+    """Graph status is always answerable, even with no Neo4j configured."""
+    body = client.get("/graph/status").json()
+    assert set(body) == {"enabled", "connected"}
+    assert isinstance(body["enabled"], bool)
+    assert isinstance(body["connected"], bool)
+
+
+def test_graph_suggestions_degrade_gracefully():
+    """With no graph configured, suggestions are an empty list, never an error."""
+    resp = client.get("/clients/pf_gold_hedge/graph-suggestions")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["enabled"] is False  # no NEO4J_URI in the test environment
+    assert body["suggestions"] == []
+
+
+def test_graph_suggestions_unknown_client_404():
+    resp = client.get("/clients/not-a-real-portfolio/graph-suggestions")
+    assert resp.status_code == 404
+
+
 def test_products_groups_cover_all_securities():
     resp = client.get("/products").json()
     assert resp["total"] == sum(g["count"] for g in resp["groups"])
