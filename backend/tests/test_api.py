@@ -318,6 +318,21 @@ def test_product_suggestions_are_suitable_and_unheld():
             assert item["rationale"]
 
 
+def test_every_client_gets_a_preference_matched_suggestion():
+    """Every client should get at least one product suggestion that matches their
+    stated preferences (rationale starts with "Matches ..."), not only gap-fill
+    fallbacks. Guards the preference engine against silently regressing to the
+    old suitability-and-gap-only behavior."""
+    from api import load_data, suggest_products
+    data = load_data()
+    for p in data["portfolios"]:
+        if not p.get("client") or p.get("is_reference"):
+            continue
+        suggestions = suggest_products(data, p)
+        matched = [s for s in suggestions if s["rationale"].startswith("Matches ")]
+        assert matched, f"No preference-matched suggestion for {p['client']['name']}"
+
+
 def test_talking_points_rejects_unknown_portfolio():
     response = client.post("/talking-points", json={"portfolio_id": "not-a-real-portfolio", "sector": "Financials"})
     assert response.status_code == 404
