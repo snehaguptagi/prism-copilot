@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  # Fast, free, runs on every push and PR. The deterministic core needs no API
+  # key, so this never spends Anthropic credits.
+  tests:
+    name: Backend tests (deterministic)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run pytest
+        run: python -m pytest -q
+
+  # Optional live check that actually exercises the ANTHROPIC_API_KEY secret.
+  # Manual-only (workflow_dispatch) so normal pushes never make paid API calls.
+  # Skips itself gracefully if the secret has not been set on the repo.
+  live-smoke:
+    name: Live API smoke test (manual)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: One grounded research call
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY secret is not set on this repo. Skipping live smoke."
+            echo "Add it under Settings > Secrets and variables > Actions, then re-run."
+            exit 0
+          fi
+          python insight_lens.py --sector "Financials"

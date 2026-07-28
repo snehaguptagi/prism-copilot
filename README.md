@@ -66,6 +66,24 @@ cd backend
 python -m pytest tests/ -q       # deterministic core is fully unit-tested
 ```
 
+## Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the deterministic
+backend test suite on every push and pull request. It needs no API key and spends
+no Anthropic credits.
+
+An optional, manual-only `live-smoke` job makes one real grounded research call to
+verify the pipeline end to end. It reads the key from an encrypted GitHub Actions
+secret, never from the repo. To enable it, add the secret once (the value stays
+encrypted and is never printed in logs):
+
+- **GitHub UI:** repo Settings > Secrets and variables > Actions > New repository
+  secret, name `ANTHROPIC_API_KEY`.
+- **CLI:** `gh secret set ANTHROPIC_API_KEY` (prompts for the value, hidden input).
+
+Then trigger it from the Actions tab via "Run workflow". Normal pushes never run it,
+so CI stays free.
+
 ## Data note
 
 All client, portfolio, and communication data is synthetic, built to demonstrate the workflow.
