@@ -33,7 +33,8 @@ The running system uses a single external API: the Anthropic Claude API, includi
 - **Portfolio Analysis** - pick a client's book, run live market analysis on its dominant exposure, get exposure vs. a normal book plus tailored talking points.
 - **News Feed** - categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and per-client talking points. Cached so it does not reload on its own; manual Reload button.
 - **Products** - the investable universe the desk can offer, grouped by asset class.
-- **Product recommendation** - each client gets suggestions matched to their stated preferences (goal, horizon, loss aversion, life stage) and risk mandate. An optional Neo4j knowledge graph adds a second, collaborative-filtering layer ("held by N clients with a similar profile"); the app works identically without it.
+- **Product Fit** - a visual map, per client, of their holdings, preferences, and the products worth raising with them, with the single strongest pick highlighted. Suggestions are matched to each client's stated preferences (goal, horizon, loss aversion, life stage) and risk mandate; an optional knowledge graph adds a second, similar-client layer on top. The app works identically without it.
+- **Light and dark theme** - a toggle in the top bar; the choice persists across visits and otherwise follows the system preference.
 
 ## Core design principles
 

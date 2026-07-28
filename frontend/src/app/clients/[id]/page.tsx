@@ -105,7 +105,7 @@ export default function ClientDetailPage() {
             <div className="detail-name">{c.name}</div>
             <div className="detail-sub">{c.age} · {c.occupation} · {c.city}</div>
             <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <span className="chip" style={{ background: `color-mix(in srgb, ${tierColor} 14%, white)`, color: tierColor }}>
+              <span className="chip" style={{ background: `color-mix(in srgb, ${tierColor} 14%, var(--surface))`, color: tierColor }}>
                 <span className="chip-dot" />{account.risk_tier ?? "n/a"} risk
               </span>
               <span className="chip" style={{ background: "var(--surface-2)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}>
@@ -190,7 +190,7 @@ export default function ClientDetailPage() {
                     <span
                       className="chip"
                       style={{
-                        background: account.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, white)" : "color-mix(in srgb, var(--negative) 12%, white)",
+                        background: account.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, var(--surface))" : "color-mix(in srgb, var(--negative) 12%, var(--surface))",
                         color: account.performance.vs_benchmark_1y >= 0 ? "var(--positive)" : "var(--negative)",
                       }}
                     >
@@ -350,7 +350,7 @@ export default function ClientDetailPage() {
                       <div className="cross-sell-tags">
                         <span
                           className="chip"
-                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, white)`, color: sectorColor(p.sector) }}
+                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, var(--surface))`, color: sectorColor(p.sector) }}
                         >
                           {p.asset_class}
                         </span>
@@ -366,12 +366,12 @@ export default function ClientDetailPage() {
             {graphEnabled && graphSuggestions && graphSuggestions.length > 0 && (
               <div className="panel">
                 <div className="panel-title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span className="graph-badge" title="Powered by the Neo4j knowledge graph">◈ Graph</span>
-                  Similar clients also hold
+                  <span className="graph-badge">Similar clients</span>
+                  Also held by clients like {c.name.split(" ")[0]}
                 </div>
                 <p className="cross-sell-note">
-                  From the knowledge graph: products in an asset class {c.name.split(" ")[0]} prefers, within
-                  their mandate, ranked by how many clients with a similar profile already hold each.
+                  Products in an asset class {c.name.split(" ")[0]} prefers, within their mandate, ranked by
+                  how many clients with a similar profile already hold each.
                 </p>
                 <div className="cross-sell-grid stagger">
                   {graphSuggestions.map((p) => (
@@ -383,7 +383,7 @@ export default function ClientDetailPage() {
                       <div className="cross-sell-tags">
                         <span
                           className="chip"
-                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, white)`, color: sectorColor(p.sector) }}
+                          style={{ background: `color-mix(in srgb, ${sectorColor(p.sector)} 12%, var(--surface))`, color: sectorColor(p.sector) }}
                         >
                           {p.asset_class}
                         </span>

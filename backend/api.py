@@ -362,6 +362,108 @@ def suggest_products(data, portfolio, max_n=3):
     return out
 
 
+def build_graph_view(data, portfolio, max_held=6):
+    """Assemble a small, renderable node/edge graph for one client, for the
+    visual Graph tab: the client, their largest holdings, the asset classes
+    those touch, and both recommendation layers (rule-based and, if configured,
+    the Neo4j graph) as candidate nodes. Also picks the single best product to
+    highlight: if the two recommenders agree on a security, that is the
+    strongest possible signal (both a preference match AND a peer-validated
+    pick), so it wins; otherwise the top graph pick if the graph is live,
+    else the top rule-based pick. Fully deterministic, reuses the same
+    suggest_products / graph.recommend_products the rest of the app already
+    calls, so the graph tab can never disagree with the suggestion lists
+    shown elsewhere."""
+    pid = portfolio["portfolio_id"]
+    client = portfolio["client"]
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    pf_holdings = [h for h in data["holdings"] if h["portfolio_id"] == pid]
+    top_holdings = sorted(pf_holdings, key=lambda h: h["weight"], reverse=True)[:max_held]
+
+    rule_suggestions = suggest_products(data, portfolio, max_n=4)
+    graph_enabled = graph.graph_enabled()
+    graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
+
+    rule_ids = {s["security_id"] for s in rule_suggestions}
+    graph_ids = {s["security_id"] for s in graph_suggestions}
+    rule_by_id = {s["security_id"]: s for s in rule_suggestions}
+    graph_by_id = {s["security_id"]: s for s in graph_suggestions}
+
+    best_match = None
+    common = rule_ids & graph_ids
+    if common:
+        # both recommenders agree: rank the agreed set by graph peer support
+        top_id = max(common, key=lambda sid: graph_by_id[sid].get("peers", 0))
+        r, g = rule_by_id[top_id], graph_by_id[top_id]
+        best_match = {
+            "security_id": top_id, "name": r["name"], "ticker": r["ticker"],
+            "asset_class": r["asset_class"], "source": "both",
+            "rationale": f"{r['rationale']} The knowledge graph independently agrees: {g['rationale'][0].lower()}{g['rationale'][1:]}",
+        }
+    elif graph_suggestions:
+        g = graph_suggestions[0]
+        best_match = {**g, "source": "graph"}
+    elif rule_suggestions:
+        r = rule_suggestions[0]
+        best_match = {**r, "source": "rule"}
+
+    nodes, edges, seen_classes = [], [], set()
+    nodes.append({"id": "client", "type": "client", "label": client["name"], "sub": client.get("risk_mandate")})
+
+    def ensure_class(cls):
+        node_id = f"class:{cls}"
+        if cls not in seen_classes:
+            seen_classes.add(cls)
+            nodes.append({"id": node_id, "type": "asset_class", "label": cls})
+        return node_id
+
+    for h in top_holdings:
+        s = sec_by_id.get(h["security_id"])
+        if not s:
+            continue
+        node_id = f"held:{s['security_id']}"
+        nodes.append({
+            "id": node_id, "type": "held", "label": s["name"], "sub": s["primary_ticker"],
+            "asset_class": s["asset_class"], "weight_pct": round(h["weight"] * 100, 1),
+        })
+        edges.append({"source": "client", "target": node_id, "kind": "holds"})
+        cls_id = ensure_class(s["asset_class"])
+        edges.append({"source": node_id, "target": cls_id, "kind": "in_class"})
+
+    extra_holdings = max(len(pf_holdings) - len(top_holdings), 0)
+
+    def add_suggestion(s, source):
+        node_id = f"sugg:{s['security_id']}"
+        existing = next((n for n in nodes if n["id"] == node_id), None)
+        if existing:
+            existing["source"] = "both"
+        else:
+            nodes.append({
+                "id": node_id, "type": "suggested", "label": s["name"], "sub": s["ticker"],
+                "asset_class": s["asset_class"], "source": source,
+                "peers": s.get("peers"), "rationale": s["rationale"],
+                "best": bool(best_match and best_match["security_id"] == s["security_id"]),
+            })
+            edges.append({"source": "client", "target": node_id, "kind": "suggests"})
+            cls_id = ensure_class(s["asset_class"])
+            edges.append({"source": node_id, "target": cls_id, "kind": "in_class"})
+
+    for s in rule_suggestions:
+        add_suggestion(s, "rule")
+    for s in graph_suggestions:
+        add_suggestion(s, "graph")
+
+    return {
+        "portfolio_id": pid,
+        "client_name": client["name"],
+        "graph_enabled": graph_enabled,
+        "extra_holdings": extra_holdings,
+        "nodes": nodes,
+        "edges": edges,
+        "best_match": best_match,
+    }
+
+
 # Sectors that have a live market-research lens (i.e. real equities/commodities
 # to search on). Cash/Fixed Income holdings don't have a meaningful company-news
 # lens, so the analysis flow defaults to the top *researchable* sector.
@@ -723,6 +825,20 @@ def client_graph_suggestions(portfolio_id: str):
         "enabled": graph.graph_enabled(),
         "suggestions": graph.recommend_products(portfolio_id),
     }
+
+
+@app.get("/clients/{portfolio_id}/graph-view")
+def client_graph_view(portfolio_id: str):
+    """Renderable graph (nodes + edges) for the visual Graph tab: this client,
+    their largest holdings, the asset classes touched, both recommendation
+    layers, and the single best product to highlight. Works with or without
+    Neo4j configured; the graph-specific nodes/edges are simply absent when
+    it is not."""
+    data = load_data()
+    portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
+    if not portfolio or not portfolio.get("client"):
+        raise HTTPException(status_code=404, detail=f"No client portfolio found for '{portfolio_id}'.")
+    return build_graph_view(data, portfolio)
 
 
 @app.get("/news/categories")

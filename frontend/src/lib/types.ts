@@ -293,6 +293,44 @@ export interface GraphSuggestionsResult {
   suggestions: GraphSuggestion[];
 }
 
+export interface GraphViewNode {
+  id: string;
+  type: "client" | "asset_class" | "held" | "suggested";
+  label: string;
+  sub?: string;
+  asset_class?: string;
+  weight_pct?: number;
+  source?: "rule" | "graph" | "both";
+  peers?: number;
+  rationale?: string;
+  best?: boolean;
+}
+
+export interface GraphViewEdge {
+  source: string;
+  target: string;
+  kind: "holds" | "in_class" | "suggests";
+}
+
+export interface GraphViewBestMatch {
+  security_id: string;
+  name: string;
+  ticker: string;
+  asset_class: string;
+  source: "rule" | "graph" | "both";
+  rationale: string;
+}
+
+export interface GraphViewResult {
+  portfolio_id: string;
+  client_name: string;
+  graph_enabled: boolean;
+  extra_holdings: number;
+  nodes: GraphViewNode[];
+  edges: GraphViewEdge[];
+  best_match: GraphViewBestMatch | null;
+}
+
 export interface ProductSuggestion {
   security_id: string;
   name: string;

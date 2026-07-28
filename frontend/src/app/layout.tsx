@@ -19,14 +19,22 @@ export const metadata: Metadata = {
   description: "Portfolio-aware research assistant for buy-side investment teams.",
 };
 
+// Sets data-theme on <html> before first paint (localStorage choice, else the
+// OS preference), so there is never a flash of the wrong theme. A manual
+// toggle (ThemeToggle) always overrides the OS preference once set.
+const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('prism_theme');var t=(s==='light'||s==='dark')?s:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

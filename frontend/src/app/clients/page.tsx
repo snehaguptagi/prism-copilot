@@ -178,7 +178,7 @@ export default function ClientsPage() {
                     <td>
                       <span
                         className="chip"
-                        style={{ background: `color-mix(in srgb, ${tierColor} 12%, white)`, color: tierColor }}
+                        style={{ background: `color-mix(in srgb, ${tierColor} 12%, var(--surface))`, color: tierColor }}
                       >
                         <span className="chip-dot" />
                         {c.risk_tier ?? "n/a"}

@@ -93,7 +93,7 @@ export default function OverviewPage() {
                       <span
                         className="chip"
                         style={{
-                          background: data.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, white)" : "color-mix(in srgb, var(--negative) 12%, white)",
+                          background: data.performance.vs_benchmark_1y >= 0 ? "color-mix(in srgb, var(--positive) 12%, var(--surface))" : "color-mix(in srgb, var(--negative) 12%, var(--surface))",
                           color: data.performance.vs_benchmark_1y >= 0 ? "var(--positive)" : "var(--negative)",
                         }}
                       >
@@ -311,7 +311,7 @@ export default function OverviewPage() {
                             </div>
                           </td>
                           <td>
-                            <span className="chip" style={{ background: `color-mix(in srgb, ${tc} 12%, white)`, color: tc }}>
+                            <span className="chip" style={{ background: `color-mix(in srgb, ${tc} 12%, var(--surface))`, color: tc }}>
                               {c.risk_tier ?? "n/a"}
                             </span>
                           </td>

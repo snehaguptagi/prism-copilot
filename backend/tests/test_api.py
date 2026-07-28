@@ -302,6 +302,32 @@ def test_graph_suggestions_unknown_client_404():
     assert resp.status_code == 404
 
 
+def test_graph_view_shape():
+    resp = client.get("/clients/pf_it_services/graph-view")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert set(body) >= {"portfolio_id", "client_name", "graph_enabled", "nodes", "edges", "best_match"}
+    assert any(n["id"] == "client" for n in body["nodes"])
+    assert len(body["edges"]) > 0
+
+
+def test_graph_view_unknown_client_404():
+    resp = client.get("/clients/not-a-real-portfolio/graph-view")
+    assert resp.status_code == 404
+
+
+def test_graph_view_best_match_for_every_client():
+    """Every client should get a best_match to highlight (every client has at
+    least one rule-based suggestion, per test_every_client_gets_a_preference_matched_suggestion,
+    so the graph tab is never empty)."""
+    data_resp = client.get("/portfolios").json()
+    for p in data_resp:
+        resp = client.get(f"/clients/{p['portfolio_id']}/graph-view")
+        body = resp.json()
+        assert body["best_match"] is not None, f"No best_match for {p['portfolio_id']}"
+        assert body["best_match"]["source"] in ("rule", "graph", "both")
+
+
 def test_products_groups_cover_all_securities():
     resp = client.get("/products").json()
     assert resp["total"] == sum(g["count"] for g in resp["groups"])

@@ -39,6 +39,45 @@
 
   --body: var(--font-ibm-plex-sans), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  --topbar-bg: rgba(255, 255, 255, 0.85);
+}
+
+/* Dark theme: same structure, same semantic tokens, different values. Applied
+   via a data-theme attribute on <html> (set before paint by an inline script
+   in layout.tsx, so there is no flash), never by a bare media query, so a
+   manual toggle always wins over the OS preference. */
+:root[data-theme="dark"] {
+  --bg: #121319;
+  --surface: #1b1d26;
+  --surface-2: #23252f;
+  --border: #2d303c;
+  --border-strong: #3c3f4d;
+  --text: #f0f1f6;
+  --text-secondary: #b6bac8;
+  --text-faint: #82869a;
+  --accent: #8078ff;
+  --accent-hover: #9992ff;
+  --accent-soft: #8078ff20;
+
+  --sev-low: #22b98f;
+  --sev-moderate: #74c274;
+  --sev-elevated: #d99a2b;
+  --sev-high: #e69361;
+  --sev-vhigh: #e6605f;
+
+  --positive: #22b98f;
+  --negative: #e6605f;
+  --tailwind: #22b98f;
+  --headwind: #e69361;
+  --mixed: #82869a;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.18);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  --topbar-bg: rgba(27, 29, 38, 0.85);
 }
 
 * {
@@ -56,6 +95,10 @@ body {
 html {
   height: 100%;
   color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
@@ -121,7 +164,7 @@ a:hover {
   z-index: 30;
   padding: 0 24px;
   height: 56px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--topbar-bg);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
@@ -187,6 +230,37 @@ a:hover {
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out), transform 130ms var(--ease-out);
+}
+
+.theme-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.theme-toggle:active {
+  transform: scale(0.92);
 }
 
 /* ---- Hero / page header ---- */
@@ -987,10 +1061,156 @@ tr.clickable:active td {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 10%, white);
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, white);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--surface));
   border-radius: 6px;
   padding: 2px 7px;
+}
+
+/* ---- Knowledge Graph tab ---- */
+.kg-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 860px) {
+  .kg-layout {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.kg-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kg-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  margin: 4px auto 6px;
+}
+
+.kg-class-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kg-client-initials {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.kg-client-name {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+@keyframes kg-pulse-ring {
+  0% { opacity: 0.75; transform: scale(1); }
+  70% { opacity: 0; transform: scale(1.35); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+.kg-pulse {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: kg-pulse-ring 1.8s var(--ease-out) infinite;
+}
+
+.kg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.kg-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.kg-legend .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.kg-note {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.kg-best-panel {
+  border: 1px solid color-mix(in srgb, var(--sev-elevated) 35%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sev-elevated) 8%, transparent);
+}
+
+.kg-best-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kg-best-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.kg-best-tkr {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.kg-source-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.kg-source-both {
+  color: var(--sev-elevated);
+  background: color-mix(in srgb, var(--sev-elevated) 14%, var(--surface));
+}
+
+.kg-source-graph {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.kg-source-rule {
+  color: var(--text-secondary);
+  background: var(--surface-2);
+}
+
+.kg-best-why {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.kg-graph-off-note {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--text-faint);
 }
 
 .mini-head {
@@ -1268,7 +1488,7 @@ tr.clickable:active td {
 }
 
 .action-prio.prio-high {
-  background: color-mix(in srgb, var(--negative) 12%, white);
+  background: color-mix(in srgb, var(--negative) 12%, var(--surface));
   color: var(--negative);
 }
 
@@ -1578,7 +1798,7 @@ tr.clickable:active td {
 }
 
 .comm-inbound {
-  background: color-mix(in srgb, var(--sev-elevated) 14%, white);
+  background: color-mix(in srgb, var(--sev-elevated) 14%, var(--surface));
   color: var(--sev-high);
 }
 
