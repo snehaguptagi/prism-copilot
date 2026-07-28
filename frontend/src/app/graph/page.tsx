@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getClients, getClientGraphView } from "@/lib/api";
-import { ClientAccount, GraphViewResult } from "@/lib/types";
+import { getClients, getClientGraphView, getOverviewGraphView } from "@/lib/api";
+import { ClientAccount, GraphViewResult, OverviewGraphResult } from "@/lib/types";
 import { avatarColor, initials, severityColor, assetClassColor } from "@/lib/colors";
 import Topbar from "@/components/Topbar";
 import KnowledgeGraph from "@/components/KnowledgeGraph";
+import BookProductMap from "@/components/BookProductMap";
 
 const SOURCE_LABEL = {
   both: "Confirmed match",
@@ -13,10 +14,14 @@ const SOURCE_LABEL = {
   rule: "Preference match",
 } as const;
 
+type Mode = "client" | "book";
+
 export default function GraphPage() {
+  const [mode, setMode] = useState<Mode>("client");
   const [clients, setClients] = useState<ClientAccount[]>([]);
   const [selected, setSelected] = useState<ClientAccount | null>(null);
   const [view, setView] = useState<GraphViewResult | null>(null);
+  const [bookView, setBookView] = useState<OverviewGraphResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +32,9 @@ export default function GraphPage() {
         if (c[0]) pick(c[0]);
       })
       .catch((e) => setError(String(e)));
+    getOverviewGraphView()
+      .then(setBookView)
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -61,6 +69,75 @@ export default function GraphPage() {
           </div>
         )}
 
+        <div className="view-toggle">
+          <button className={mode === "client" ? "active" : ""} onClick={() => setMode("client")}>
+            Per client
+          </button>
+          <button className={mode === "book" ? "active" : ""} onClick={() => setMode("book")}>
+            Whole book
+          </button>
+        </div>
+
+        {mode === "book" && (
+          <div className="fade-in">
+            {!bookView && (
+              <div className="panel">
+                <p>Finding the best product matches across your book...</p>
+              </div>
+            )}
+            {bookView && (
+              <div className="kg-layout">
+                <div className="panel kg-panel" style={{ alignItems: "stretch" }}>
+                  <div className="panel-title">Product fit across all {bookView.client_count} clients</div>
+                  <BookProductMap data={bookView} />
+                  <div className="kg-legend">
+                    <span>
+                      <span className="dot" style={{ background: "var(--accent)" }} />
+                      Client
+                    </span>
+                    <span>
+                      <span className="dot" style={{ background: "var(--text-faint)" }} />
+                      Asset class
+                    </span>
+                    <span>
+                      <span className="dot" style={{ background: "var(--sev-elevated)" }} />
+                      Confirmed by both signals
+                    </span>
+                  </div>
+                  {bookView.unmatched_clients > 0 && (
+                    <p className="kg-note">
+                      {bookView.unmatched_clients} client{bookView.unmatched_clients !== 1 ? "s" : ""} without a
+                      suitable match today.
+                    </p>
+                  )}
+                  {!bookView.graph_enabled && (
+                    <p className="kg-graph-off-note">
+                      Similar-client matching is not available right now; showing preference-based matches only.
+                    </p>
+                  )}
+                </div>
+
+                <div className="panel">
+                  <div className="panel-title">Cross-sell opportunities</div>
+                  <p className="cross-sell-note">Products that fit the most clients right now, ranked.</p>
+                  {bookView.top_products.map((p, i) => (
+                    <div key={p.id} className="leaderboard-row">
+                      <span className="leaderboard-rank">{i + 1}</span>
+                      <div>
+                        <div className="leaderboard-name">{p.label}</div>
+                        <div className="leaderboard-clients">{p.client_names.join(", ")}</div>
+                      </div>
+                      <span className="leaderboard-count">{p.client_count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {mode === "client" && (
+          <>
         <div className="pick-grid stagger" style={{ marginBottom: 22 }}>
           {clients.map((c) => {
             const active = selected?.portfolio_id === c.portfolio_id;
@@ -160,6 +237,8 @@ export default function GraphPage() {
               )}
             </div>
           </div>
+        )}
+          </>
         )}
 
         <footer>

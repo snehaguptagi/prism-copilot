@@ -331,6 +331,40 @@ export interface GraphViewResult {
   best_match: GraphViewBestMatch | null;
 }
 
+export interface OverviewGraphClient {
+  id: string;
+  portfolio_id: string;
+  label: string;
+  best_match: string | null;
+}
+
+export interface OverviewGraphClass {
+  id: string;
+  label: string;
+}
+
+export interface OverviewGraphProduct {
+  id: string;
+  label: string;
+  ticker: string;
+  asset_class: string;
+  client_count: number;
+  client_names: string[];
+  confirmed: boolean;
+}
+
+export interface OverviewGraphResult {
+  graph_enabled: boolean;
+  client_count: number;
+  unmatched_clients: number;
+  clients: OverviewGraphClient[];
+  classes: OverviewGraphClass[];
+  products: OverviewGraphProduct[];
+  edges_client_class: { source: string; target: string }[];
+  edges_class_product: { source: string; target: string; weight: number }[];
+  top_products: OverviewGraphProduct[];
+}
+
 export interface ProductSuggestion {
   security_id: string;
   name: string;

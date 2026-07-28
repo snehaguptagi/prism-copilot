@@ -362,18 +362,43 @@ def suggest_products(data, portfolio, max_n=3):
     return out
 
 
+def compute_best_match(rule_suggestions, graph_suggestions):
+    """Combine the two recommendation layers into a single best pick. If both
+    independently name the same security, that is the strongest possible
+    signal (a preference fit AND peer validation), so it wins; otherwise the
+    top similar-client pick if that layer is live, else the top preference
+    pick. Shared by the per-client and firm-wide views so neither can ever
+    disagree with the other."""
+    rule_ids = {s["security_id"] for s in rule_suggestions}
+    graph_ids = {s["security_id"] for s in graph_suggestions}
+    rule_by_id = {s["security_id"]: s for s in rule_suggestions}
+    graph_by_id = {s["security_id"]: s for s in graph_suggestions}
+
+    common = rule_ids & graph_ids
+    if common:
+        top_id = max(common, key=lambda sid: graph_by_id[sid].get("peers", 0))
+        r, g = rule_by_id[top_id], graph_by_id[top_id]
+        return {
+            "security_id": top_id, "name": r["name"], "ticker": r["ticker"],
+            "asset_class": r["asset_class"], "source": "both",
+            "rationale": f"{r['rationale']} Clients with a similar profile independently confirm it: {g['rationale'][0].lower()}{g['rationale'][1:]}",
+        }
+    if graph_suggestions:
+        return {**graph_suggestions[0], "source": "graph"}
+    if rule_suggestions:
+        return {**rule_suggestions[0], "source": "rule"}
+    return None
+
+
 def build_graph_view(data, portfolio, max_held=6):
     """Assemble a small, renderable node/edge graph for one client, for the
-    visual Graph tab: the client, their largest holdings, the asset classes
-    those touch, and both recommendation layers (rule-based and, if configured,
-    the Neo4j graph) as candidate nodes. Also picks the single best product to
-    highlight: if the two recommenders agree on a security, that is the
-    strongest possible signal (both a preference match AND a peer-validated
-    pick), so it wins; otherwise the top graph pick if the graph is live,
-    else the top rule-based pick. Fully deterministic, reuses the same
+    Product Fit tab: the client, their largest holdings, the asset classes
+    those touch, and both recommendation layers (preference-based and, if
+    configured, similar-client) as candidate nodes, plus the single best
+    product to highlight. Fully deterministic, reuses the same
     suggest_products / graph.recommend_products the rest of the app already
-    calls, so the graph tab can never disagree with the suggestion lists
-    shown elsewhere."""
+    calls, so this tab can never disagree with the suggestion lists shown
+    elsewhere."""
     pid = portfolio["portfolio_id"]
     client = portfolio["client"]
     sec_by_id = {s["security_id"]: s for s in data["securities"]}
@@ -383,29 +408,7 @@ def build_graph_view(data, portfolio, max_held=6):
     rule_suggestions = suggest_products(data, portfolio, max_n=4)
     graph_enabled = graph.graph_enabled()
     graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
-
-    rule_ids = {s["security_id"] for s in rule_suggestions}
-    graph_ids = {s["security_id"] for s in graph_suggestions}
-    rule_by_id = {s["security_id"]: s for s in rule_suggestions}
-    graph_by_id = {s["security_id"]: s for s in graph_suggestions}
-
-    best_match = None
-    common = rule_ids & graph_ids
-    if common:
-        # both recommenders agree: rank the agreed set by graph peer support
-        top_id = max(common, key=lambda sid: graph_by_id[sid].get("peers", 0))
-        r, g = rule_by_id[top_id], graph_by_id[top_id]
-        best_match = {
-            "security_id": top_id, "name": r["name"], "ticker": r["ticker"],
-            "asset_class": r["asset_class"], "source": "both",
-            "rationale": f"{r['rationale']} The knowledge graph independently agrees: {g['rationale'][0].lower()}{g['rationale'][1:]}",
-        }
-    elif graph_suggestions:
-        g = graph_suggestions[0]
-        best_match = {**g, "source": "graph"}
-    elif rule_suggestions:
-        r = rule_suggestions[0]
-        best_match = {**r, "source": "rule"}
+    best_match = compute_best_match(rule_suggestions, graph_suggestions)
 
     nodes, edges, seen_classes = [], [], set()
     nodes.append({"id": "client", "type": "client", "label": client["name"], "sub": client.get("risk_mandate")})
@@ -461,6 +464,85 @@ def build_graph_view(data, portfolio, max_held=6):
         "nodes": nodes,
         "edges": edges,
         "best_match": best_match,
+    }
+
+
+def build_overview_graph_view(data):
+    """Firm-wide product-fit picture: every client's single best-match product,
+    flowing client -> asset class -> product, so the RM can see cross-sell
+    concentration across the whole book at a glance (which products would suit
+    the most clients right now) rather than one client at a time. Each client
+    contributes exactly the same best_match computed by build_graph_view, via
+    the shared compute_best_match helper, so this view can never disagree with
+    the per-client one. Deterministic aside from the optional similar-client
+    lookups, each of which already fails closed to an empty list."""
+    graph_enabled = graph.graph_enabled()
+    client_nodes, class_nodes, product_nodes = [], {}, {}
+    edges_client_class, edges_class_product = [], []
+    unmatched_clients = 0
+
+    for p in data["portfolios"]:
+        if p.get("is_reference") or not p.get("client"):
+            continue
+        pid = p["portfolio_id"]
+        client = p["client"]
+        rule_suggestions = suggest_products(data, p, max_n=4)
+        graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
+        best = compute_best_match(rule_suggestions, graph_suggestions)
+
+        client_nodes.append({
+            "id": f"client:{pid}", "portfolio_id": pid, "label": client["name"],
+            "best_match": best["name"] if best else None,
+        })
+        if not best:
+            unmatched_clients += 1
+            continue
+
+        cls = best["asset_class"]
+        class_id = f"class:{cls}"
+        class_nodes.setdefault(class_id, {"id": class_id, "label": cls})
+        edges_client_class.append({"source": f"client:{pid}", "target": class_id})
+
+        prod_id = f"product:{best['security_id']}"
+        entry = product_nodes.setdefault(prod_id, {
+            "id": prod_id, "label": best["name"], "ticker": best["ticker"],
+            "asset_class": cls, "client_names": [], "sources": set(),
+        })
+        entry["client_names"].append(client["name"])
+        entry["sources"].add(best["source"])
+        edges_class_product.append({"source": class_id, "target": prod_id})
+
+    products = sorted(
+        [
+            {
+                "id": e["id"], "label": e["label"], "ticker": e["ticker"], "asset_class": e["asset_class"],
+                "client_count": len(e["client_names"]), "client_names": e["client_names"],
+                "confirmed": "both" in e["sources"],
+            }
+            for e in product_nodes.values()
+        ],
+        key=lambda x: x["client_count"],
+        reverse=True,
+    )
+    # dedupe class->product edges, keep a weight (how many clients flow through it)
+    class_product_weight = {}
+    for e in edges_class_product:
+        key = (e["source"], e["target"])
+        class_product_weight[key] = class_product_weight.get(key, 0) + 1
+    edges_class_product_deduped = [
+        {"source": s, "target": t, "weight": w} for (s, t), w in class_product_weight.items()
+    ]
+
+    return {
+        "graph_enabled": graph_enabled,
+        "client_count": len(client_nodes),
+        "unmatched_clients": unmatched_clients,
+        "clients": client_nodes,
+        "classes": list(class_nodes.values()),
+        "products": products,
+        "edges_client_class": edges_client_class,
+        "edges_class_product": edges_class_product_deduped,
+        "top_products": products[:8],
     }
 
 
@@ -839,6 +921,15 @@ def client_graph_view(portfolio_id: str):
     if not portfolio or not portfolio.get("client"):
         raise HTTPException(status_code=404, detail=f"No client portfolio found for '{portfolio_id}'.")
     return build_graph_view(data, portfolio)
+
+
+@app.get("/graph/overview")
+def graph_overview():
+    """Firm-wide Product Fit view: every client's best-match product, flowing
+    client -> asset class -> product, plus a top-products leaderboard, so the
+    RM can see cross-sell concentration across the whole book at a glance."""
+    data = load_data()
+    return build_overview_graph_view(data)
 
 
 @app.get("/news/categories")

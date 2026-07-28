@@ -328,6 +328,36 @@ def test_graph_view_best_match_for_every_client():
         assert body["best_match"]["source"] in ("rule", "graph", "both")
 
 
+def test_graph_overview_shape():
+    resp = client.get("/graph/overview")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert set(body) >= {"graph_enabled", "client_count", "clients", "classes", "products", "top_products"}
+    assert body["client_count"] == 16
+    assert len(body["clients"]) == 16
+
+
+def test_graph_overview_products_sorted_by_client_count():
+    products = client.get("/graph/overview").json()["products"]
+    counts = [p["client_count"] for p in products]
+    assert counts == sorted(counts, reverse=True)
+    for p in products:
+        assert len(p["client_names"]) == p["client_count"]
+
+
+def test_graph_overview_agrees_with_per_client_best_match():
+    """The firm-wide view's client_count for a product must reconcile with each
+    client's own best_match from /clients/{id}/graph-view, so the two tabs
+    never tell a different story."""
+    overview = client.get("/graph/overview").json()
+    portfolios = client.get("/portfolios").json()
+    for p in portfolios:
+        view = client.get(f"/clients/{p['portfolio_id']}/graph-view").json()
+        client_entry = next(c for c in overview["clients"] if c["portfolio_id"] == p["portfolio_id"])
+        expected_name = view["best_match"]["name"] if view["best_match"] else None
+        assert client_entry["best_match"] == expected_name
+
+
 def test_products_groups_cover_all_securities():
     resp = client.get("/products").json()
     assert resp["total"] == sum(g["count"] for g in resp["groups"])

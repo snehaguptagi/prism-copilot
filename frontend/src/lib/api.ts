@@ -1,4 +1,4 @@
-import { ClientAccount, GraphStatus, GraphSuggestionsResult, GraphViewResult, LensResult, NewsFeedResult, Overview, Portfolio, Products, TalkingPointsResult } from "./types";
+import { ClientAccount, GraphStatus, GraphSuggestionsResult, GraphViewResult, LensResult, NewsFeedResult, Overview, OverviewGraphResult, Portfolio, Products, TalkingPointsResult } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
@@ -73,4 +73,8 @@ export function getGraphSuggestions(portfolioId: string): Promise<GraphSuggestio
 
 export function getClientGraphView(portfolioId: string): Promise<GraphViewResult> {
   return getJSON<GraphViewResult>(`/clients/${portfolioId}/graph-view`);
+}
+
+export function getOverviewGraphView(): Promise<OverviewGraphResult> {
+  return getJSON<OverviewGraphResult>("/graph/overview");
 }

@@ -214,6 +214,7 @@ decide whether to render the graph-powered section at all; it does not error or 
 | GET | `/graph/status` | `{enabled, connected}` for the optional Neo4j knowledge graph. |
 | GET | `/clients/{portfolio_id}/graph-suggestions` | Graph-based product suggestions for one client; `{enabled: false, suggestions: []}` if the graph is not configured. |
 | GET | `/clients/{portfolio_id}/graph-view` | Renderable graph (nodes/edges) for the Product Fit tab: client, top holdings, asset classes, both recommendation layers, and the single best product to highlight. |
+| GET | `/graph/overview` | Firm-wide Product Fit view: every client's best-match product, flowing client -> asset class -> product, plus a top-products leaderboard. |
 
 ## 8. Caching
 
