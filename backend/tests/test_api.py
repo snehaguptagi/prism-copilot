@@ -267,13 +267,34 @@ def test_graph_status_shape():
     assert isinstance(body["connected"], bool)
 
 
-def test_graph_suggestions_degrade_gracefully():
-    """With no graph configured, suggestions are an empty list, never an error."""
+def test_graph_suggestions_degrade_gracefully(monkeypatch):
+    """With no graph configured, suggestions are an empty list, never an error.
+    Force the env off with monkeypatch rather than assuming NEO4J_* is unset,
+    since a developer's local .env may legitimately have real graph creds."""
+    monkeypatch.delenv("NEO4J_URI", raising=False)
+    monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
     resp = client.get("/clients/pf_gold_hedge/graph-suggestions")
     assert resp.status_code == 200
     body = resp.json()
-    assert body["enabled"] is False  # no NEO4J_URI in the test environment
+    assert body["enabled"] is False
     assert body["suggestions"] == []
+
+
+def test_graph_recommends_when_configured():
+    """When a real graph is configured and reachable, suggestions are non-empty
+    and well-shaped. Skips itself everywhere the graph isn't configured
+    (including CI, which has no Neo4j secret), so it never fails there."""
+    import graph
+    if not graph.graph_enabled():
+        pytest.skip("Neo4j not configured in this environment")
+    resp = client.get("/clients/pf_it_services/graph-suggestions")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["enabled"] is True
+    assert len(body["suggestions"]) > 0
+    for s in body["suggestions"]:
+        assert s["asset_class"] != "Cash"
+        assert s["rationale"]
 
 
 def test_graph_suggestions_unknown_client_404():
