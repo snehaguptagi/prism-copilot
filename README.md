@@ -1,4 +1,4 @@
-# PRISM — Investment Research & Portfolio Insight Copilot
+# PRISM - Investment Research & Portfolio Insight Copilot
 
 A portfolio-aware research assistant for buy-side relationship managers, focused on the
 Indian market. It turns live market news into cited, book-specific insight: which of your
@@ -13,14 +13,24 @@ clients a development actually touches, by how much, and what to tell them.
 |---|---|
 | [`backend/`](./backend) | FastAPI + the market-insight pipeline (entity linking, deterministic roll-ups, direction/factor engine, news briefing, talking points). Python. |
 | [`frontend/`](./frontend) | Next.js + TypeScript app: Overview, Clients, Portfolio Analysis, News Feed, Products. |
+| [`docs/`](./docs) | Product and technical scoping: the [PRD](./docs/PRD.md) (Part A, product) and [LLD](./docs/LLD.md) (Parts B and C, design and plan). |
+
+## Design docs
+
+The full scoping that this MVP is built from lives in [`docs/`](./docs):
+
+- **[Product Requirements Document (PRD.md)](./docs/PRD.md)** - problem, personas, goals, feature scope, user journeys, functional and non-functional requirements, compliance guardrails, and the risk register.
+- **[Low-Level Design (LLD.md)](./docs/LLD.md)** - system architecture, component design, data model, ingestion pipeline, entity linking, retrieval and RAG, LLM orchestration, the portfolio roll-up engine, API surface, evaluation harness, tech stack, roadmap, and open questions.
+
+The docs describe the general buy-side copilot. What ships in this repo is the concrete India-only, relationship-manager instantiation of that scope: a single-tenant demo over synthetic Indian portfolios, with the entity-linking and deterministic roll-up ideas from the LLD implemented end to end.
 
 ## What it does
 
-- **Overview** — firm-wide book summary (AUM, risk spread, asset/sector allocation, top holdings), all computed from real holdings.
-- **Clients** — a roster of 12 distinct client personas, each with a full profile: behavioral psychographics, relationship insights, portfolio metrics, holdings, and a PM-to-client communication log with the next action due.
-- **Portfolio Analysis** — pick a client's book, run live market analysis on its dominant exposure, get exposure vs. a normal book plus tailored talking points.
-- **News Feed** — categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and per-client talking points. Cached so it does not reload on its own; manual Reload button.
-- **Products** — the investable universe the desk can offer, grouped by asset class.
+- **Overview** - firm-wide book summary (AUM, risk spread, asset/sector allocation, top holdings), all computed from real holdings.
+- **Clients** - a roster of 16 distinct client personas, from a ₹38 lakh young trader to a ₹46 crore business promoter, each with a full profile: behavioral psychographics, relationship insights, portfolio metrics, holdings, performance vs the Nifty, a suitability check, and a PM-to-client communication log with the next action due.
+- **Portfolio Analysis** - pick a client's book, run live market analysis on its dominant exposure, get exposure vs. a normal book plus tailored talking points.
+- **News Feed** - categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and per-client talking points. Cached so it does not reload on its own; manual Reload button.
+- **Products** - the investable universe the desk can offer, grouped by asset class.
 
 ## Core design principles
 
