@@ -182,6 +182,16 @@ def test_overview_risk_distribution_covers_all_tiers():
     assert sum(d["count"] for d in dist) == 12
 
 
+def test_overview_action_items_sorted_soonest_first():
+    items = client.get("/overview").json()["action_items"]
+    assert len(items) >= 1
+    dues = [i["days_until_due"] for i in items if i["days_until_due"] is not None]
+    assert dues == sorted(dues)  # soonest / most overdue first
+    for i in items:
+        assert i["action"] and i["client_name"]
+        assert i["priority"] in ("Low", "Normal", "High")
+
+
 def test_overview_largest_clients_sorted_desc():
     largest = client.get("/overview").json()["largest_clients"]
     aums = [c["aum"] for c in largest]

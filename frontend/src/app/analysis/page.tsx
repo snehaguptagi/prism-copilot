@@ -221,10 +221,19 @@ export default function AnalysisPage() {
               )}
             </div>
 
-            <div className="panel">
-              <div className="narrative-head">Market context · {result.sector}</div>
-              <p className="narrative" style={{ marginTop: 8 }}>{result.narrative_summary ?? ""}</p>
-            </div>
+            {result.market_insights.length > 0 && (
+              <div className="panel">
+                <div className="narrative-head">Market context · {result.sector}</div>
+                <ul className="keypoint-list stagger" style={{ marginTop: 10 }}>
+                  {result.market_insights.map((m, i) => (
+                    <li className="keypoint" key={i}>
+                      <span className="keypoint-dot" />
+                      {m}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="step-head" style={{ marginTop: 26 }}>
               <span className="step-num">4</span>

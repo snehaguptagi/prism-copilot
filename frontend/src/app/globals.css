@@ -864,6 +864,110 @@ tr.clickable:active td {
   justify-content: center;
 }
 
+/* ---- Overview: action items (what needs attention) ---- */
+.action-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-family: var(--body);
+  box-shadow: var(--shadow-xs);
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+
+.action-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.action-item:active {
+  transform: scale(0.99);
+}
+
+.action-item.soon {
+  border-left-color: var(--sev-elevated);
+}
+
+.action-item.overdue {
+  border-left-color: var(--negative);
+  background: color-mix(in srgb, var(--negative) 4%, var(--surface));
+}
+
+.action-due {
+  flex-shrink: 0;
+  width: 62px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.action-item.overdue .action-due {
+  color: var(--negative);
+}
+
+.action-item.soon .action-due {
+  color: var(--sev-high);
+}
+
+.action-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-client {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+
+.action-prio {
+  flex-shrink: 0;
+}
+
+.action-prio.prio-high {
+  background: color-mix(in srgb, var(--negative) 12%, white);
+  color: var(--negative);
+}
+
+.action-prio.prio-normal {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.action-prio.prio-low {
+  background: var(--surface-2);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+
 /* ---- Client detail (enriched) ---- */
 .contact-strip {
   display: flex;

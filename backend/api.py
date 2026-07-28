@@ -14,6 +14,7 @@ Run:
 import os
 import re
 import time
+from datetime import date
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -326,6 +327,34 @@ def get_overview():
         for p in client_portfolios
     )
 
+    # action items: each client's next action, soonest due first, so the PM
+    # lands on "what needs attention". "today" is the demo's fixed date.
+    today = date(2026, 7, 24)
+    prio_rank = {"High": 0, "Normal": 1, "Low": 2}
+    action_items = []
+    for p in client_portfolios:
+        na = p["client"].get("next_action")
+        if not na:
+            continue
+        try:
+            due = date.fromisoformat(na["due"])
+            days = (due - today).days
+        except (ValueError, KeyError):
+            days = None
+        action_items.append({
+            "portfolio_id": p["portfolio_id"],
+            "client_name": p["client"]["name"],
+            "action": na["action"],
+            "due": na.get("due"),
+            "priority": na.get("priority", "Normal"),
+            "days_until_due": days,
+            "overdue": days is not None and days < 0,
+        })
+    action_items.sort(key=lambda a: (
+        a["days_until_due"] if a["days_until_due"] is not None else 9999,
+        prio_rank.get(a["priority"], 1),
+    ))
+
     return {
         "kpis": {
             "total_aum": total_aum,
@@ -335,6 +364,7 @@ def get_overview():
             "blended_fee_pct": blended_fee,
             "annual_fee_revenue": annual_fee_revenue,
         },
+        "action_items": action_items,
         "risk_distribution": risk_distribution,
         "asset_class_allocation": asset_class_allocation,
         "sector_allocation": sector_allocation,
@@ -588,7 +618,7 @@ def talking_points(req: TalkingPointsRequest):
     impact_entry = next((p for p in portfolio_impact_vs_ref if p["portfolio_id"] == req.portfolio_id), None)
     factor_entry = next((p for p in factor_impact if p["portfolio_id"] == req.portfolio_id), None)
 
-    points = generate_talking_points(
+    tp = generate_talking_points(
         client=portfolio["client"],
         portfolio_name=portfolio["name"],
         mandate=portfolio["mandate"],
@@ -603,10 +633,10 @@ def talking_points(req: TalkingPointsRequest):
         "portfolio_name": portfolio["name"],
         "client_name": portfolio["client"]["name"],
         "sector": req.sector,
-        "narrative_summary": extracted["narrative"],
+        "market_insights": tp["market_insights"],
         "citations": linked,
         "impact": impact_entry,
         "factor_impact": factor_entry,
-        "points": points,
+        "points": tp["points"],
         "note": "Observational output only. No buy/sell/hold guidance is generated at any stage.",
     }

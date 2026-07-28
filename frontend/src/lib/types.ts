@@ -133,6 +133,16 @@ export interface SectorWeight {
   weight_pct: number;
 }
 
+export interface ActionItem {
+  portfolio_id: string;
+  client_name: string;
+  action: string;
+  due: string;
+  priority: "Low" | "Normal" | "High";
+  days_until_due: number | null;
+  overdue: boolean;
+}
+
 export interface Overview {
   kpis: {
     total_aum: number;
@@ -142,6 +152,7 @@ export interface Overview {
     blended_fee_pct: number;
     annual_fee_revenue: number;
   };
+  action_items: ActionItem[];
   risk_distribution: { tier: RiskTier; count: number; aum: number }[];
   asset_class_allocation: { asset_class: string; value: number; pct: number }[];
   sector_allocation: { sector: string; value: number; pct: number }[];
@@ -232,7 +243,7 @@ export interface TalkingPointsResult {
   portfolio_name: string;
   client_name: string;
   sector: string;
-  narrative_summary?: string;
+  market_insights: string[];
   citations: Citation[];
   impact: PortfolioImpact | null;
   factor_impact: FactorImpact | null;

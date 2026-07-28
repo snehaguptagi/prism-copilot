@@ -496,37 +496,45 @@ TALKING_POINTS_SYSTEM_PROMPT = """You help a relationship manager prepare for a 
 
 You will be given: the client's persona, their portfolio's mandate, a piece of grounded
 market research, and a set of ALREADY-COMPUTED numbers (NAV exposure, comparison to a
-reference book, factor tailwind/headwind). Turn this into 3 to 4 talking points the
-manager could say on a call with this specific client.
+reference book, factor tailwind/headwind). Produce two things:
+
+1. "market_insights": 3 to 4 short bullets summarizing what is happening in the market that
+   matters to THIS book. Each bullet is ONE plain sentence, max 20 words, leading with the
+   concrete fact. These replace any long prose, so they must stand alone and be scannable.
+2. "points": 3 to 4 talking points the manager could say on a call with this specific client.
 
 Hard rules:
-- BE SHORT. Each point is ONE sentence, maximum 25 words. No preamble, no filler.
-- LEAD WITH THE NUMBER. Start each point with the concrete figure, then the plain-English
-  read for this client. Example: "38% of your book sits in names in today's news; your
-  concentration is doing what you asked it to."
+- BE SHORT. Every bullet and point is ONE sentence, max 20 to 25 words. No preamble, no filler.
+- LEAD WITH THE NUMBER OR FACT, then the plain-English read for this client.
+- Plain text only. NEVER use markdown, asterisks, bold, or bullet characters. Just sentences.
 - Never say what the client should buy, sell, hold, or how to change their portfolio.
 - Never use words like "recommend," "should invest," "opportunity," or similar.
 - Use ONLY the numbers you are given. Do not invent or estimate any number yourself.
-- Tailor the tone to the persona (anxious client gets reassurance, expert gets the nuance),
-  but keep it tight either way.
+- Tailor the tone to the persona (anxious client gets reassurance, expert gets the nuance).
 - If the data shows no material impact, say exactly that in one short sentence.
 - Never use em dashes. Use commas, periods, or "to" for ranges instead.
 - You are not a financial advisor and this is not investment advice."""
 
 TALKING_POINTS_TOOL = {
     "name": "record_talking_points",
-    "description": "Record 3-5 short, natural talking points for a relationship manager's client call.",
+    "description": "Record scannable market-insight bullets plus natural talking points for a client call.",
     "input_schema": {
         "type": "object",
         "properties": {
+            "market_insights": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 2,
+                "maxItems": 4,
+            },
             "points": {
                 "type": "array",
                 "items": {"type": "string"},
                 "minItems": 3,
                 "maxItems": 5,
-            }
+            },
         },
-        "required": ["points"],
+        "required": ["market_insights", "points"],
     },
 }
 
@@ -567,10 +575,23 @@ def generate_talking_points(client, portfolio_name, mandate, sector, narrative, 
         tools=[TALKING_POINTS_TOOL],
         tool_choice={"type": "tool", "name": "record_talking_points"},
     )
+    def _clean(items):
+        # belt-and-suspenders: strip any stray markdown the model slips in
+        out = []
+        for s in items or []:
+            s = s.replace("**", "").replace("*", "").replace("—", ", ").strip()
+            s = s.lstrip("-•").strip()
+            if s:
+                out.append(s)
+        return out
+
     for block in response.content:
         if getattr(block, "type", None) == "tool_use" and block.name == "record_talking_points":
-            return block.input.get("points", [])
-    return []
+            return {
+                "market_insights": _clean(block.input.get("market_insights", [])),
+                "points": _clean(block.input.get("points", [])),
+            }
+    return {"market_insights": [], "points": []}
 
 
 NEWS_BRIEFING_SYSTEM_PROMPT = """You brief a relationship manager on what today's news means

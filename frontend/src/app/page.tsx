@@ -81,6 +81,45 @@ export default function OverviewPage() {
               </div>
             </div>
 
+            {/* Action items: what needs attention */}
+            {data.action_items.length > 0 && (
+              <>
+                <div className="shead">
+                  What needs attention
+                  <span className="shead-count">
+                    {data.action_items.filter((a) => a.overdue || (a.days_until_due ?? 99) <= 3).length} due soon
+                  </span>
+                </div>
+                <div className="action-list stagger">
+                  {data.action_items.slice(0, 6).map((a) => {
+                    const soon = a.overdue || (a.days_until_due ?? 99) <= 3;
+                    return (
+                      <button
+                        key={a.portfolio_id}
+                        className={`action-item${a.overdue ? " overdue" : soon ? " soon" : ""}`}
+                        onClick={() => router.push(`/clients/${a.portfolio_id}`)}
+                      >
+                        <span className="action-due">
+                          {a.overdue
+                            ? `${Math.abs(a.days_until_due ?? 0)}d overdue`
+                            : a.days_until_due === 0
+                            ? "today"
+                            : a.days_until_due != null
+                            ? `in ${a.days_until_due}d`
+                            : "—"}
+                        </span>
+                        <span className="action-body">
+                          <span className="action-text">{a.action}</span>
+                          <span className="action-client">{a.client_name}</span>
+                        </span>
+                        <span className={`chip action-prio prio-${a.priority.toLowerCase()}`}>{a.priority}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
             <div className="ov-grid">
               {/* Asset-class allocation */}
               <div className="panel">
