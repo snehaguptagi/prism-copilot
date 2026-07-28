@@ -142,7 +142,7 @@ export default function OverviewPage() {
                             ? "today"
                             : a.days_until_due != null
                             ? `in ${a.days_until_due}d`
-                            : "—"}
+                            : "--"}
                         </span>
                         <span className="action-body">
                           <span className="action-text">{a.action}</span>
