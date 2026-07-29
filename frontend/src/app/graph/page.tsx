@@ -202,29 +202,32 @@ export default function GraphPage() {
             </div>
 
             <div className="panel kg-best-panel">
-              <div className="panel-title">Perfect match</div>
-              {view.best_match ? (
-                <>
-                  <div className="kg-best-head">
-                    <span className="kg-best-name">{view.best_match.name}</span>
-                    <span className="kg-best-tkr">{view.best_match.ticker}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "8px 0 12px" }}>
-                    <span
-                      className="chip"
-                      style={{
-                        background: `color-mix(in srgb, ${assetClassColor(view.best_match.asset_class)} 14%, var(--surface))`,
-                        color: assetClassColor(view.best_match.asset_class),
-                      }}
-                    >
-                      {view.best_match.asset_class}
-                    </span>
-                    <span className={`kg-source-badge kg-source-${view.best_match.source}`}>
-                      {SOURCE_LABEL[view.best_match.source]}
-                    </span>
-                  </div>
-                  <p className="kg-best-why">{view.best_match.rationale}</p>
-                </>
+              <div className="panel-title">Recommended products</div>
+              {view.top_matches.length > 0 ? (
+                <div className="kg-match-list">
+                  {view.top_matches.map((m, i) => (
+                    <div key={m.security_id} className={`kg-match-row${i === 0 ? " kg-match-top" : ""}`}>
+                      <div className="kg-match-rank">{i === 0 ? "Top pick" : `#${i + 1}`}</div>
+                      <div className="kg-best-head">
+                        <span className="kg-best-name">{m.name}</span>
+                        <span className="kg-best-tkr">{m.ticker}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "6px 0 8px" }}>
+                        <span
+                          className="chip"
+                          style={{
+                            background: `color-mix(in srgb, ${assetClassColor(m.asset_class)} 14%, var(--surface))`,
+                            color: assetClassColor(m.asset_class),
+                          }}
+                        >
+                          {m.asset_class}
+                        </span>
+                        <span className={`kg-source-badge kg-source-${m.source}`}>{SOURCE_LABEL[m.source]}</span>
+                      </div>
+                      <p className="kg-best-why">{m.rationale}</p>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
                   No suitable product surfaced for this client today.

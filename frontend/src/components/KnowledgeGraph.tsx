@@ -59,6 +59,29 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
     });
   });
 
+  // Crop the viewBox to the content's actual bounding box, rather than a fixed
+  // square: the arc fan only ever occupies part of a full circle, so a fixed
+  // canvas left a lot of dead space below and to the sides. Each node type
+  // gets an allowance for what renders around it (labels, the pulse ring).
+  const classIds = new Set(classNodes.map((n) => n.id));
+  function allowance(id: string) {
+    if (id === "client") return { top: 30, bottom: 56, left: 34, right: 34 };
+    if (classIds.has(id)) return { top: 30, bottom: 20, left: 24, right: 24 };
+    return { top: 22, bottom: 22, left: 22, right: 22 };
+  }
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  Object.entries(positions).forEach(([id, pos]) => {
+    const a = allowance(id);
+    minX = Math.min(minX, pos.x - a.left);
+    maxX = Math.max(maxX, pos.x + a.right);
+    minY = Math.min(minY, pos.y - a.top);
+    maxY = Math.max(maxY, pos.y + a.bottom);
+  });
+  const viewBox = `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
+
   function nodeRadius(n: GraphViewNode) {
     if (n.type === "client") return 26;
     if (n.type === "asset_class") return 15;
@@ -79,7 +102,7 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
   }
 
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="kg-svg" role="img">
+    <svg viewBox={viewBox} className="kg-svg" role="img">
       {edges.map((e, i) => {
         const s = positions[e.source];
         const t = positions[e.target];

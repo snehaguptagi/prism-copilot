@@ -329,6 +329,7 @@ export interface GraphViewResult {
   nodes: GraphViewNode[];
   edges: GraphViewEdge[];
   best_match: GraphViewBestMatch | null;
+  top_matches: GraphViewBestMatch[];
 }
 
 export interface OverviewGraphClient {

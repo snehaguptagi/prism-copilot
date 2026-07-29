@@ -306,7 +306,7 @@ def test_graph_view_shape():
     resp = client.get("/clients/pf_it_services/graph-view")
     assert resp.status_code == 200
     body = resp.json()
-    assert set(body) >= {"portfolio_id", "client_name", "graph_enabled", "nodes", "edges", "best_match"}
+    assert set(body) >= {"portfolio_id", "client_name", "graph_enabled", "nodes", "edges", "best_match", "top_matches"}
     assert any(n["id"] == "client" for n in body["nodes"])
     assert len(body["edges"]) > 0
 
@@ -326,6 +326,24 @@ def test_graph_view_best_match_for_every_client():
         body = resp.json()
         assert body["best_match"] is not None, f"No best_match for {p['portfolio_id']}"
         assert body["best_match"]["source"] in ("rule", "graph", "both")
+
+
+def test_graph_view_shows_more_than_one_recommendation():
+    """A client should see several worthwhile products, not just the single
+    strongest one: top_matches is a ranked list, its first entry always equals
+    best_match, and every entry is a distinct security."""
+    portfolios = client.get("/portfolios").json()
+    multi_seen = False
+    for p in portfolios:
+        body = client.get(f"/clients/{p['portfolio_id']}/graph-view").json()
+        matches = body["top_matches"]
+        assert matches, f"No top_matches for {p['portfolio_id']}"
+        assert matches[0]["security_id"] == body["best_match"]["security_id"]
+        ids = [m["security_id"] for m in matches]
+        assert len(ids) == len(set(ids)), f"Duplicate security in top_matches for {p['portfolio_id']}"
+        if len(matches) > 1:
+            multi_seen = True
+    assert multi_seen, "No client anywhere received more than one recommendation"
 
 
 def test_graph_overview_shape():

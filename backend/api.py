@@ -362,40 +362,56 @@ def suggest_products(data, portfolio, max_n=3):
     return out
 
 
-def compute_best_match(rule_suggestions, graph_suggestions):
-    """Combine the two recommendation layers into a single best pick. If both
-    independently name the same security, that is the strongest possible
-    signal (a preference fit AND peer validation), so it wins; otherwise the
-    top similar-client pick if that layer is live, else the top preference
-    pick. Shared by the per-client and firm-wide views so neither can ever
-    disagree with the other."""
+def compute_ranked_matches(rule_suggestions, graph_suggestions, max_n=4):
+    """Combine the two recommendation layers into ONE ranked list, not a single
+    pick: a client should see several worthwhile products, not just one.
+    Ranking: securities both layers independently name come first (the
+    strongest signal, a preference fit AND peer validation), ranked among
+    themselves by similar-client support; then remaining similar-client-only
+    picks by peer count; then remaining preference-only picks in their
+    existing preference order. Shared by the per-client and firm-wide views so
+    neither can ever disagree with the other."""
     rule_ids = {s["security_id"] for s in rule_suggestions}
     graph_ids = {s["security_id"] for s in graph_suggestions}
     rule_by_id = {s["security_id"]: s for s in rule_suggestions}
     graph_by_id = {s["security_id"]: s for s in graph_suggestions}
-
     common = rule_ids & graph_ids
-    if common:
-        top_id = max(common, key=lambda sid: graph_by_id[sid].get("peers", 0))
-        r, g = rule_by_id[top_id], graph_by_id[top_id]
+
+    ranked = []
+
+    def _both_entry(sid):
+        r, g = rule_by_id[sid], graph_by_id[sid]
         return {
-            "security_id": top_id, "name": r["name"], "ticker": r["ticker"],
-            "asset_class": r["asset_class"], "source": "both",
+            "security_id": sid, "name": r["name"], "ticker": r["ticker"],
+            "asset_class": r["asset_class"], "source": "both", "peers": g.get("peers"),
             "rationale": f"{r['rationale']} Clients with a similar profile independently confirm it: {g['rationale'][0].lower()}{g['rationale'][1:]}",
         }
-    if graph_suggestions:
-        return {**graph_suggestions[0], "source": "graph"}
-    if rule_suggestions:
-        return {**rule_suggestions[0], "source": "rule"}
-    return None
+
+    for sid in sorted(common, key=lambda s: graph_by_id[s].get("peers", 0), reverse=True):
+        ranked.append(_both_entry(sid))
+    for s in sorted(graph_suggestions, key=lambda x: x.get("peers", 0), reverse=True):
+        if s["security_id"] not in common:
+            ranked.append({**s, "source": "graph"})
+    for s in rule_suggestions:
+        if s["security_id"] not in common:
+            ranked.append({**s, "source": "rule"})
+
+    return ranked[:max_n]
+
+
+def compute_best_match(rule_suggestions, graph_suggestions):
+    """The single strongest pick, i.e. the first entry of compute_ranked_matches.
+    Kept as its own function since several call sites only need the one pick."""
+    ranked = compute_ranked_matches(rule_suggestions, graph_suggestions, max_n=1)
+    return ranked[0] if ranked else None
 
 
 def build_graph_view(data, portfolio, max_held=6):
     """Assemble a small, renderable node/edge graph for one client, for the
     Product Fit tab: the client, their largest holdings, the asset classes
     those touch, and both recommendation layers (preference-based and, if
-    configured, similar-client) as candidate nodes, plus the single best
-    product to highlight. Fully deterministic, reuses the same
+    configured, similar-client) as candidate nodes, plus a ranked list of
+    recommended products (not just one). Fully deterministic, reuses the same
     suggest_products / graph.recommend_products the rest of the app already
     calls, so this tab can never disagree with the suggestion lists shown
     elsewhere."""
@@ -408,7 +424,8 @@ def build_graph_view(data, portfolio, max_held=6):
     rule_suggestions = suggest_products(data, portfolio, max_n=4)
     graph_enabled = graph.graph_enabled()
     graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
-    best_match = compute_best_match(rule_suggestions, graph_suggestions)
+    top_matches = compute_ranked_matches(rule_suggestions, graph_suggestions, max_n=4)
+    best_match = top_matches[0] if top_matches else None
 
     nodes, edges, seen_classes = [], [], set()
     nodes.append({"id": "client", "type": "client", "label": client["name"], "sub": client.get("risk_mandate")})
@@ -464,6 +481,7 @@ def build_graph_view(data, portfolio, max_held=6):
         "nodes": nodes,
         "edges": edges,
         "best_match": best_match,
+        "top_matches": top_matches,
     }
 
 
