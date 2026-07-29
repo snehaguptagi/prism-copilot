@@ -405,6 +405,47 @@ def test_news_feed_rejects_unknown_category():
     assert response.status_code == 404
 
 
+def test_material_factors_surfaces_every_material_driver_not_just_one():
+    """A client genuinely exposed to two or more distinct macro drivers at once
+    (e.g. a rate headwind on bonds AND a gold tailwind on a commodity sleeve)
+    must see both, not just whichever is largest. This is the fix for the bug
+    where _dominant_factor kept only the single biggest driver across the
+    whole entry and silently dropped the rest."""
+    from api import _material_factors
+
+    factor_entry = {
+        "matched": [
+            {"security_id": "sec_a", "factor": "interest_rates_india", "effect": "headwind", "weight_pct": 41.1},
+            {"security_id": "sec_b", "factor": "gold", "effect": "tailwind", "weight_pct": 28.0},
+            {"security_id": "sec_c", "factor": "oil", "effect": "tailwind", "weight_pct": 5.0},  # below materiality
+        ]
+    }
+    result = _material_factors(factor_entry)
+    factors = {f["factor"] for f in result}
+    assert factors == {"interest_rates_india", "gold"}  # oil dropped, below the 15% threshold
+    assert result[0]["factor"] == "interest_rates_india"  # sorted by pct desc
+    assert result[0]["effect"] == "headwind"
+    assert result[1]["effect"] == "tailwind"
+
+
+def test_material_factors_reports_one_effect_per_factor():
+    """If the same factor has both tailwind- and headwind-tagged holdings
+    (different securities with opposing sensitivity to one factor), report
+    only the larger side for that factor, not both."""
+    from api import _material_factors
+
+    factor_entry = {
+        "matched": [
+            {"security_id": "sec_a", "factor": "usd_inr", "effect": "tailwind", "weight_pct": 60.0},
+            {"security_id": "sec_b", "factor": "usd_inr", "effect": "headwind", "weight_pct": 20.0},
+        ]
+    }
+    result = _material_factors(factor_entry)
+    assert len(result) == 1
+    assert result[0]["effect"] == "tailwind"
+    assert result[0]["pct"] == 60.0
+
+
 # ---------------------------------------------------------------------------
 # Talking points (validation only — the live LLM narration call itself is
 # covered by manual runs, same reasoning as /lens/run and /news/feed above)

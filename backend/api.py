@@ -971,20 +971,34 @@ _FACTOR_LABEL = {
 }
 
 
-def _dominant_factor(factor_entry, effect):
-    """Return (label, pct) for the single macro factor with the most exposure in
-    the given direction. pct counts each holding once for that factor (distinct
-    NAV), so it can never exceed 100%, and the label is specific ('gold prices')
-    rather than a vague 'macro factors'."""
-    per_factor = {}  # factor -> {security_id: weight_pct}  (dedup within a factor)
+def _material_factors(factor_entry, min_pct=FACTOR_MATERIALITY_PCT):
+    """Return EVERY macro factor (not just the single largest) whose exposure
+    clears the materiality threshold, as a list of {factor, label, effect, pct}
+    sorted by pct desc. A client can be genuinely, materially exposed to more
+    than one distinct driver in the same day's news (e.g. a rate headwind on
+    their bonds AND a gold tailwind on their commodity sleeve); both deserve
+    their own line rather than only ever keeping the single largest. Each
+    holding has one fixed effect (tailwind or headwind) per factor, so a given
+    factor is reported once, in whichever direction its own exposure nets to."""
+    per_factor_effect = {}  # (factor, effect) -> {security_id: weight_pct}, dedup within a factor+effect
     for m in factor_entry.get("matched", []):
-        if m.get("effect") == effect:
-            per_factor.setdefault(m["factor"], {})[m["security_id"]] = m["weight_pct"]
-    if not per_factor:
-        return None, 0.0
-    totals = {f: sum(w.values()) for f, w in per_factor.items()}
-    top = max(totals, key=totals.get)
-    return _FACTOR_LABEL.get(top, "macro moves"), round(min(totals[top], 100.0), 1)
+        key = (m["factor"], m["effect"])
+        per_factor_effect.setdefault(key, {})[m["security_id"]] = m["weight_pct"]
+
+    per_factor_totals = {}  # factor -> (effect, pct), keep the larger-exposure effect per factor
+    for (factor, effect), weights in per_factor_effect.items():
+        pct = round(min(sum(weights.values()), 100.0), 1)
+        existing = per_factor_totals.get(factor)
+        if not existing or pct > existing[1]:
+            per_factor_totals[factor] = (effect, pct)
+
+    out = [
+        {"factor": factor, "label": _FACTOR_LABEL.get(factor, "macro moves"), "effect": effect, "pct": pct}
+        for factor, (effect, pct) in per_factor_totals.items()
+        if pct >= min_pct
+    ]
+    out.sort(key=lambda x: x["pct"], reverse=True)
+    return out
 
 
 _STAT_RE = re.compile(
@@ -1066,28 +1080,32 @@ def get_news_feed(category: str, force: bool = False):
             continue
         how = []
         material = 0.0
+        material_factors = []
         if direct_pct.get(pid, 0) > 0:
             how.append(f"{direct_pct[pid]}% of NAV in names directly in the news")
             material += direct_pct[pid] * 2.0  # a directly-named holding is the strongest signal
         fi = factor_by_pid.get(pid)
         if fi:
-            t_label, t_pct = _dominant_factor(fi, "tailwind")
-            h_label, h_pct = _dominant_factor(fi, "headwind")
-            if t_pct >= h_pct and t_pct >= FACTOR_MATERIALITY_PCT:
-                how.append(f"{t_pct}% of NAV is a tailwind from {t_label}")
-                material += t_pct
-            elif h_pct >= FACTOR_MATERIALITY_PCT:
-                how.append(f"{h_pct}% of NAV is a headwind from {h_label}")
-                material += h_pct
+            material_factors = _material_factors(fi)
+            for f in material_factors:
+                how.append(f"{f['pct']}% of NAV is a {f['effect']} from {f['label']}")
+                material += f["pct"]
         if not how:
             continue
         meta = portfolio_meta[pid]
+        if len(how) == 1:
+            how_text = how[0]
+        elif len(how) == 2:
+            how_text = " and ".join(how)
+        else:
+            how_text = ", ".join(how[:-1]) + f", and {how[-1]}"
         affected.append({
             "portfolio_id": pid,
             "portfolio_name": meta["portfolio_name"],
             "client_name": meta["client"]["name"],
+            "material_factors": material_factors,
             "persona": meta["client"]["persona"],
-            "how_affected": ", and ".join(how),
+            "how_affected": how_text,
             "direct_pct": direct_pct.get(pid, 0.0),
             "material": material,
             "factor": factor_by_pid.get(pid),

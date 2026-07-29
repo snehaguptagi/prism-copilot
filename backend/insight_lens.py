@@ -630,11 +630,15 @@ already computed). Produce:
    concrete fact (a number, a name, a decision). No paragraphs. These replace the raw text,
    so they must stand on their own and give a genuinely fuller read than the tldr alone.
 3. For EACH affected client given, one short talking point the manager could say to that
-   specific client, tailored to their persona and how they are affected.
+   specific client, tailored to their persona and how they are affected. Their "affected"
+   line may list more than one distinct driver (e.g. a direct holding plus a rate headwind
+   plus a separate gold tailwind), the client is genuinely exposed to all of
+   them, so briefly acknowledge the combination rather than picking only the first one.
 
 Hard rules:
-- BE SHORT everywhere. The tldr is ONE sentence. Each key_point and talking point is ONE
-  sentence, max 22 to 25 words.
+- BE SHORT everywhere. The tldr is ONE sentence. Each key_point is ONE sentence, max 22 to 25
+  words. Each talking point is ONE to TWO sentences, max 35 words, longer only when the client
+  has multiple distinct drivers worth naming.
 - LEAD WITH THE CONCRETE FACT (number, name, decision), then the plain read.
 - Never say what any client should buy, sell, hold, or how to change a portfolio.
 - Never use words like "recommend," "should invest," "opportunity," or similar.

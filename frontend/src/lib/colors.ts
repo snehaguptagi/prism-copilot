@@ -79,6 +79,7 @@ const ASSET_CLASS_COLORS: Record<string, string> = {
   Commodity: "#b5850a",
   Cash: "#64748b",
   Alternatives: "#7c3aed",
+  Hybrid: "#2f7a3d", // validated against the rest of this palette on light + dark surfaces
 };
 
 export function assetClassColor(assetClass: string): string {

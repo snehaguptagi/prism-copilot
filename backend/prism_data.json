@@ -2627,6 +2627,281 @@
       "beta": 0.55,
       "cap_tier": null,
       "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_largecap",
+      "primary_ticker": "MIRAELCF",
+      "name": "Mirae Asset Large Cap Fund",
+      "aliases": [
+        "Mirae Large Cap Fund",
+        "Mirae Asset Large Cap"
+      ],
+      "isin": "ZZIN0000MIRAELCF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Diversified Equity",
+      "industry": "Large Cap Fund",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 16.0,
+      "beta": 0.95,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_flexicap",
+      "primary_ticker": "PPFCF",
+      "name": "Parag Parikh Flexi Cap Fund",
+      "aliases": [
+        "Parag Parikh Flexi Cap",
+        "PPFAS Flexi Cap"
+      ],
+      "isin": "ZZIN0000PPFCF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Diversified Equity",
+      "industry": "Flexi Cap Fund",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 17.5,
+      "beta": 0.9,
+      "cap_tier": "large",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_midcap",
+      "primary_ticker": "KOTAKEEF",
+      "name": "Kotak Emerging Equity Fund",
+      "aliases": [
+        "Kotak Emerging Equity",
+        "Kotak Mid Cap Fund"
+      ],
+      "isin": "ZZIN0000KOTAKEEF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Diversified Equity",
+      "industry": "Mid Cap Fund",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 21.0,
+      "beta": 1.0,
+      "cap_tier": "mid",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_smallcap",
+      "primary_ticker": "SBISCF",
+      "name": "SBI Small Cap Fund",
+      "aliases": [
+        "SBI Small Cap"
+      ],
+      "isin": "ZZIN0000SBISCF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Diversified Equity",
+      "industry": "Small Cap Fund",
+      "country": "IN",
+      "asset_class": "Equity",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 26.0,
+      "beta": 1.1,
+      "cap_tier": "small",
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_shortterm",
+      "primary_ticker": "AXISSTF",
+      "name": "Axis Short Term Fund",
+      "aliases": [
+        "Axis Short Term Fund",
+        "Axis Short Duration Fund"
+      ],
+      "isin": "ZZIN0000AXISSTF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Short Duration Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 1.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AAA"
+    },
+    {
+      "security_id": "sec_mf_gilt",
+      "primary_ticker": "SBIGILT",
+      "name": "SBI Magnum Gilt Fund",
+      "aliases": [
+        "SBI Magnum Gilt Fund",
+        "SBI Gilt Fund"
+      ],
+      "isin": "ZZIN0000SBIGILT1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Gilt Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 5.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "Govt"
+    },
+    {
+      "security_id": "sec_mf_dynamicbond",
+      "primary_ticker": "ICICIASB",
+      "name": "ICICI Prudential All Seasons Bond Fund",
+      "aliases": [
+        "ICICI All Seasons Bond Fund",
+        "ICICI Prudential Dynamic Bond"
+      ],
+      "isin": "ZZIN0000ICICIASB1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Dynamic Bond Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 3.0,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AA+"
+    },
+    {
+      "security_id": "sec_mf_creditrisk",
+      "primary_ticker": "ABSLCRF",
+      "name": "Aditya Birla Sun Life Credit Risk Fund",
+      "aliases": [
+        "Aditya Birla Credit Risk Fund",
+        "ABSL Credit Risk Fund"
+      ],
+      "isin": "ZZIN0000ABSLCRF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Credit Risk Fund",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 4.5,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "A+"
+    },
+    {
+      "security_id": "sec_corp_bond_aa",
+      "primary_ticker": "RECAABOND",
+      "name": "REC Ltd AA Bond",
+      "aliases": [
+        "REC Bond",
+        "Rural Electrification Corporation Bond"
+      ],
+      "isin": "ZZIN0000RECAABOND1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Fixed Income",
+      "industry": "Corporate Bond",
+      "country": "IN",
+      "asset_class": "Fixed Income",
+      "instrument_type": "Corporate Bond",
+      "factor_sensitivities": {
+        "interest_rates_india": "negative"
+      },
+      "vol": 4.0,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": "AA"
+    },
+    {
+      "security_id": "sec_silver_etf",
+      "primary_ticker": "SILVERBEES",
+      "name": "Nippon India Silver ETF",
+      "aliases": [
+        "Silver ETF",
+        "SilverBeES"
+      ],
+      "isin": "ZZIN0000SILVERBEES1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Commodity",
+      "industry": "Silver ETF",
+      "country": "IN",
+      "asset_class": "Commodity",
+      "instrument_type": "ETF",
+      "factor_sensitivities": {
+        "gold": "same_direction"
+      },
+      "vol": 18.0,
+      "beta": 0.0,
+      "cap_tier": null,
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_bafund",
+      "primary_ticker": "ICICIBAF",
+      "name": "ICICI Prudential Balanced Advantage Fund",
+      "aliases": [
+        "ICICI Balanced Advantage Fund",
+        "ICICI BAF"
+      ],
+      "isin": "ZZIN0000ICICIBAF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Multi-Asset",
+      "industry": "Balanced Advantage Fund",
+      "country": "IN",
+      "asset_class": "Hybrid",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 9.0,
+      "beta": 0.5,
+      "cap_tier": null,
+      "credit_quality": null
+    },
+    {
+      "security_id": "sec_mf_hybrid",
+      "primary_ticker": "HDFCHEF",
+      "name": "HDFC Hybrid Equity Fund",
+      "aliases": [
+        "HDFC Hybrid Equity",
+        "HDFC Balanced Fund"
+      ],
+      "isin": "ZZIN0000HDFCHEF1",
+      "parent_id": null,
+      "adr_of": null,
+      "sector": "Multi-Asset",
+      "industry": "Aggressive Hybrid Fund",
+      "country": "IN",
+      "asset_class": "Hybrid",
+      "instrument_type": "Mutual Fund",
+      "factor_sensitivities": {},
+      "vol": 12.0,
+      "beta": 0.65,
+      "cap_tier": null,
+      "credit_quality": null
     }
   ],
   "holdings": [

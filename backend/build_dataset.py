@@ -238,6 +238,47 @@ SECURITIES = [
         "Real Estate", "Office REIT", "Real Estate", "REIT", 16.0, 0.6),
     sec("sec_mindspace_reit", "MINDSPACE", "Mindspace Business Parks REIT", ["Mindspace REIT", "Mindspace Business Parks"],
         "Real Estate", "Office REIT", "Real Estate", "REIT", 15.0, 0.55),
+
+    # Diversified equity mutual funds. A realistic RM shelf leans heavily on
+    # these rather than only single stocks, spanning the full cap spectrum.
+    sec("sec_mf_largecap", "MIRAELCF", "Mirae Asset Large Cap Fund", ["Mirae Large Cap Fund", "Mirae Asset Large Cap"],
+        "Diversified Equity", "Large Cap Fund", "Equity", "Mutual Fund", 16.0, 0.95, cap_tier="large"),
+    sec("sec_mf_flexicap", "PPFCF", "Parag Parikh Flexi Cap Fund", ["Parag Parikh Flexi Cap", "PPFAS Flexi Cap"],
+        "Diversified Equity", "Flexi Cap Fund", "Equity", "Mutual Fund", 17.5, 0.9, cap_tier="large"),
+    sec("sec_mf_midcap", "KOTAKEEF", "Kotak Emerging Equity Fund", ["Kotak Emerging Equity", "Kotak Mid Cap Fund"],
+        "Diversified Equity", "Mid Cap Fund", "Equity", "Mutual Fund", 21.0, 1.0, cap_tier="mid"),
+    sec("sec_mf_smallcap", "SBISCF", "SBI Small Cap Fund", ["SBI Small Cap"],
+        "Diversified Equity", "Small Cap Fund", "Equity", "Mutual Fund", 26.0, 1.1, cap_tier="small"),
+
+    # More fixed income: duration and credit variety beyond the existing AAA
+    # corporate bond fund and PSU bond fund, so the shelf isn't gold-plated-only.
+    sec("sec_mf_shortterm", "AXISSTF", "Axis Short Term Fund", ["Axis Short Term Fund", "Axis Short Duration Fund"],
+        "Fixed Income", "Short Duration Fund", "Fixed Income", "Mutual Fund", 1.5, 0.0, credit_quality="AAA",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_mf_gilt", "SBIGILT", "SBI Magnum Gilt Fund", ["SBI Magnum Gilt Fund", "SBI Gilt Fund"],
+        "Fixed Income", "Gilt Fund", "Fixed Income", "Mutual Fund", 5.5, 0.0, credit_quality="Govt",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_mf_dynamicbond", "ICICIASB", "ICICI Prudential All Seasons Bond Fund", ["ICICI All Seasons Bond Fund", "ICICI Prudential Dynamic Bond"],
+        "Fixed Income", "Dynamic Bond Fund", "Fixed Income", "Mutual Fund", 3.0, 0.0, credit_quality="AA+",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_mf_creditrisk", "ABSLCRF", "Aditya Birla Sun Life Credit Risk Fund", ["Aditya Birla Credit Risk Fund", "ABSL Credit Risk Fund"],
+        "Fixed Income", "Credit Risk Fund", "Fixed Income", "Mutual Fund", 4.5, 0.0, credit_quality="A+",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+    sec("sec_corp_bond_aa", "RECAABOND", "REC Ltd AA Bond", ["REC Bond", "Rural Electrification Corporation Bond"],
+        "Fixed Income", "Corporate Bond", "Fixed Income", "Corporate Bond", 4.0, 0.0, credit_quality="AA",
+        factor_sensitivities={"interest_rates_india": "negative"}),
+
+    # Second commodity sleeve, so it isn't gold-only.
+    sec("sec_silver_etf", "SILVERBEES", "Nippon India Silver ETF", ["Silver ETF", "SilverBeES"],
+        "Commodity", "Silver ETF", "Commodity", "ETF", 18.0, 0.0,
+        factor_sensitivities={"gold": "same_direction"}),
+
+    # Hybrid (balanced) funds, extremely common on a real RM shelf, blending
+    # equity and debt in one product; absent from the shelf until now.
+    sec("sec_mf_bafund", "ICICIBAF", "ICICI Prudential Balanced Advantage Fund", ["ICICI Balanced Advantage Fund", "ICICI BAF"],
+        "Multi-Asset", "Balanced Advantage Fund", "Hybrid", "Mutual Fund", 9.0, 0.5),
+    sec("sec_mf_hybrid", "HDFCHEF", "HDFC Hybrid Equity Fund", ["HDFC Hybrid Equity", "HDFC Balanced Fund"],
+        "Multi-Asset", "Aggressive Hybrid Fund", "Hybrid", "Mutual Fund", 12.0, 0.65),
 ]
 
 SEC_BY_ID = {s["security_id"]: s for s in SECURITIES}
