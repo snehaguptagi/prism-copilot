@@ -31,7 +31,11 @@ export default function OverviewPage() {
       <div className="wrap">
         <header className="hero hero-tight">
           <p className="eyebrow">Book overview</p>
-          <h1>Your entire book, at a glance</h1>
+          {/* The deck's one typographic flourish, used as sparingly as it uses it
+              (2 of 33 slides): a single word in serif italic inside a grotesk line. */}
+          <h1>
+            Your <span className="em-serif">entire</span> book, at a glance
+          </h1>
           <p className="lede">
             A live, firm wide summary of every client portfolio you manage. Every figure below is
             computed directly from current holdings, nothing estimated.

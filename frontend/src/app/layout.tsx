@@ -1,17 +1,40 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-plex-sans",
+// Typography follows the Perplexity deck's pairing: a neutral grotesk carrying
+// everything, at weights from Thin to Semibold, plus a serif italic used for
+// exactly one emphasized word inside a grotesk line ("Search like *never*
+// before.").
+//
+// The deck itself sets FK Grotesk, which is commercially licensed and cannot be
+// redistributed here. Inter is the substitute: the same neo-grotesque genre
+// (closed apertures, low contrast, neutral skeleton) and, critically, it ships
+// the 200-300 weights the deck's display treatment depends on. Instrument Serif
+// is the deck's actual accent face and is openly licensed, so that one is exact.
+// Loaded as the VARIABLE font (no `weight` array) rather than a set of static
+// cuts, because the display scale asks for weights between the named stops
+// (--weight-display is 250). With static cuts the browser snaps to the nearest
+// loaded weight and the intended thinness is lost.
+const grotesk = Inter({
+  variable: "--font-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
+const serifAccent = Instrument_Serif({
+  variable: "--font-serif-accent",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic"],
+});
+
+// Retained for tickers, ISINs and holding ids, where character-cell alignment
+// genuinely helps. Display figures do NOT use it: the deck sets its big numbers
+// in the grotesk at a light weight, and Inter's tabular figures cover alignment.
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +53,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${grotesk.variable} ${serifAccent.variable} ${ibmPlexMono.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {children}

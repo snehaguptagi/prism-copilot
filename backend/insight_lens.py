@@ -25,6 +25,7 @@ Run:
 """
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -49,6 +50,11 @@ except ImportError:
     sys.exit(1)
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "prism_data.json")
+# Runtime edits (clients an RM adds, holdings they adjust, profiles they fill
+# in) are written HERE, never into prism_data.json. That split is the whole
+# point: `python build_dataset.py` can regenerate the demo dataset from scratch
+# without destroying anything the RM entered by hand.
+OVERLAY_PATH = os.path.join(os.path.dirname(__file__), "prism_overlay.json")
 # Tiered models to keep latency down without sacrificing the parts that need
 # judgment. Search + narration go to Sonnet (fast, strong); pure classification
 # goes to Haiku (fastest). None of these compute exposure numbers; that is all
@@ -83,9 +89,100 @@ grounding layer that a separate, deterministic system will use to compute portfo
 exposure, that system decides impact, not you."""
 
 
+_EMPTY_OVERLAY = {
+    "version": 1,
+    "portfolios": [],        # whole portfolios added at runtime
+    "client_overrides": {},  # portfolio_id -> partial client dict (persona, psychographics)
+    "holdings": {},          # portfolio_id -> full replacement holdings list
+    "risk": {},              # portfolio_id -> risk block
+}
+
+
+def empty_overlay():
+    return copy.deepcopy(_EMPTY_OVERLAY)
+
+
+def load_overlay():
+    """Read the runtime-edit overlay, tolerating a missing or partial file.
+    Anything unrecognized or of the wrong type is ignored rather than raised,
+    so a hand-edited overlay can never take the whole app down."""
+    if not os.path.exists(OVERLAY_PATH):
+        return empty_overlay()
+    try:
+        with open(OVERLAY_PATH, encoding="utf-8") as f:
+            raw = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return empty_overlay()
+    if not isinstance(raw, dict):
+        return empty_overlay()
+    overlay = empty_overlay()
+    if isinstance(raw.get("portfolios"), list):
+        overlay["portfolios"] = raw["portfolios"]
+    for key in ("client_overrides", "holdings", "risk"):
+        if isinstance(raw.get(key), dict):
+            overlay[key] = raw[key]
+    return overlay
+
+
+def save_overlay(overlay):
+    with open(OVERLAY_PATH, "w", encoding="utf-8") as f:
+        json.dump(overlay, f, indent=2)
+
+
+def _merge_client(base_client, patch):
+    """One level of nesting is enough here: psychographics is a flat dict of
+    strings, everything else on a client is a scalar. A patch value of None
+    means "not supplied", so it never blanks an existing field."""
+    for key, value in patch.items():
+        if value is None:
+            continue
+        if isinstance(value, dict) and isinstance(base_client.get(key), dict):
+            base_client[key].update({k: v for k, v in value.items() if v is not None})
+        else:
+            base_client[key] = value
+
+
+def apply_overlay(data, overlay):
+    """Layer runtime edits onto the seed dataset. Order matters: portfolios
+    first (so an override can target a client added earlier), then per-client
+    field patches, then holdings, then risk."""
+    known = {p["portfolio_id"] for p in data["portfolios"]}
+    for p in overlay["portfolios"]:
+        pid = p.get("portfolio_id")
+        if pid and pid not in known:
+            data["portfolios"].append(p)
+            known.add(pid)
+
+    for pid, patch in overlay["client_overrides"].items():
+        if not isinstance(patch, dict):
+            continue
+        for p in data["portfolios"]:
+            if p["portfolio_id"] == pid and p.get("client"):
+                _merge_client(p["client"], patch)
+                break
+
+    # A portfolio_id present in overlay["holdings"] has its holdings REPLACED
+    # wholesale, not appended to, so removing a position actually removes it.
+    replaced = {pid for pid, rows in overlay["holdings"].items() if isinstance(rows, list)}
+    if replaced:
+        data["holdings"] = [h for h in data["holdings"] if h["portfolio_id"] not in replaced]
+        for pid in replaced:
+            data["holdings"].extend(overlay["holdings"][pid])
+
+    for pid, block in overlay["risk"].items():
+        if isinstance(block, dict):
+            data["risk"][pid] = block
+
+    return data
+
+
 def load_data():
+    """Single read path for the whole app: seed dataset plus runtime overlay.
+    Every endpoint calls this on each request, so an edit is visible
+    immediately with no restart and no in-process cache to invalidate."""
     with open(DATA_PATH, encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    return apply_overlay(data, load_overlay())
 
 
 def securities_in_sector(data, sector):

@@ -1,4 +1,4 @@
-import { ClientAccount, GraphStatus, GraphSuggestionsResult, GraphViewResult, LensResult, NewsFeedResult, Overview, OverviewGraphResult, Portfolio, Products, TalkingPointsResult } from "./types";
+import { ClientAccount, GraphStatus, GraphSuggestionsResult, GraphViewResult, LensResult, NewsFeedResult, Overview, OverviewGraphResult, Portfolio, ProductSuggestion, Products, ProfileOptions, Psychographics, Security, TalkingPointsResult } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
@@ -18,6 +18,27 @@ async function postJSON<T>(path: string, body: unknown): Promise<T> {
   });
   if (!res.ok) {
     throw new Error(`${path} failed: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+async function sendJSON<T>(method: "PUT" | "DELETE", path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (!res.ok) {
+    // FastAPI puts the human-readable reason in `detail`; surface that rather
+    // than a bare status code, since these are validation errors an RM can fix.
+    let detail = `${res.status}`;
+    try {
+      const parsed = await res.json();
+      detail = typeof parsed?.detail === "string" ? parsed.detail : JSON.stringify(parsed);
+    } catch {
+      detail = (await res.text()) || detail;
+    }
+    throw new Error(detail);
   }
   return res.json();
 }
@@ -48,16 +69,62 @@ export interface AddClientRequest {
   age?: number;
   email?: string;
   phone?: string;
+  persona?: string;
+  psychographics?: Psychographics;
 }
 
 export interface AddClientResult {
   portfolio_id: string;
   client_name: string;
   risk_tier: string;
+  has_profile: boolean;
 }
 
 export function addClient(req: AddClientRequest): Promise<AddClientResult> {
   return postJSON<AddClientResult>("/clients", req);
+}
+
+export function deleteClient(portfolioId: string): Promise<{ deleted: boolean }> {
+  return sendJSON<{ deleted: boolean }>("DELETE", `/clients/${portfolioId}`);
+}
+
+export function getProfileOptions(): Promise<ProfileOptions> {
+  return getJSON<ProfileOptions>("/profile-options");
+}
+
+export function getSecurities(): Promise<Security[]> {
+  return getJSON<Security[]>("/securities");
+}
+
+export interface UpdateProfileResult {
+  portfolio_id: string;
+  psychographics: Psychographics;
+  persona: string;
+  product_suggestions: ProductSuggestion[];
+}
+
+export function updateProfile(
+  portfolioId: string,
+  body: { persona?: string; psychographics?: Psychographics },
+): Promise<UpdateProfileResult> {
+  return sendJSON<UpdateProfileResult>("PUT", `/clients/${portfolioId}/profile`, body);
+}
+
+export interface UpdateHoldingsResult {
+  portfolio_id: string;
+  num_holdings: number;
+  aum: number;
+  risk_tier: string;
+  est_vol: number;
+}
+
+/** Weights are raw and need not total 100; the backend normalizes them. */
+export function updateHoldings(
+  portfolioId: string,
+  holdings: { security_id: string; weight: number }[],
+  nav?: number,
+): Promise<UpdateHoldingsResult> {
+  return sendJSON<UpdateHoldingsResult>("PUT", `/clients/${portfolioId}/holdings`, { holdings, nav });
 }
 
 export function getOverview(): Promise<Overview> {

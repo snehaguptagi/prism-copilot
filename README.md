@@ -36,6 +36,29 @@ The running system uses a single external API: the Anthropic Claude API, includi
 - **Product Fit** - a visual map, per client, of their holdings, preferences, and the products worth raising with them, with the single strongest pick highlighted. Suggestions are matched to each client's stated preferences (goal, horizon, loss aversion, life stage) and risk mandate; an optional knowledge graph adds a second, similar-client layer on top. The app works identically without it.
 - **Light and dark theme** - a toggle in the top bar; the choice persists across visits and otherwise follows the system preference.
 
+## Adding and editing clients
+
+The 16 personas are demo data, and they are also the starting point for your own. Adding a client
+never asks you to type a portfolio from scratch:
+
+1. **Add a client** from the Clients tab. You give the client-level facts (name, mandate, initial
+   AUM) and pick a **starting strategy** - one of the existing books, whose asset mix is cloned and
+   rescaled to your client's AUM. Optionally answer the four preference questions (goal, horizon,
+   loss aversion, life stage); those are what Product Fit ranks against, so a client without them
+   gets suggestions that can only fill allocation gaps.
+2. **Edit holdings** on the client's Holdings tab: adjust weights, add securities from the full
+   investable universe, remove positions. Weights are normalized on save, so they need not total
+   exactly 100, and AUM is held constant. Risk tier, volatility and concentration are recomputed by
+   the same `compute_portfolio_risk` formula used for every seeded client, so an edited book stays
+   directly comparable to the demo ones.
+3. **Edit the profile** on the Profile tab, for seeded clients as well as your own.
+
+All of this is written to `backend/prism_overlay.json`, never to `prism_data.json`. That split is
+deliberate: `python build_dataset.py` can regenerate the demo dataset at any time without destroying
+your work, and deleting the overlay resets the app to the shipped 16 personas. The overlay is
+gitignored, like `.env`. Clients you added can be removed from the app; seeded ones cannot, since
+nothing at runtime writes to the seed dataset.
+
 ## Core design principles
 
 - **Portfolio-aware grounding is the moat.** Every insight is linked to actual holdings.

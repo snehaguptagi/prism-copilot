@@ -59,15 +59,35 @@ export interface ScenarioImpact {
   bands: { mild: number; moderate: number; severe: number };
 }
 
+// Every field optional: a seeded client has all eight, but a profile filled in
+// by hand through the UI is allowed to be partial and often is.
 export interface Psychographics {
-  decision_style: string;
-  loss_aversion: string;
-  financial_literacy: string;
-  engagement: string;
-  comms_pref: string;
-  primary_goal: string;
-  time_horizon: string;
-  life_stage: string;
+  decision_style?: string;
+  loss_aversion?: string;
+  financial_literacy?: string;
+  engagement?: string;
+  comms_pref?: string;
+  primary_goal?: string;
+  time_horizon?: string;
+  life_stage?: string;
+}
+
+export type PsychographicField = keyof Psychographics;
+
+export interface ProfileOptions {
+  options: Record<PsychographicField, string[]>;
+  // The subset that actually drives product ranking, per the backend.
+  scoring_fields: PsychographicField[];
+}
+
+export interface Security {
+  security_id: string;
+  name: string;
+  ticker: string;
+  sector: string;
+  asset_class: string;
+  instrument_type: string;
+  vol: number | null;
 }
 
 export interface Communication {
@@ -208,6 +228,7 @@ export interface ClientAccount {
   portfolio_id: string;
   portfolio_name: string;
   mandate: string;
+  is_custom?: boolean; // added at runtime, so it can be deleted again
   risk_driver?: string;
   risk_tier: RiskTier | null;
   est_vol?: number | null;

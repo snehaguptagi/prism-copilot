@@ -8,12 +8,16 @@ insight_lens.py, since mocking a full Anthropic response would test the
 mock, not the app. No auth — this is an open, single-PM demo API.
 """
 
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 
 from api import app
 
 client = TestClient(app)
+
+SEED_DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "prism_data.json")
 
 
 def test_me_returns_manager_name():
@@ -71,7 +75,7 @@ def test_clients_endpoint_returns_one_per_real_portfolio():
     assert len(clients) == 16
 
 
-def test_add_client_creates_a_valid_persisted_client(preserve_dataset):
+def test_add_client_creates_a_valid_persisted_client(preserve_dataset, clean_overlay):
     resp = client.post("/clients", json={
         "name": "Test Client Zzz",
         "occupation": "Software Engineer",
@@ -99,7 +103,7 @@ def test_add_client_creates_a_valid_persisted_client(preserve_dataset):
     assert overview["kpis"]["client_count"] == 17  # 16 seeded + this one
 
 
-def test_add_client_risk_tier_matches_shared_formula(preserve_dataset):
+def test_add_client_risk_tier_matches_shared_formula(preserve_dataset, clean_overlay):
     """The runtime endpoint must compute risk with the exact same formula the
     seed dataset uses (portfolio_risk.compute_portfolio_risk), so a client
     added live is never treated differently from a seeded one."""
@@ -126,7 +130,7 @@ def test_add_client_risk_tier_matches_shared_formula(preserve_dataset):
     assert data["risk"][new_pid]["risk_score"] == expected_risk["risk_score"]
 
 
-def test_add_client_rejects_unknown_mandate(preserve_dataset):
+def test_add_client_rejects_unknown_mandate(preserve_dataset, clean_overlay):
     resp = client.post("/clients", json={
         "name": "Bad Mandate Client", "occupation": "X", "city": "Y",
         "risk_mandate": "Not A Real Mandate", "initial_aum": 1_000_000,
@@ -135,7 +139,7 @@ def test_add_client_rejects_unknown_mandate(preserve_dataset):
     assert resp.status_code == 400
 
 
-def test_add_client_rejects_unknown_template(preserve_dataset):
+def test_add_client_rejects_unknown_template(preserve_dataset, clean_overlay):
     resp = client.post("/clients", json={
         "name": "Bad Template Client", "occupation": "X", "city": "Y",
         "risk_mandate": "Moderate", "initial_aum": 1_000_000,
@@ -144,13 +148,316 @@ def test_add_client_rejects_unknown_template(preserve_dataset):
     assert resp.status_code == 404
 
 
-def test_add_client_rejects_non_positive_aum(preserve_dataset):
+def test_add_client_rejects_non_positive_aum(preserve_dataset, clean_overlay):
     resp = client.post("/clients", json={
         "name": "Zero AUM Client", "occupation": "X", "city": "Y",
         "risk_mandate": "Moderate", "initial_aum": 0,
         "template_portfolio_id": "pf_largecap_growth",
     })
     assert resp.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# The runtime-edit overlay: added clients, edited holdings, filled-in profiles.
+# The contract is that all three persist in prism_overlay.json and NEVER touch
+# prism_data.json, so `python build_dataset.py` cannot destroy an RM's work.
+# ---------------------------------------------------------------------------
+
+BASE_CLIENT = {
+    "occupation": "Software Engineer",
+    "city": "Pune",
+    "risk_mandate": "Moderate",
+    "initial_aum": 3_000_000,
+    "template_portfolio_id": "pf_largecap_growth",
+}
+
+
+def _add(name, **extra):
+    resp = client.post("/clients", json={"name": name, **BASE_CLIENT, **extra})
+    assert resp.status_code == 200, resp.text
+    return resp.json()
+
+
+def test_add_client_leaves_the_seed_dataset_byte_identical(preserve_dataset, clean_overlay):
+    """The whole reason the overlay exists. If this fails, regenerating the demo
+    dataset silently deletes every client the RM added."""
+    original = preserve_dataset
+    _add("Overlay Only Client")
+    with open(SEED_DATA_PATH, encoding="utf-8") as f:
+        assert f.read() == original
+
+
+def test_added_client_survives_a_seed_dataset_rebuild(preserve_dataset, clean_overlay):
+    """Simulates `python build_dataset.py`: rewrite prism_data.json from the
+    generator, then confirm the added client is still there afterwards."""
+    import build_dataset
+
+    new_pid = _add("Rebuild Survivor")["portfolio_id"]
+    build_dataset.main()  # the exact thing that used to wipe added clients
+
+    clients = client.get("/clients").json()
+    assert any(c["portfolio_id"] == new_pid for c in clients)
+
+
+def test_add_client_accepts_a_behavioral_profile_that_drives_product_fit(preserve_dataset, clean_overlay):
+    """The gap this closes: without psychographics, _preference_profile scores
+    every asset class at 0.0 and no suggestion can say "Matches ...". Supplying
+    a preservation goal must produce a preference-matched suggestion, exactly
+    like a seeded client gets."""
+    body = _add(
+        "Profiled New Client",
+        risk_mandate="Conservative",
+        psychographics={
+            "primary_goal": "Preserve capital and avoid losses",
+            "time_horizon": "Short, under 3 years",
+            "loss_aversion": "Very high",
+            "life_stage": "Retired",
+        },
+    )
+    assert body["has_profile"] is True
+
+    match = next(c for c in client.get("/clients").json() if c["portfolio_id"] == body["portfolio_id"])
+    assert match["client"]["psychographics"]["primary_goal"] == "Preserve capital and avoid losses"
+    matched = [s for s in match["product_suggestions"] if s["rationale"].startswith("Matches ")]
+    assert matched, "a profiled client must get preference-matched suggestions"
+
+
+def test_add_client_without_a_profile_still_works_but_has_no_preference_match(preserve_dataset, clean_overlay):
+    """Documents the honest fallback: no profile means suggestions still appear
+    (mandate-and-gap reasoning), they just cannot claim a preference match."""
+    body = _add("Unprofiled New Client")
+    assert body["has_profile"] is False
+    match = next(c for c in client.get("/clients").json() if c["portfolio_id"] == body["portfolio_id"])
+    assert match["product_suggestions"], "must still get suggestions"
+    assert not [s for s in match["product_suggestions"] if s["rationale"].startswith("Matches ")]
+
+
+def test_profile_update_makes_product_fit_work_for_an_added_client(preserve_dataset, clean_overlay):
+    """Same outcome as supplying the profile up front, but filled in later,
+    which is the realistic flow: add the client, learn about them, come back."""
+    new_pid = _add("Later Profiled Client")["portfolio_id"]
+    before = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    assert not [s for s in before["product_suggestions"] if s["rationale"].startswith("Matches ")]
+
+    resp = client.put(f"/clients/{new_pid}/profile", json={
+        "psychographics": {"primary_goal": "Hedge against inflation with gold", "loss_aversion": "High"},
+    })
+    assert resp.status_code == 200
+    assert [s for s in resp.json()["product_suggestions"] if s["rationale"].startswith("Matches ")]
+
+    after = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    assert after["client"]["psychographics"]["primary_goal"] == "Hedge against inflation with gold"
+
+
+def test_profile_update_merges_rather_than_replaces(preserve_dataset, clean_overlay):
+    new_pid = _add("Merge Profile Client")["portfolio_id"]
+    client.put(f"/clients/{new_pid}/profile", json={"psychographics": {"primary_goal": "Long-term growth and compounding"}})
+    resp = client.put(f"/clients/{new_pid}/profile", json={"psychographics": {"life_stage": "Early career"}})
+    psy = resp.json()["psychographics"]
+    assert psy["primary_goal"] == "Long-term growth and compounding"  # not blanked by the second call
+    assert psy["life_stage"] == "Early career"
+
+
+def test_profile_update_works_on_a_seeded_client_without_touching_seed_data(preserve_dataset, clean_overlay):
+    original = preserve_dataset
+    resp = client.put("/clients/pf_largecap_growth/profile", json={
+        "psychographics": {"engagement": "Checks daily"},
+    })
+    assert resp.status_code == 200
+    assert resp.json()["psychographics"]["engagement"] == "Checks daily"
+    # the seeded fields it did not mention must survive
+    assert resp.json()["psychographics"].get("primary_goal")
+    with open(SEED_DATA_PATH, encoding="utf-8") as f:
+        assert f.read() == original
+
+
+def test_profile_update_rejects_unknown_and_clientless_portfolios(clean_overlay):
+    assert client.put("/clients/nope/profile", json={"persona": "x"}).status_code == 404
+    assert client.put("/clients/pf_reference_balanced/profile", json={"persona": "x"}).status_code == 400
+
+
+def test_profile_update_rejects_an_empty_patch(clean_overlay):
+    assert client.put("/clients/pf_largecap_growth/profile", json={}).status_code == 400
+
+
+def test_edit_holdings_renormalizes_preserves_nav_and_recomputes_risk(preserve_dataset, clean_overlay):
+    """Weights are raw input: 60/40 typed as 60 and 40 must normalize to 0.6/0.4,
+    NAV must be preserved from the existing book, and the risk block must be
+    recomputed by the shared formula rather than left stale."""
+    from portfolio_risk import compute_portfolio_risk
+    from api import load_data
+
+    new_pid = _add("Holdings Edit Client")["portfolio_id"]
+    before = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    nav_before = before["aum"]
+
+    resp = client.put(f"/clients/{new_pid}/holdings", json={
+        "holdings": [
+            {"security_id": "sec_hdfcbank", "weight": 60},
+            {"security_id": "sec_gsec_10y", "weight": 40},
+        ],
+    })
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["num_holdings"] == 2
+    assert resp.json()["aum"] == pytest.approx(nav_before, abs=1)
+
+    after = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    weights = {h["security_id"]: h["weight_pct"] for h in after["holdings"]}
+    assert weights == {"sec_hdfcbank": 60.0, "sec_gsec_10y": 40.0}
+    assert after["aum"] == pytest.approx(nav_before, abs=1)
+    assert sum(h["market_value"] for h in after["holdings"]) == pytest.approx(nav_before, abs=1)
+
+    data = load_data()
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    _, _, expected = compute_portfolio_risk(nav_before, {"sec_hdfcbank": 60, "sec_gsec_10y": 40}, sec_by_id)
+    assert data["risk"][new_pid]["risk_tier"] == expected["risk_tier"]
+    assert data["risk"][new_pid]["risk_score"] == expected["risk_score"]
+    assert after["risk_tier"] == expected["risk_tier"]
+
+
+def test_edit_holdings_actually_removes_dropped_positions(preserve_dataset, clean_overlay):
+    """A replace, not a merge. If overlay holdings were appended instead of
+    replacing, the dropped names would linger and weights would not sum to 1."""
+    new_pid = _add("Position Drop Client")["portfolio_id"]
+    before = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    assert len(before["holdings"]) > 1
+
+    client.put(f"/clients/{new_pid}/holdings", json={
+        "holdings": [{"security_id": "sec_hdfcbank", "weight": 1}],
+    })
+    after = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    assert [h["security_id"] for h in after["holdings"]] == ["sec_hdfcbank"]
+    assert after["holdings"][0]["weight_pct"] == 100.0
+
+
+def test_edit_holdings_accepts_an_explicit_nav(preserve_dataset, clean_overlay):
+    new_pid = _add("Nav Override Client")["portfolio_id"]
+    resp = client.put(f"/clients/{new_pid}/holdings", json={
+        "holdings": [{"security_id": "sec_hdfcbank", "weight": 1}],
+        "nav": 9_500_000,
+    })
+    assert resp.json()["aum"] == pytest.approx(9_500_000)
+    after = next(c for c in client.get("/clients").json() if c["portfolio_id"] == new_pid)
+    assert after["aum"] == pytest.approx(9_500_000, abs=1)
+
+
+def test_edit_holdings_works_on_a_seeded_client_without_touching_seed_data(preserve_dataset, clean_overlay):
+    original = preserve_dataset
+    resp = client.put("/clients/pf_largecap_growth/holdings", json={
+        "holdings": [
+            {"security_id": "sec_hdfcbank", "weight": 50},
+            {"security_id": "sec_tcs", "weight": 50},
+        ],
+    })
+    assert resp.status_code == 200
+    after = next(c for c in client.get("/clients").json() if c["portfolio_id"] == "pf_largecap_growth")
+    assert len(after["holdings"]) == 2
+    with open(SEED_DATA_PATH, encoding="utf-8") as f:
+        assert f.read() == original
+
+
+@pytest.mark.parametrize("payload,expected", [
+    ({"holdings": []}, 400),                                                            # empty book
+    ({"holdings": [{"security_id": "sec_nope", "weight": 1}]}, 404),                     # unknown security
+    ({"holdings": [{"security_id": "sec_hdfcbank", "weight": 0}]}, 400),                 # zero weight
+    ({"holdings": [{"security_id": "sec_hdfcbank", "weight": -5}]}, 400),                # negative weight
+    ({"holdings": [{"security_id": "sec_hdfcbank", "weight": 1},
+                   {"security_id": "sec_hdfcbank", "weight": 2}]}, 400),                 # duplicate
+    ({"holdings": [{"security_id": "sec_hdfcbank", "weight": 1}], "nav": 0}, 400),       # bad nav
+])
+def test_edit_holdings_validation(payload, expected, preserve_dataset, clean_overlay):
+    resp = client.put("/clients/pf_largecap_growth/holdings", json=payload)
+    assert resp.status_code == expected
+
+
+def test_edit_holdings_rejects_unknown_and_reference_portfolios(clean_overlay):
+    body = {"holdings": [{"security_id": "sec_hdfcbank", "weight": 1}]}
+    assert client.put("/clients/nope/holdings", json=body).status_code == 404
+    assert client.put("/clients/pf_reference_balanced/holdings", json=body).status_code == 400
+
+
+def test_delete_removes_an_added_client_but_refuses_a_seeded_one(preserve_dataset, clean_overlay):
+    new_pid = _add("Deletable Client")["portfolio_id"]
+    assert client.delete(f"/clients/{new_pid}").status_code == 200
+    assert not any(c["portfolio_id"] == new_pid for c in client.get("/clients").json())
+    assert client.get("/overview").json()["kpis"]["client_count"] == 16
+
+    refused = client.delete("/clients/pf_largecap_growth")
+    assert refused.status_code == 400
+    assert any(c["portfolio_id"] == "pf_largecap_growth" for c in client.get("/clients").json())
+
+
+def test_added_clients_are_flagged_custom_and_seeded_ones_are_not(preserve_dataset, clean_overlay):
+    new_pid = _add("Flag Check Client")["portfolio_id"]
+    by_id = {c["portfolio_id"]: c for c in client.get("/clients").json()}
+    assert by_id[new_pid]["is_custom"] is True
+    assert by_id["pf_largecap_growth"]["is_custom"] is False
+
+
+def test_a_corrupt_overlay_is_ignored_rather_than_fatal(clean_overlay):
+    """A hand-edited overlay must never be able to take the app down."""
+    with open(clean_overlay, "w", encoding="utf-8") as f:
+        f.write("{not valid json at all")
+    assert client.get("/clients").status_code == 200
+    assert len(client.get("/clients").json()) == 16
+
+
+# Middle-of-the-road answers that are SUPPOSED to leave scoring untouched: a
+# client with a medium horizon and moderate loss aversion has expressed no tilt,
+# and inventing one would be dishonest. Listed explicitly so the test below can
+# tell "deliberately neutral" apart from "silently broken wording".
+NEUTRAL_PROFILE_OPTIONS = {
+    ("time_horizon", "Medium, 3 to 7 years"),
+    ("loss_aversion", "Moderate"),
+    ("life_stage", "Mid career"),
+    ("life_stage", "Peak earning years"),
+    ("life_stage", "Near retirement"),
+}
+
+
+def test_profile_options_stay_aligned_with_the_preference_matcher():
+    """The dropdown vocabulary is only useful if _preference_profile actually
+    matches on it. Every option is either opinionated (moves at least one asset
+    class) or listed above as deliberately neutral. Catches the real failure
+    mode: someone rewords an option, the keyword stops matching, and the form
+    goes on offering a choice that quietly does nothing."""
+    from api import _preference_profile
+
+    body = client.get("/profile-options").json()
+    options, scoring = body["options"], body["scoring_fields"]
+    assert set(scoring) <= set(options)
+
+    for field in scoring:
+        for value in options[field]:
+            aff, _reasons = _preference_profile({"psychographics": {field: value}})
+            moves = any(v != 0.0 for v in aff.values())
+            if (field, value) in NEUTRAL_PROFILE_OPTIONS:
+                assert not moves, f"{field}={value!r} was meant to be neutral but now scores"
+            else:
+                assert moves, f"{field}={value!r} scores nothing; wording no longer matches"
+
+    # Every neutral entry must correspond to a real option, so the list cannot
+    # rot into a silent exemption for an option that was renamed or removed.
+    for field, value in NEUTRAL_PROFILE_OPTIONS:
+        assert value in options[field], f"stale neutral exemption: {field}={value!r}"
+
+
+def test_opinionated_goals_produce_a_quotable_reason():
+    """A scored preference must also come with the phrasing the rationale uses,
+    otherwise suggestions rank correctly but cannot explain themselves."""
+    from api import PROFILE_OPTIONS, _preference_profile
+
+    for goal in PROFILE_OPTIONS["primary_goal"]:
+        _aff, reasons = _preference_profile({"psychographics": {"primary_goal": goal}})
+        assert reasons, f"{goal!r} scores but has no reason text to quote"
+
+
+def test_securities_endpoint_lists_the_whole_universe():
+    secs = client.get("/securities").json()
+    from api import load_data
+    assert len(secs) == len(load_data()["securities"])
+    assert {"security_id", "name", "ticker", "sector", "asset_class"} <= set(secs[0])
+    assert [s["name"] for s in secs] == sorted(s["name"] for s in secs)
 
 
 def test_clients_endpoint_excludes_reference_book():

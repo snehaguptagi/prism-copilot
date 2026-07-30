@@ -1,87 +1,150 @@
-/* Light, professional theme, editorial financial-services structure, elevated
-   with Emil Kowalski's design-engineering principles: custom easing curves,
-   press feedback, staggered entrances, transform/opacity-only transitions
-   under 250ms, and semi-transparent shadows over hard borders. Brand accent is
-   a warm signature orange, used only for interactive chrome (buttons, active
-   nav, links, focus/highlight rings). Status colors (positive/negative,
-   risk severity) and the categorical chart palette are deliberately
-   independent of it, since those carry their own meaning. */
+/* PRISM visual system, retuned to the design language of the Perplexity Ads
+   deck. Values below are measured from that PDF's content streams, not
+   approximated by eye:
+     #FCFCF9  Paper    — warm off-white page ground (34 uses)
+     #13343B  Peacock  — the "ink"; body text and dark surfaces (144 uses, dominant)
+     #20808D  Turquoise— the single accent (30 uses)
+     #FFFFFF  White    — type on dark tiles (82 uses)
+   The deck's whole colour argument is restraint: one accent, applied only to
+   interactive chrome and single-series data, over a warm paper ground, with
+   deep teal standing in for black.
+
+   Retained from the previous system: Emil Kowalski's motion principles (custom
+   easing, press feedback, transform/opacity-only transitions under 250ms,
+   semi-transparent shadows over hard borders).
+
+   Deliberately NOT collapsed into the accent: status colours (positive/negative,
+   risk severity) and the categorical chart palette. Those encode meaning, and
+   the deck has no equivalent to borrow, so they keep their own hues, merely
+   re-harmonised toward peacock. Every categorical value here is the output of
+   the data-viz validator (lightness band, chroma floor, protan/deutan
+   separation, normal-vision floor, contrast) — see lib/colors.ts. */
 :root {
-  --bg: #f7f6f3;
+  --bg: #fcfcf9;
   --surface: #ffffff;
-  --surface-2: #faf9f6;
-  --border: #ece9e3;
-  --border-strong: #ddd8cf;
-  --text: #1a1815;
-  --text-secondary: #5c574f;
-  --text-faint: #8b857a;
-  --accent: #c7491e;
-  --accent-hover: #a83a15;
-  --accent-soft: #c7491e14;
+  --surface-2: #f7f7f2;
+  --border: #e8e8e0;
+  --border-strong: #d5d5c9;
+  --text: #13343b;
+  --text-secondary: #4a656b;
+  --text-faint: #7d9298;
+  --accent: #20808d;
+  --accent-hover: #196873;
+  --accent-soft: #20808d14;
 
-  --sev-low: #12a67f;
-  --sev-moderate: #4a9d4a;
-  --sev-elevated: #b5850a;
-  --sev-high: #d97430;
-  --sev-vhigh: #c93b3b;
+  /* Peacock-anchored ink ramp, for the deck's dark hero tiles. */
+  --ink: #13343b;
+  --ink-2: #1c474f;
+  --on-ink: #fcfcf9;
+  --on-ink-faint: #9fbcc2;
 
-  --positive: #12855a;
-  --negative: #c93b3b;
-  --tailwind: #12855a;
-  --headwind: #d97430;
-  --mixed: #878c9c;
+  --sev-low: #0f8a72;
+  --sev-moderate: #3f8f45;
+  --sev-elevated: #a67c0c;
+  --sev-high: #c2691f;
+  --sev-vhigh: #bc3a3a;
+
+  --positive: #0e7a55;
+  --negative: #bc3a3a;
+  --tailwind: #0e7a55;
+  --headwind: #c2691f;
+  --mixed: #7d9298;
+
+  /* Categorical chart steps, in fixed assignment order. Validator output on the
+     #FCFCF9 paper surface: all five checks PASS, worst adjacent CVD ΔE 11.6
+     (protan), normal-vision floor 20.7. cat-1 is a chroma-boosted sibling of the
+     accent — the accent itself sits below the categorical chroma floor. */
+  --cat-1: #008c9e;
+  --cat-2: #b0710a;
+  --cat-3: #4a3aa7;
+  --cat-4: #a8326b;
+  --cat-5: #5a9e4a;
+  --cat-6: #6b4e9e;
+  --cat-neutral: #7d9298;
 
   /* Emil's strong custom easing curves — the built-in CSS easings lack punch */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
-  /* Semi-transparent shadows, not solid borders, for real elevation */
-  --shadow-xs: 0 1px 2px rgba(26, 22, 18, 0.04);
-  --shadow-sm: 0 1px 3px rgba(26, 22, 18, 0.06), 0 1px 2px rgba(26, 22, 18, 0.04);
-  --shadow-md: 0 4px 12px rgba(26, 22, 18, 0.07), 0 2px 4px rgba(26, 22, 18, 0.04);
-  --shadow-lg: 0 12px 32px rgba(26, 22, 18, 0.1), 0 4px 8px rgba(26, 22, 18, 0.05);
+  /* Shadows tinted with peacock rather than neutral brown, so elevation sits in
+     the same colour world as everything else. */
+  --shadow-xs: 0 1px 2px rgba(19, 52, 59, 0.04);
+  --shadow-sm: 0 1px 3px rgba(19, 52, 59, 0.06), 0 1px 2px rgba(19, 52, 59, 0.04);
+  --shadow-md: 0 4px 12px rgba(19, 52, 59, 0.08), 0 2px 4px rgba(19, 52, 59, 0.04);
+  --shadow-lg: 0 12px 32px rgba(19, 52, 59, 0.11), 0 4px 8px rgba(19, 52, 59, 0.05);
 
-  --body: var(--font-ibm-plex-sans), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --body: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --serif: var(--font-serif-accent), Georgia, "Times New Roman", serif;
   --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 
-  --topbar-bg: rgba(255, 255, 255, 0.85);
+  /* Display type scale. The deck runs 18pt caption to 180pt display on a 1440pt
+     slide — a 10x range. App UI cannot go that far, but the principle (a much
+     wider range than typical dashboard type, with weight dropping as size
+     climbs) is what these steps encode. */
+  --display-1: clamp(38px, 5.2vw, 66px);
+  --display-2: clamp(30px, 3.6vw, 46px);
+  --display-3: clamp(24px, 2.6vw, 34px);
+  --weight-display: 250; /* Thin/ExtraLight territory, for --display-* only */
+  --weight-figure: 300;  /* big numbers: light, never bold */
+
+  --topbar-bg: rgba(252, 252, 249, 0.85);
 }
 
 /* Dark theme: same structure, same semantic tokens, different values. Applied
    via a data-theme attribute on <html> (set before paint by an inline script
    in layout.tsx, so there is no flash), never by a bare media query, so a
    manual toggle always wins over the OS preference. */
+/* Dark mode is SELECTED, not an inverted flip: the surfaces are steps down the
+   same peacock hue the deck uses for its dark tiles (#13343B is the mid step,
+   used verbatim as --surface), and the accent is lifted to clear 3:1 against
+   them. The categorical chart steps were re-validated against #13343B rather
+   than lightened arithmetically. */
 :root[data-theme="dark"] {
-  --bg: #17151a;
-  --surface: #201d22;
-  --surface-2: #28242a;
-  --border: #37333a;
-  --border-strong: #47424a;
-  --text: #f3f1ee;
-  --text-secondary: #bcb7b0;
-  --text-faint: #8b8680;
-  --accent: #e06b3a;
-  --accent-hover: #f08150;
-  --accent-soft: #e06b3a22;
+  --bg: #0c2429;
+  --surface: #13343b;
+  --surface-2: #1a424a;
+  --border: #24545d;
+  --border-strong: #356a74;
+  --text: #f0f4f3;
+  --text-secondary: #b3cbd0;
+  --text-faint: #83a3aa;
+  --accent: #4ab8c7;
+  --accent-hover: #6dcdd9;
+  --accent-soft: #4ab8c722;
 
-  --sev-low: #22b98f;
-  --sev-moderate: #74c274;
-  --sev-elevated: #d99a2b;
-  --sev-high: #e69361;
-  --sev-vhigh: #e6605f;
+  --ink: #0c2429;
+  --ink-2: #13343b;
+  --on-ink: #f0f4f3;
+  --on-ink-faint: #83a3aa;
 
-  --positive: #22b98f;
-  --negative: #e6605f;
-  --tailwind: #22b98f;
-  --headwind: #e69361;
-  --mixed: #82869a;
+  --sev-low: #2bc0a0;
+  --sev-moderate: #6dc06d;
+  --sev-elevated: #d5a533;
+  --sev-high: #e0925c;
+  --sev-vhigh: #e86b6b;
+
+  --positive: #2bc0a0;
+  --negative: #e86b6b;
+  --tailwind: #2bc0a0;
+  --headwind: #e0925c;
+  --mixed: #83a3aa;
+
+  /* Re-validated against the #13343B dark surface, not lightened from the light
+     set: all five checks PASS, worst adjacent CVD ΔE 9.3, normal-vision 16.3. */
+  --cat-1: #00a2b5;
+  --cat-2: #c1881f;
+  --cat-3: #7e6fd6;
+  --cat-4: #c9608f;
+  --cat-5: #66a751;
+  --cat-6: #9b7ed0;
+  --cat-neutral: #83a3aa;
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.18);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.18);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.2);
 
-  --topbar-bg: rgba(32, 29, 34, 0.85);
+  --topbar-bg: rgba(19, 52, 59, 0.85);
 }
 
 * {
@@ -272,87 +335,129 @@ a:hover {
   padding: 32px 0 20px;
 }
 
+/* The deck labels a section in plain sentence case at small size, with no rule
+   and no all-caps shouting. Dropping the uppercase tracking and the accent dash
+   is the single biggest step toward its voice. */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  display: block;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
-  margin: 0 0 10px;
+  margin: 0 0 14px;
 }
 
-.eyebrow::before {
-  content: "";
-  display: inline-block;
-  width: 18px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-}
-
+/* Display heading: large, and LIGHT because it is large. The deck never sets a
+   headline bold; it lets size carry the emphasis and keeps the strokes thin. */
 h1 {
-  font-weight: 700;
-  font-size: 30px;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  font-weight: var(--weight-display);
+  font-size: var(--display-2);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
   color: var(--text);
-  margin: 0 0 10px;
+  margin: 0 0 14px;
+  max-width: 30ch; /* forces the deck's 2-3 line wrap rather than one long line */
+}
+
+/* "Search like *never* before." — the deck's one typographic flourish: a single
+   word in serif italic inside an otherwise grotesk line. Deliberately scoped to
+   an inline element so it can only ever be a word or two, never a whole heading.
+   Sized up slightly because the serif's x-height runs smaller than Inter's. */
+.em-serif {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.12em;
+  letter-spacing: 0;
 }
 
 .lede {
-  max-width: 68ch;
+  max-width: 62ch;
   color: var(--text-secondary);
-  font-size: 13.5px;
-  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0 0 26px;
 }
 
-/* ---- Stat tiles ---- */
+/* ---- Stat tiles ----
+   Rebuilt on the deck's stats slide, which is the clearest statement of its data
+   style. Four things there, all of which contradict a conventional KPI card:
+     1. the label sits ABOVE the figure, in sentence case, at body size
+     2. the figure is huge and LIGHT-weight, never bold
+     3. there is no card — no border, no fill, no shadow. Space does the grouping
+     4. the gaps are large; the whitespace is the layout
+   Order is handled with flex-direction: column-reverse so existing markup
+   (.v then .l) needs no change to render label-above-figure. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 30px 34px;
+  margin-bottom: 34px;
 }
 
 .stat-tile {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 15px 17px;
-  box-shadow: var(--shadow-xs);
-  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
-}
-
-.stat-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .stat-tile .v {
-  font-family: var(--mono);
-  font-size: 21px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--display-3);
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .stat-tile .l {
-  font-size: 11.5px;
-  color: var(--text-faint);
-  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Dark hero tile, as on the deck's "230 Million" panel: peacock ground, paper
+   type, generous radius. For the one figure on a page that outranks the others. */
+.stat-hero {
+  background: var(--ink);
+  border-radius: 20px;
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--on-ink);
+}
+
+.stat-hero .l {
+  font-size: 13.5px;
+  color: var(--on-ink-faint);
+}
+
+.stat-hero .v {
+  font-size: var(--display-1);
+  font-weight: var(--weight-display);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--on-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .shead {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin: 18px 0 10px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
+  margin: 30px 0 14px;
 }
 
 /* ---- Sticky section tabs (Screener-style) ---- */
@@ -635,9 +740,9 @@ input:focus-visible {
   align-items: center;
   gap: 5px;
   font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   padding: 3px 9px;
   border-radius: 6px;
   white-space: nowrap;
@@ -693,8 +798,8 @@ input:focus-visible {
   flex-shrink: 0;
   font-size: 10.5px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-faint);
 }
 
@@ -748,9 +853,9 @@ table {
 
 th {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   text-align: left;
   padding: 10px 14px;
@@ -891,9 +996,9 @@ tr.clickable:active td {
 
 .meta-item .l {
   font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 3px;
 }
@@ -973,9 +1078,9 @@ tr.clickable:active td {
 }
 
 .perf-v {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 300;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1050,9 +1155,9 @@ tr.clickable:active td {
 
 .perf-banner-label {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
@@ -1064,18 +1169,18 @@ tr.clickable:active td {
 }
 
 .perf-banner-v {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 300;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .graph-badge {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 10%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--surface));
@@ -1187,9 +1292,9 @@ tr.clickable:active td {
 
 .kg-match-rank {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
@@ -1331,7 +1436,7 @@ tr.clickable:active td {
 .leaderboard-rank {
   font-family: var(--mono);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-faint);
 }
 
@@ -1350,16 +1455,16 @@ tr.clickable:active td {
 .leaderboard-count {
   font-family: var(--mono);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--accent);
   white-space: nowrap;
 }
 
 .mini-head {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 10px;
 }
@@ -1519,9 +1624,9 @@ tr.clickable:active td {
 
 .perf-bw-label {
   font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
 }
 
@@ -1665,9 +1770,9 @@ tr.clickable:active td {
   color: var(--text-faint);
   font-weight: 600;
   margin-right: 6px;
-  text-transform: uppercase;
+  text-transform: none;
   font-size: 9.5px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
 }
 
 .psy-grid {
@@ -1683,9 +1788,9 @@ tr.clickable:active td {
 
 .psy-label {
   font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 3px;
 }
@@ -1713,9 +1818,9 @@ tr.clickable:active td {
 }
 
 .metric-v {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 300;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
@@ -1733,9 +1838,9 @@ tr.clickable:active td {
 }
 
 .big-fact-v {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 300;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -1793,8 +1898,8 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-faint);
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -1823,9 +1928,9 @@ tr.clickable:active td {
 .manager-note-label {
   display: block;
   font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
   margin-bottom: 4px;
 }
@@ -1840,9 +1945,9 @@ tr.clickable:active td {
 
 .na-label {
   font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
@@ -1933,8 +2038,8 @@ tr.clickable:active td {
 .comm-dir {
   font-size: 9.5px;
   font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -1973,65 +2078,53 @@ tr.clickable:active td {
 }
 
 .panel-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
   color: var(--text);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
+/* Same reasoning as .stat-tile: the deck groups figures with space, not with a
+   grid of bordered cells. The hairline separators and the hover underline both
+   go; what is left is the number and its label. */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 28px 32px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  margin-bottom: 28px;
 }
 
 .kpi {
   position: relative;
-  background: var(--surface);
-  padding: 16px 18px;
-  transition: background 140ms var(--ease-out);
-  overflow: hidden;
-}
-
-.kpi::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 0;
-  background: var(--accent);
-  transition: width 220ms var(--ease-out);
-}
-
-.kpi:hover {
-  background: var(--surface-2);
-}
-
-.kpi:hover::after {
-  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  background: none;
+  padding: 0;
+  overflow: visible;
 }
 
 .kpi-v {
-  font-family: var(--mono);
-  font-size: 23px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--display-3);
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .kpi-l {
-  font-size: 11px;
-  color: var(--text-faint);
-  margin-top: 4px;
-  line-height: 1.3;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.35;
 }
 
 .ov-grid {
@@ -2069,16 +2162,16 @@ tr.clickable:active td {
 }
 
 .donut-center-top {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 300;
   letter-spacing: -0.02em;
 }
 
 .donut-center-sub {
   font-size: 10.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .donut-legend {
@@ -2237,24 +2330,31 @@ tr.clickable:active td {
   text-overflow: ellipsis;
 }
 
+/* The deck's bar chart carries no track behind the bars, no gridlines and no
+   value labels on the marks: just accent-coloured bars on the paper ground and a
+   single hairline baseline. The track goes to a barely-there tint so the row
+   still reads as a scale without drawing a second competing shape.
+   4px rounded data-end per the mark spec, square at the origin. */
 .sector-bar-track {
-  height: 10px;
-  border-radius: 5px;
-  background: var(--surface-2);
+  height: 8px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
   overflow: hidden;
 }
 
 .sector-bar-fill {
   display: block;
   height: 100%;
-  border-radius: 5px;
+  border-radius: 0 4px 4px 0;
   transition: width 650ms var(--ease-out);
 }
 
+/* Values wear text tokens, never the series colour. Light weight, since these
+   are figures and the deck sets figures light. */
 .sector-bar-val {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 400;
   color: var(--text);
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -2338,7 +2438,7 @@ tr.clickable:active td {
 .risk-dist-count {
   font-family: var(--mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2505,9 +2605,9 @@ tr.clickable:active td {
   align-items: center;
   gap: 7px;
   font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
   margin-bottom: 7px;
 }
@@ -2809,9 +2909,9 @@ tr.clickable:active td {
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
   margin-bottom: 8px;
 }
@@ -3165,9 +3265,9 @@ tr.clickable:active td {
 
 .run-label {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 5px;
 }
@@ -3191,9 +3291,9 @@ tr.clickable:active td {
 }
 
 .factor-v {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 300;
   font-variant-numeric: tabular-nums;
 }
 
@@ -3205,9 +3305,9 @@ tr.clickable:active td {
 
 .narrative-head {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--accent);
 }
 
@@ -3307,8 +3407,59 @@ footer {
 
 .modal-footer {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
   padding: 16px 20px;
   border-top: 1px solid var(--border);
+}
+
+/* Labelled rule that groups a set of form fields, with a right-aligned note
+   saying what the group is for (e.g. "ranks suggestions" vs "descriptive
+   only"), so the consequence of filling it in is visible on the form itself. */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
+}
+
+.form-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  order: 1;
+}
+
+.form-divider em {
+  order: 2;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* Header row for a read-only section that has an Edit button. */
+.editable-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+textarea.text-input {
+  line-height: 1.55;
+  padding-top: 9px;
+  padding-bottom: 9px;
 }

@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getClients, getGraphSuggestions } from "@/lib/api";
+import { deleteClient, getClients, getGraphSuggestions } from "@/lib/api";
 import { ClientAccount, GraphSuggestion } from "@/lib/types";
 import { assetClassColor, avatarColor, initials, sectorColor, severityColor } from "@/lib/colors";
 import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import Donut from "@/components/Donut";
 import PerfHorizons from "@/components/PerfHorizons";
+import HoldingsEditor from "@/components/HoldingsEditor";
+import ProfileEditor from "@/components/ProfileEditor";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
@@ -36,6 +38,15 @@ export default function ClientDetailPage() {
   const [tab, setTab] = useState<Tab>("Profile");
   const [graphSuggestions, setGraphSuggestions] = useState<GraphSuggestion[] | null>(null);
   const [graphEnabled, setGraphEnabled] = useState(false);
+  const [editingHoldings, setEditingHoldings] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  // Removing a client cannot be undone (the overlay entry is gone), so the
+  // button arms first and only deletes on a second, explicit click.
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  // Bumped after a save to force a refetch, so the page shows the recomputed
+  // risk tier and re-ranked suggestions rather than the stale ones it had.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     getClients()
@@ -58,7 +69,24 @@ export default function ClientDetailPage() {
         setGraphEnabled(false);
         setGraphSuggestions(null);
       });
-  }, [params.id]);
+  }, [params.id, reloadKey]);
+
+  function afterSave(close: (v: boolean) => void) {
+    close(false);
+    setReloadKey((k) => k + 1);
+  }
+
+  async function removeClient() {
+    if (!account) return;
+    setDeleting(true);
+    try {
+      await deleteClient(account.portfolio_id);
+      router.push("/clients");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setDeleting(false);
+    }
+  }
 
   if (error) {
     return (
@@ -118,6 +146,37 @@ export default function ClientDetailPage() {
               <div className="kpi-v">{inr(account.aum)}</div>
               <div className="kpi-l">AUM · {c.aum_fee_pct}% fee</div>
             </div>
+            {/* Only clients added at runtime can be removed. Seeded demo clients
+                live in prism_data.json, which the app never writes to. */}
+            {account.is_custom && !confirmRemove && (
+              <button
+                className="btn-secondary"
+                style={{ marginTop: 10, padding: "5px 11px", fontSize: 12 }}
+                onClick={() => setConfirmRemove(true)}
+              >
+                Remove client
+              </button>
+            )}
+            {account.is_custom && confirmRemove && (
+              <div style={{ marginTop: 10, display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                <button
+                  className="btn-secondary"
+                  style={{ padding: "5px 11px", fontSize: 12 }}
+                  onClick={() => setConfirmRemove(false)}
+                  disabled={deleting}
+                >
+                  Keep
+                </button>
+                <button
+                  className="btn-secondary"
+                  style={{ padding: "5px 11px", fontSize: 12, color: "var(--negative)" }}
+                  onClick={removeClient}
+                  disabled={deleting}
+                >
+                  {deleting ? "Removing…" : "Remove for good"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -134,22 +193,43 @@ export default function ClientDetailPage() {
           ))}
         </div>
 
-        {tab === "Profile" && !psy && (
+        {tab === "Profile" && editingProfile && (
+          <ProfileEditor
+            portfolioId={account.portfolio_id}
+            persona={c.persona}
+            psychographics={psy}
+            onSaved={() => afterSave(setEditingProfile)}
+            onCancel={() => setEditingProfile(false)}
+          />
+        )}
+
+        {tab === "Profile" && !editingProfile && !psy && (
           <div className="panel fade-in">
             <div className="panel-title">Who they are</div>
             <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6 }}>{c.persona}</p>
             <p style={{ color: "var(--text-faint)", fontSize: 12.5, marginTop: 10 }}>
-              No behavioral profile yet. Add goals, communication preferences, and relationship notes as you learn
-              more about this client.
+              No behavioral profile yet. Until their goal, horizon, loss aversion and life stage are
+              recorded, Product Fit can only suggest products that fill an allocation gap; it has no
+              stated preference to match against.
             </p>
+            <button className="btn" style={{ marginTop: 14 }} onClick={() => setEditingProfile(true)}>
+              Add behavioral profile
+            </button>
           </div>
         )}
 
-        {tab === "Profile" && psy && (
+        {tab === "Profile" && !editingProfile && psy && (
           <div className="stagger">
             <div className="panel">
-              <div className="panel-title">Who they are</div>
-              <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6 }}>{c.persona}</p>
+              <div className="editable-head" style={{ marginBottom: 0 }}>
+                <div className="panel-title" style={{ marginBottom: 0 }}>Who they are</div>
+                <button className="btn-secondary" onClick={() => setEditingProfile(true)}>
+                  Edit profile
+                </button>
+              </div>
+              <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6, marginTop: 10 }}>
+                {c.persona}
+              </p>
             </div>
 
             <div className="panel">
@@ -413,28 +493,49 @@ export default function ClientDetailPage() {
           </div>
         )}
 
-        {tab === "Holdings" && (
-          <div className="table-wrap fade-in">
-            <table>
-              <thead>
-                <tr>
-                  <th>Holding</th>
-                  <th>Ticker</th>
-                  <th style={{ textAlign: "right" }}>Weight</th>
-                  <th style={{ textAlign: "right" }}>Value</th>
-                </tr>
-              </thead>
-              <tbody className="stagger">
-                {account.holdings.map((h) => (
-                  <tr key={h.security_id}>
-                    <td>{h.name}</td>
-                    <td>{h.ticker}</td>
-                    <td className="num">{h.weight_pct}%</td>
-                    <td className="num">{inr(h.market_value)}</td>
+        {tab === "Holdings" && editingHoldings && (
+          <HoldingsEditor
+            portfolioId={account.portfolio_id}
+            holdings={account.holdings}
+            aum={account.aum}
+            onSaved={() => afterSave(setEditingHoldings)}
+            onCancel={() => setEditingHoldings(false)}
+          />
+        )}
+
+        {tab === "Holdings" && !editingHoldings && (
+          <div className="fade-in">
+            <div className="editable-head">
+              <span>
+                {account.holdings.length} {account.holdings.length === 1 ? "holding" : "holdings"} ·{" "}
+                {inr(account.aum)}
+              </span>
+              <button className="btn-secondary" onClick={() => setEditingHoldings(true)}>
+                Edit holdings
+              </button>
+            </div>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Holding</th>
+                    <th>Ticker</th>
+                    <th style={{ textAlign: "right" }}>Weight</th>
+                    <th style={{ textAlign: "right" }}>Value</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="stagger">
+                  {account.holdings.map((h) => (
+                    <tr key={h.security_id}>
+                      <td>{h.name}</td>
+                      <td>{h.ticker}</td>
+                      <td className="num">{h.weight_pct}%</td>
+                      <td className="num">{inr(h.market_value)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -487,11 +588,15 @@ export default function ClientDetailPage() {
   );
 }
 
-function PsyItem({ label, value }: { label: string; value: string }) {
+/** A hand-filled profile can be partial, so an unanswered field says so rather
+ *  than rendering an empty row that looks like a bug. */
+function PsyItem({ label, value }: { label: string; value?: string }) {
   return (
     <div className="psy-item">
       <div className="psy-label">{label}</div>
-      <div className="psy-value">{value}</div>
+      <div className="psy-value" style={value ? undefined : { color: "var(--text-faint)" }}>
+        {value || "Not recorded"}
+      </div>
     </div>
   );
 }

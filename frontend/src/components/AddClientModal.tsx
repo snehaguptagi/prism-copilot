@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { addClient } from "@/lib/api";
-import { ClientAccount } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { addClient, getProfileOptions } from "@/lib/api";
+import { ClientAccount, ProfileOptions, Psychographics } from "@/lib/types";
 
 // Every mandate string the backend's suitability check recognizes
 // (_MANDATE_MAX_TIER / _MANDATE_MIN_TIER in api.py). Keep in sync with those.
@@ -45,6 +45,27 @@ export default function AddClientModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // The four preference fields that drive Product Fit. Optional here (you often
+  // don't know them on day one) but offered up front, because without them the
+  // recommender has nothing to match on and can only fall back to gap-filling.
+  const [profileOptions, setProfileOptions] = useState<ProfileOptions | null>(null);
+  const [psy, setPsy] = useState<Psychographics>({});
+
+  useEffect(() => {
+    getProfileOptions().then(setProfileOptions).catch(() => setProfileOptions(null));
+  }, []);
+
+  function setPref(field: keyof Psychographics, value: string) {
+    setPsy((prev) => {
+      const next = { ...prev };
+      if (value) next[field] = value;
+      else delete next[field];
+      return next;
+    });
+  }
+
+  const prefsGiven = Object.keys(psy).length;
+
   async function submit() {
     if (!name.trim() || !occupation.trim() || !city.trim() || !templateId) {
       setError("Name, occupation, city, and a starting strategy are required.");
@@ -68,6 +89,7 @@ export default function AddClientModal({
         age: age ? Number(age) : undefined,
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
+        psychographics: prefsGiven ? psy : undefined,
       });
       onCreated(result.portfolio_id);
     } catch (e) {
@@ -158,9 +180,59 @@ export default function AddClientModal({
               </div>
             </label>
           </div>
+
+          {profileOptions && (
+            <>
+              <div className="form-divider">
+                <span>What they care about</span>
+                <em>optional</em>
+              </div>
+              <p style={{ fontSize: 12.5, color: "var(--text-faint)", marginBottom: 14 }}>
+                These four answers are what Product Fit matches products against. Leave them blank and
+                the client still works everywhere, but suggestions can only fall back to filling
+                allocation gaps. You can fill them in later from the client&apos;s Profile tab.
+              </p>
+              <div className="form-grid">
+                <PrefField
+                  label="Primary goal"
+                  field="primary_goal"
+                  options={profileOptions.options.primary_goal}
+                  value={psy.primary_goal}
+                  onChange={setPref}
+                  wide
+                />
+                <PrefField
+                  label="Time horizon"
+                  field="time_horizon"
+                  options={profileOptions.options.time_horizon}
+                  value={psy.time_horizon}
+                  onChange={setPref}
+                />
+                <PrefField
+                  label="Loss aversion"
+                  field="loss_aversion"
+                  options={profileOptions.options.loss_aversion}
+                  value={psy.loss_aversion}
+                  onChange={setPref}
+                />
+                <PrefField
+                  label="Life stage"
+                  field="life_stage"
+                  options={profileOptions.options.life_stage}
+                  value={psy.life_stage}
+                  onChange={setPref}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="modal-footer">
+          <span style={{ marginRight: "auto", fontSize: 12, color: "var(--text-faint)" }}>
+            {prefsGiven === 4
+              ? "Full preference profile — Product Fit will rank on it"
+              : `${prefsGiven} of 4 preferences set`}
+          </span>
           <button className="btn-secondary" onClick={onClose} disabled={submitting}>
             Cancel
           </button>
@@ -171,5 +243,37 @@ export default function AddClientModal({
         </div>
       </div>
     </div>
+  );
+}
+
+function PrefField({
+  label,
+  field,
+  options,
+  value,
+  onChange,
+  wide,
+}: {
+  label: string;
+  field: keyof Psychographics;
+  options: string[];
+  value?: string;
+  onChange: (field: keyof Psychographics, value: string) => void;
+  wide?: boolean;
+}) {
+  return (
+    <label className="form-field" style={wide ? { gridColumn: "1 / -1" } : undefined}>
+      <span>{label}</span>
+      <div className="select-wrap">
+        <select value={value ?? ""} onChange={(e) => onChange(field, e.target.value)}>
+          <option value="">Not known yet</option>
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </div>
+    </label>
   );
 }

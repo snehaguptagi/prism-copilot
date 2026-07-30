@@ -11,6 +11,10 @@
 backend/insight_*.json
 backend/*.log
 backend/prism_data.global_backup.json
+# Local runtime edits: clients you added, holdings you adjusted, profiles you
+# filled in. Local state, like .env, so a demo stays reproducible from the seed
+# dataset alone. Force-add it if you actually want to share your additions.
+backend/prism_overlay.json
 
 # Node / Next.js
 **/node_modules/

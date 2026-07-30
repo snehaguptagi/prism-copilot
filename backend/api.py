@@ -16,7 +16,7 @@ import os
 import re
 import time
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,7 +24,6 @@ from pydantic import BaseModel
 
 import graph
 from insight_lens import (
-    DATA_PATH,
     NEWS_FEED_CATEGORIES,
     build_query_context,
     compute_factor_impact,
@@ -38,7 +37,9 @@ from insight_lens import (
     generate_talking_points,
     link_citations_to_securities,
     load_data,
+    load_overlay,
     run_news_feed,
+    save_overlay,
     run_search,
     securities_in_sector,
 )
@@ -668,6 +669,7 @@ def get_clients():
             "portfolio_id": pid,
             "portfolio_name": p["name"],
             "mandate": p["mandate"],
+            "is_custom": bool(p.get("custom")),  # added at runtime, so deletable
             "risk_driver": p["risk_driver"],
             "risk_tier": r.get("risk_tier"),
             "est_vol": r.get("est_vol"),
@@ -685,6 +687,70 @@ def get_clients():
     return out
 
 
+# The vocabulary the UI offers for a client's behavioral profile. Free text is
+# still accepted (the seed data uses richer phrasings), but every option below
+# is worded to contain the keywords _preference_profile actually matches on, so
+# a profile filled in through the UI genuinely drives product ranking instead
+# of scoring every asset class at zero. Exposed via GET /profile-options so the
+# frontend cannot drift from the matcher.
+PROFILE_OPTIONS = {
+    # These four feed _preference_profile and therefore product suggestions.
+    "primary_goal": [
+        "Preserve capital and avoid losses",
+        "Generate steady, predictable income",
+        "Hedge against inflation with gold",
+        "Long-term growth and compounding",
+        "Broad, low-cost passive market exposure",
+        "Fund an upcoming expense (wedding, education)",
+        "Build rental-style property income",
+    ],
+    "time_horizon": [
+        "Short, under 3 years",
+        "Medium, 3 to 7 years",
+        "Long, 7 to 15 years",
+        "Generational, 15 years or more",
+    ],
+    "loss_aversion": ["Low", "Moderate", "High", "Very high"],
+    "life_stage": [
+        "Early career",
+        "Mid career",
+        "Peak earning years",
+        "Near retirement",
+        "Retired",
+    ],
+    # Descriptive only: shown on the Profile tab, no effect on ranking.
+    "decision_style": [
+        "Delegates fully, defers to advisor",
+        "Collaborative, wants to discuss",
+        "Self-directed, brings own views",
+        "Analytical, wants the data first",
+    ],
+    "financial_literacy": ["Basic", "Moderate", "Strong", "Professional"],
+    "engagement": ["Checks daily", "Checks weekly", "Checks monthly", "Checks rarely"],
+    "comms_pref": ["Phone call", "Email", "WhatsApp", "In-person meeting", "Video call"],
+}
+
+# Which of the above actually move product ranking. Kept next to the options so
+# the two never drift, and surfaced to the UI so it can say so on the form.
+SCORING_PROFILE_FIELDS = ["primary_goal", "time_horizon", "loss_aversion", "life_stage"]
+
+
+class ProfileFields(BaseModel):
+    """Every field optional and defaulting to None: a None means "not supplied"
+    and leaves any existing value alone, so a partial edit is a partial edit."""
+    primary_goal: Optional[str] = None
+    time_horizon: Optional[str] = None
+    loss_aversion: Optional[str] = None
+    life_stage: Optional[str] = None
+    decision_style: Optional[str] = None
+    financial_literacy: Optional[str] = None
+    engagement: Optional[str] = None
+    comms_pref: Optional[str] = None
+
+    def filled(self):
+        return {k: v.strip() for k, v in self.model_dump().items() if v is not None and v.strip()}
+
+
 class AddClientRequest(BaseModel):
     name: str
     occupation: str
@@ -695,6 +761,33 @@ class AddClientRequest(BaseModel):
     age: Optional[int] = None
     email: Optional[str] = None
     phone: Optional[str] = None
+    persona: Optional[str] = None
+    psychographics: Optional[ProfileFields] = None
+
+
+def _holding_rows(portfolio_id, norm_holdings, market_values, as_of, data):
+    """Build holding records in the same shape build_dataset.py emits, so an
+    overlay row is indistinguishable from a seeded one to every reader.
+    holding_id is allocated above the highest currently in use across the
+    merged dataset, so ids stay unique against seed and overlay alike."""
+    used = [
+        int(h["holding_id"].split("_")[1])
+        for h in data["holdings"]
+        if h["holding_id"].startswith("hld_") and h["holding_id"].split("_")[1].isdigit()
+    ]
+    next_hid = max(used, default=0) + 1
+    rows = []
+    for sec_id, weight in norm_holdings.items():
+        rows.append({
+            "holding_id": f"hld_{next_hid:04d}",
+            "portfolio_id": portfolio_id,
+            "security_id": sec_id,
+            "weight": weight,
+            "market_value": market_values[sec_id],
+            "as_of_date": as_of,
+        })
+        next_hid += 1
+    return rows
 
 
 def _unique_portfolio_id(name, existing_ids):
@@ -712,14 +805,18 @@ def add_client(req: AddClientRequest):
     """Add a new client at runtime. Clones an existing portfolio's asset mix as
     a starting allocation (scaled to the new client's own AUM) and computes
     risk with the exact same compute_portfolio_risk formula every seeded
-    client's risk is computed with, then persists straight into
-    prism_data.json. Because load_data() always re-reads that file from disk,
-    the new client shows up in every endpoint immediately, no restart needed,
-    and survives one. Deliberately does NOT fabricate psychographics, a
-    communications log, or trailing performance for a client just added; the
-    frontend already renders those as an empty state when absent rather than
-    crashing, since existing code paths (build_performance, the Profile tab)
-    were already written to tolerate a client with no history."""
+    client's risk is computed with, then persists into prism_overlay.json.
+    Because load_data() re-reads and re-merges on every request, the new client
+    shows up in every endpoint immediately, no restart needed, survives one,
+    and survives `python build_dataset.py` regenerating the seed dataset.
+
+    The behavioral profile is optional but no longer impossible to supply: pass
+    psychographics here, or fill it in later via PUT /clients/{id}/profile.
+    Without it the client still works everywhere, but product suggestions fall
+    back to mandate-and-gap reasoning with no preference rationale, because
+    _preference_profile has nothing to match on. Communications history and
+    trailing performance stay absent by design; the frontend renders those as
+    empty states rather than inventing a past the client does not have."""
     data = load_data()
 
     if req.risk_mandate.strip().lower() not in _MANDATE_MAX_TIER:
@@ -740,7 +837,24 @@ def add_client(req: AddClientRequest):
     new_pid = _unique_portfolio_id(req.name, existing_ids)
     today = date.today().isoformat()
 
-    data["portfolios"].append({
+    client = {
+        "name": req.name,
+        "age": req.age,
+        "occupation": req.occupation,
+        "persona": (req.persona or "").strip()
+        or "New client. Full behavioral profile to be added by the relationship manager.",
+        "email": req.email,
+        "phone": req.phone,
+        "city": req.city,
+        "relationship_since": today,
+        "aum_fee_pct": 1.0,
+        "risk_mandate": req.risk_mandate,
+    }
+    psychographics = req.psychographics.filled() if req.psychographics else {}
+    if psychographics:
+        client["psychographics"] = psychographics
+
+    new_portfolio = {
         "portfolio_id": new_pid,
         "desk_id": template["desk_id"],
         "name": f"{req.name}'s Portfolio",
@@ -749,39 +863,203 @@ def add_client(req: AddClientRequest):
         "mandate": f"Custom mandate, initial allocation modeled on the {template['name']} strategy.",
         "manager_name": None,
         "manager_bio": None,
-        "client": {
-            "name": req.name,
-            "age": req.age,
-            "occupation": req.occupation,
-            "persona": "New client. Full behavioral profile to be added by the relationship manager.",
-            "email": req.email,
-            "phone": req.phone,
-            "city": req.city,
-            "relationship_since": today,
-            "aum_fee_pct": 1.0,
-            "risk_mandate": req.risk_mandate,
-        },
-    })
+        "custom": True,  # added at runtime: editable and deletable, unlike seed clients
+        "client": client,
+    }
 
-    hid_nums = [int(h["holding_id"].split("_")[1]) for h in data["holdings"] if h["holding_id"].startswith("hld_")]
-    next_hid = max(hid_nums, default=0) + 1
-    for sec_id, weight in norm_holdings.items():
-        data["holdings"].append({
-            "holding_id": f"hld_{next_hid:04d}",
-            "portfolio_id": new_pid,
-            "security_id": sec_id,
-            "weight": weight,
-            "market_value": market_values[sec_id],
-            "as_of_date": today,
-        })
-        next_hid += 1
+    overlay = load_overlay()
+    overlay["portfolios"].append(new_portfolio)
+    overlay["holdings"][new_pid] = _holding_rows(new_pid, norm_holdings, market_values, today, data)
+    overlay["risk"][new_pid] = risk_block
+    save_overlay(overlay)
 
-    data["risk"][new_pid] = risk_block
+    return {
+        "portfolio_id": new_pid,
+        "client_name": req.name,
+        "risk_tier": risk_block["risk_tier"],
+        "has_profile": bool(psychographics),
+    }
 
-    with open(DATA_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
 
-    return {"portfolio_id": new_pid, "client_name": req.name, "risk_tier": risk_block["risk_tier"]}
+class HoldingInput(BaseModel):
+    security_id: str
+    weight: float
+
+
+class UpdateHoldingsRequest(BaseModel):
+    holdings: List[HoldingInput]
+    nav: Optional[float] = None
+
+
+@app.put("/clients/{portfolio_id}/holdings")
+def update_holdings(portfolio_id: str, req: UpdateHoldingsRequest):
+    """Replace a client's holdings wholesale. Weights are raw and need not sum
+    to anything in particular: compute_portfolio_risk normalizes them, the same
+    way the seed dataset's deliberately non-round weights are normalized, so
+    the UI can hand over whatever the RM typed. NAV is preserved from the
+    book's current market value unless overridden, so adjusting an allocation
+    does not silently change how much money the client has.
+
+    Risk tier, volatility, concentration and asset mix are all recomputed by
+    the one shared formula, never patched by hand, so an edited book stays
+    directly comparable to every seeded one."""
+    data = load_data()
+    portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail=f"No portfolio '{portfolio_id}'.")
+    if not portfolio.get("client"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"'{portfolio_id}' is a reference book, not a client portfolio. Its holdings are fixed.",
+        )
+    if not req.holdings:
+        raise HTTPException(status_code=400, detail="A portfolio needs at least one holding.")
+
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    seen = set()
+    raw_weights = {}
+    for h in req.holdings:
+        if h.security_id not in sec_by_id:
+            raise HTTPException(status_code=404, detail=f"Unknown security '{h.security_id}'.")
+        if h.security_id in seen:
+            raise HTTPException(status_code=400, detail=f"Security '{h.security_id}' listed twice.")
+        if h.weight <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Weight for '{h.security_id}' must be positive. Remove the holding instead of zeroing it.",
+            )
+        seen.add(h.security_id)
+        raw_weights[h.security_id] = h.weight
+
+    if req.nav is not None:
+        if req.nav <= 0:
+            raise HTTPException(status_code=400, detail="nav must be positive.")
+        nav = req.nav
+    else:
+        nav = sum(h["market_value"] for h in data["holdings"] if h["portfolio_id"] == portfolio_id)
+    if nav <= 0:
+        raise HTTPException(status_code=400, detail="Cannot infer NAV for this book; pass nav explicitly.")
+
+    norm_holdings, market_values, risk_block = compute_portfolio_risk(nav, raw_weights, sec_by_id)
+    today = date.today().isoformat()
+
+    overlay = load_overlay()
+    overlay["holdings"][portfolio_id] = _holding_rows(
+        portfolio_id, norm_holdings, market_values, today, data
+    )
+    overlay["risk"][portfolio_id] = risk_block
+    save_overlay(overlay)
+
+    return {
+        "portfolio_id": portfolio_id,
+        "num_holdings": len(norm_holdings),
+        "aum": round(nav, 2),
+        "risk_tier": risk_block["risk_tier"],
+        "est_vol": risk_block["est_vol"],
+    }
+
+
+class UpdateProfileRequest(BaseModel):
+    persona: Optional[str] = None
+    psychographics: Optional[ProfileFields] = None
+
+
+@app.put("/clients/{portfolio_id}/profile")
+def update_profile(portfolio_id: str, req: UpdateProfileRequest):
+    """Fill in or correct a client's behavioral profile. Works for seeded demo
+    clients as well as ones added at runtime, since the override lives in the
+    overlay and never touches prism_data.json.
+
+    This is what makes Product Fit work for a hand-added client: the four
+    scoring fields (see SCORING_PROFILE_FIELDS) are exactly what
+    _preference_profile reads to rank suggestions and to phrase the
+    "matches their ..." rationale."""
+    data = load_data()
+    portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail=f"No portfolio '{portfolio_id}'.")
+    if not portfolio.get("client"):
+        raise HTTPException(status_code=400, detail=f"'{portfolio_id}' has no client to profile.")
+
+    patch = {}
+    if req.persona is not None and req.persona.strip():
+        patch["persona"] = req.persona.strip()
+    if req.psychographics:
+        filled = req.psychographics.filled()
+        if filled:
+            patch["psychographics"] = filled
+    if not patch:
+        raise HTTPException(status_code=400, detail="Nothing to update.")
+
+    overlay = load_overlay()
+    existing = overlay["client_overrides"].get(portfolio_id, {})
+    if "psychographics" in patch:
+        merged = dict(existing.get("psychographics", {}))
+        merged.update(patch["psychographics"])
+        patch["psychographics"] = merged
+    existing.update(patch)
+    overlay["client_overrides"][portfolio_id] = existing
+    save_overlay(overlay)
+
+    refreshed = load_data()
+    updated = next(p for p in refreshed["portfolios"] if p["portfolio_id"] == portfolio_id)
+    return {
+        "portfolio_id": portfolio_id,
+        "psychographics": updated["client"].get("psychographics", {}),
+        "persona": updated["client"].get("persona"),
+        # Proof the edit actually reaches the recommender, not just the Profile tab.
+        "product_suggestions": suggest_products(refreshed, updated),
+    }
+
+
+@app.delete("/clients/{portfolio_id}")
+def delete_client(portfolio_id: str):
+    """Remove a client added at runtime. Seeded demo clients are refused: they
+    live in prism_data.json, which this endpoint deliberately never writes to.
+    Regenerate the seed dataset with build_dataset.py if you want those back."""
+    overlay = load_overlay()
+    if not any(p.get("portfolio_id") == portfolio_id for p in overlay["portfolios"]):
+        raise HTTPException(
+            status_code=400,
+            detail=f"'{portfolio_id}' is not a runtime-added client, so there is nothing to remove.",
+        )
+    overlay["portfolios"] = [p for p in overlay["portfolios"] if p.get("portfolio_id") != portfolio_id]
+    overlay["holdings"].pop(portfolio_id, None)
+    overlay["risk"].pop(portfolio_id, None)
+    overlay["client_overrides"].pop(portfolio_id, None)
+    save_overlay(overlay)
+    return {"portfolio_id": portfolio_id, "deleted": True}
+
+
+@app.get("/profile-options")
+def get_profile_options():
+    """The vocabulary the Add Client and Edit Profile forms offer. Served from
+    the backend so the options can never drift from the keyword rules in
+    _preference_profile that score them."""
+    return {"options": PROFILE_OPTIONS, "scoring_fields": SCORING_PROFILE_FIELDS}
+
+
+@app.get("/securities")
+def get_securities():
+    """The full investable universe, for the holdings editor's security picker.
+    Unlike /products this includes cash and everything already held, because an
+    editor needs the whole universe, not just what is cross-sellable."""
+    data = load_data()
+    return sorted(
+        (
+            {
+                "security_id": s["security_id"],
+                "name": s["name"],
+                "ticker": s["primary_ticker"],
+                "sector": s["sector"],
+                "asset_class": s["asset_class"],
+                "instrument_type": s["instrument_type"],
+                "vol": s.get("vol"),
+            }
+            for s in data["securities"]
+        ),
+        key=lambda s: s["name"],
+    )
 
 
 @app.get("/overview")
