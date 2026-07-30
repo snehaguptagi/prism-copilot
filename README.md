@@ -99,6 +99,15 @@ npm run dev                      # http://localhost:3000
 
 The frontend expects the backend at `http://localhost:8000` (override with `NEXT_PUBLIC_API_BASE`).
 
+## Deploying
+
+See **[docs/DEPLOY.md](./docs/DEPLOY.md)**. In short: the frontend deploys to Vercel
+cleanly with `NEXT_PUBLIC_API_BASE` set at build time, but the backend needs a host
+with a writable disk and a long request timeout (Render, Railway, Fly, a VM) — on
+Vercel's read-only filesystem every runtime edit fails, and the 55-second research
+call does not fit a serverless timeout. Rotate the Anthropic key and put the open
+API behind auth or a rate limit before exposing it publicly.
+
 ## Tests
 
 ```bash

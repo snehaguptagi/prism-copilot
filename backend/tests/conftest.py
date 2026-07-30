@@ -6,7 +6,11 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "prism_data.json")
-OVERLAY_PATH = os.path.join(os.path.dirname(__file__), "..", "prism_overlay.json")
+
+# Imported rather than recomputed: OVERLAY_PATH is overridable via
+# PRISM_OVERLAY_PATH for read-only hosts, and a second definition here would
+# quietly stop isolating the real overlay the moment that variable is set.
+from insight_lens import OVERLAY_PATH  # noqa: E402  (needs the sys.path line above)
 
 
 @pytest.fixture

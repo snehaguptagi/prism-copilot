@@ -54,7 +54,13 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "prism_data.json")
 # in) are written HERE, never into prism_data.json. That split is the whole
 # point: `python build_dataset.py` can regenerate the demo dataset from scratch
 # without destroying anything the RM entered by hand.
-OVERLAY_PATH = os.path.join(os.path.dirname(__file__), "prism_overlay.json")
+# Overridable because most hosts do not give you a writable application
+# directory. On a read-only filesystem (Vercel, Cloud Run, any container built
+# from a read-only image) point PRISM_OVERLAY_PATH at a mounted volume, or at
+# /tmp if you accept that runtime edits vanish when the instance recycles.
+OVERLAY_PATH = os.environ.get("PRISM_OVERLAY_PATH") or os.path.join(
+    os.path.dirname(__file__), "prism_overlay.json"
+)
 # Tiered models to keep latency down without sacrificing the parts that need
 # judgment. Search + narration go to Sonnet (fast, strong); pure classification
 # goes to Haiku (fastest). None of these compute exposure numbers; that is all
