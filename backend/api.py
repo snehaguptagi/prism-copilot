@@ -217,6 +217,22 @@ _ASSET_CLASS_LABEL = {
 }
 
 
+def is_sellable_product(security):
+    """Whether a security belongs in the offerable catalogue.
+
+    Depositary receipts are excluded. `sec_infosys_adr` exists so the entity
+    linker can resolve a citation about "Infosys ADR" back to the domestic line
+    via `adr_of`; it is held by no client and is not a separate thing to sell. It
+    was appearing in /products and in cross-sell suggestions as a second "INFY",
+    which on an India-only desk means offering a US-listed wrapper around a name
+    ten clients already hold.
+
+    Keyed on `adr_of` rather than a hand-set flag, so any future depositary
+    receipt added for linking purposes is excluded automatically.
+    """
+    return not security.get("adr_of")
+
+
 def _vol_band_rank(vol):
     """Map a security's volatility to the same 0 to 4 risk ladder used for
     portfolios, so a product can be checked against a client's mandate ceiling."""
@@ -319,6 +335,8 @@ def suggest_products(data, portfolio, max_n=3):
         sid = s["security_id"]
         if sid in held:
             continue
+        if not is_sellable_product(s):
+            continue  # depositary receipts are not a separate thing to sell
         if s["asset_class"] == "Cash" or s.get("instrument_type") == "cash":
             continue  # cash is not a product to cross-sell
         if _vol_band_rank(s.get("vol")) > max_band:
@@ -1246,10 +1264,11 @@ def get_overview():
 
 @app.get("/products")
 def get_products():
-    """The investable universe the desk can offer clients: every security in
-    the securities master, grouped by asset class, with how many client books
-    currently hold each (so the manager sees what is already in use vs. idle).
-    Deterministic, no model."""
+    """The investable universe the desk can offer clients, grouped by asset class,
+    with how many client books currently hold each (so the manager sees what is
+    already in use vs. idle). Deterministic, no model.
+
+    Excludes depositary receipts — see is_sellable_product."""
     data = load_data()
     client_pids = {p["portfolio_id"] for p in data["portfolios"] if p.get("client") and not p.get("is_reference")}
     held_count = {}
@@ -1259,6 +1278,8 @@ def get_products():
 
     by_class = {}
     for s in data["securities"]:
+        if not is_sellable_product(s):
+            continue
         item = {
             "security_id": s["security_id"],
             "name": s["name"],

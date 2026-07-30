@@ -129,148 +129,164 @@ export default function NewsFeedPage() {
           </p>
         </header>
 
-        <div className="news-toolbar">
-          <div className="news-tabs">
+        <div className="news-shell">
+          {/* Column 1: category rail. Replaces the horizontally-scrolling tab
+              strip, and marks which categories are already cached so it is clear
+              which ones are instant and which will cost a live call. */}
+          <aside className="news-rail">
+            <div className="news-rail-head">Categories</div>
             {categories.map((cat) => (
               <button
                 key={cat}
-                className={`news-tab${category === cat ? " active" : ""}`}
+                className={`news-rail-item${category === cat ? " active" : ""}`}
                 onClick={() => loadCategory(cat)}
               >
-                <CategoryIcon category={cat} size={14} />
+                <CategoryIcon category={cat} size={15} />
                 <span>{cat}</span>
+                {cache[cat] && <span className="news-rail-dot" title="Cached on this device" />}
               </button>
             ))}
-          </div>
-          <button
-            className="reload-btn"
-            onClick={() => loadCategory(category, true)}
-            disabled={loading || refreshing || !category}
-            title="Fetch the latest news for this category"
-          >
-            <span className={`refresh-icon${loading || refreshing ? " spinning" : ""}`}>↻</span>
-            {loading || refreshing ? "Reloading" : "Reload"}
-          </button>
-        </div>
+          </aside>
 
-        {result && !loading && (
-          <div className="news-fresh-line">
-            {refreshing
-              ? "Refreshing with the latest..."
-              : `Last fetched ${timeAgo(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
-          </div>
-        )}
-
-        {error && (
-          <div className="panel" style={{ borderLeft: "3px solid var(--negative)" }}>
-            <p style={{ color: "var(--negative)" }}>{error}</p>
-          </div>
-        )}
-
-        {loading && (
-          <div className="news-loading">
-            <span className="spinner" style={{ borderTopColor: "var(--accent)", borderColor: "var(--accent-soft)", borderTopWidth: 2 }} />
-            Reading the latest {category} developments and mapping them to your book...
-          </div>
-        )}
-
-        {result && !loading && (
-          <div className="fade-in">
-            {/* TL;DR + key-stat infographics */}
-            <div className="tldr-card">
-              <div className="tldr-kicker">
-                <CategoryIcon category={category} size={15} />
-                {category} · the one thing to know
+          {/* Column 2: the briefing itself. */}
+          <div>
+            <div className="news-toolbar">
+              <div className="news-fresh-line" style={{ margin: 0 }}>
+                {loading
+                  ? `Reading the latest ${category} developments...`
+                  : refreshing
+                  ? "Refreshing with the latest..."
+                  : result
+                  ? `Last fetched ${timeAgo(fetchedAt[category])} · cached on this device`
+                  : ""}
               </div>
-              <p className="tldr-text">{result.tldr || "No single dominant development in this category today."}</p>
-              {result.key_stats.length > 0 && (
-                <div className="tldr-stats">
-                  {result.key_stats.map((s, i) => (
-                    <span className="tldr-stat" key={i}>{s}</span>
-                  ))}
-                </div>
-              )}
+              <button
+                className="reload-btn"
+                onClick={() => loadCategory(category, true)}
+                disabled={loading || refreshing || !category}
+                title="Fetch the latest news for this category"
+              >
+                <span className={`refresh-icon${loading || refreshing ? " spinning" : ""}`}>↻</span>
+                {loading || refreshing ? "Reloading" : "Reload"}
+              </button>
             </div>
 
-            {/* key developments as scannable bullets */}
-            {result.key_points.length > 0 && (
+            {error && (
+              <div className="panel" style={{ borderLeft: "3px solid var(--negative)" }}>
+                <p style={{ color: "var(--negative)" }}>{error}</p>
+              </div>
+            )}
+
+            {loading && (
+              <div className="news-loading">
+                <span className="spinner" style={{ borderTopColor: "var(--accent)", borderColor: "var(--accent-soft)", borderTopWidth: 2 }} />
+                Reading the latest {category} developments and mapping them to your book...
+              </div>
+            )}
+
+            {result && !loading && (
+              <div className="fade-in">
+                <div className="tldr-card">
+                  <div className="tldr-kicker">
+                    <CategoryIcon category={category} size={15} />
+                    {category} · the one thing to know
+                  </div>
+                  <p className="tldr-text">{result.tldr || "No single dominant development in this category today."}</p>
+                  {result.key_stats.length > 0 && (
+                    <div className="tldr-stats">
+                      {result.key_stats.map((s, i) => (
+                        <span className="tldr-stat" key={i}>{s}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {result.key_points.length > 0 && (
+                  <>
+                    <div className="shead">Key developments</div>
+                    <ul className="keypoint-list stagger">
+                      {result.key_points.map((k, i) => (
+                        <li className="keypoint" key={i}>
+                          <span className="keypoint-dot" />
+                          {k}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                <button className="disclose-btn" onClick={() => setShowDetail((v) => !v)}>
+                  <span className={`disclose-caret${showDetail ? " open" : ""}`}>›</span>
+                  {showDetail ? "Hide" : "Show"} {result.citations.length} sources
+                </button>
+
+                {showDetail && (
+                  <div className="fade-in" style={{ marginTop: 12 }}>
+                    <div className="source-grid stagger">
+                      {result.citations.map((c, i) => {
+                        const domain = sourceDomain(c.url);
+                        return (
+                          <a className="source-card" href={c.url} target="_blank" rel="noreferrer" key={i}>
+                            <span className="source-favi">{domain.charAt(0).toUpperCase()}</span>
+                            <span className="source-body">
+                              <span className="source-title">{c.title || domain}</span>
+                              <span className="source-domain">{domain}</span>
+                            </span>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Column 3: who it touches. Moved out of the bottom of the page and
+              into the sidebar, because this is the reason an RM opens the tab and
+              it was previously below the fold. */}
+          <aside className="news-side">
+            {result && !loading && (
               <>
-                <div className="shead">Key developments</div>
-                <ul className="keypoint-list stagger">
-                  {result.key_points.map((k, i) => (
-                    <li className="keypoint" key={i}>
-                      <span className="keypoint-dot" />
-                      {k}
-                    </li>
-                  ))}
-                </ul>
+                <div className="news-side-head">
+                  What to tell your clients
+                  {result.affected_clients.length > 0 && (
+                    <span className="shead-count">{result.affected_clients.length} affected</span>
+                  )}
+                </div>
+                {result.affected_clients.length === 0 ? (
+                  <div className="panel">
+                    <p>None of your clients are materially affected by today&apos;s {category} news.</p>
+                  </div>
+                ) : (
+                  <div className="tp-grid stagger">
+                    {result.affected_clients.map((c) => (
+                      <div
+                        className="tp-card"
+                        key={c.portfolio_id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => router.push(`/clients/${c.portfolio_id}`)}
+                        onKeyDown={(e) => e.key === "Enter" && router.push(`/clients/${c.portfolio_id}`)}
+                      >
+                        <div className="tp-card-head">
+                          <div className="avatar" style={{ background: avatarColor(c.client_name) }}>
+                            {initials(c.client_name)}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <div className="tp-card-name">{c.client_name}</div>
+                            <div className="tp-card-how">{c.how_affected}</div>
+                          </div>
+                        </div>
+                        <p className="tp-card-point">{c.talking_point}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
-
-            {/* per-client talking points */}
-            <div className="shead">
-              What to tell your clients
-              {result.affected_clients.length > 0 && (
-                <span className="shead-count">{result.affected_clients.length} affected</span>
-              )}
-            </div>
-
-            {result.affected_clients.length === 0 ? (
-              <div className="panel">
-                <p>None of your clients are materially affected by today&apos;s {category} news.</p>
-              </div>
-            ) : (
-              <div className="tp-grid stagger">
-                {result.affected_clients.map((c) => (
-                  <div
-                    className="tp-card"
-                    key={c.portfolio_id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => router.push(`/clients/${c.portfolio_id}`)}
-                    onKeyDown={(e) => e.key === "Enter" && router.push(`/clients/${c.portfolio_id}`)}
-                  >
-                    <div className="tp-card-head">
-                      <div className="avatar" style={{ background: avatarColor(c.client_name) }}>
-                        {initials(c.client_name)}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div className="tp-card-name">{c.client_name}</div>
-                        <div className="tp-card-how">{c.how_affected}</div>
-                      </div>
-                    </div>
-                    <p className="tp-card-point">{c.talking_point}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* progressive disclosure: sources only (the key points ARE the briefing) */}
-            <button className="disclose-btn" onClick={() => setShowDetail((v) => !v)}>
-              <span className={`disclose-caret${showDetail ? " open" : ""}`}>›</span>
-              {showDetail ? "Hide" : "Show"} {result.citations.length} sources
-            </button>
-
-            {showDetail && (
-              <div className="fade-in" style={{ marginTop: 12 }}>
-                <div className="source-grid stagger">
-                  {result.citations.map((c, i) => {
-                    const domain = sourceDomain(c.url);
-                    return (
-                      <a className="source-card" href={c.url} target="_blank" rel="noreferrer" key={i}>
-                        <span className="source-favi">{domain.charAt(0).toUpperCase()}</span>
-                        <span className="source-body">
-                          <span className="source-title">{c.title || domain}</span>
-                          <span className="source-domain">{domain}</span>
-                        </span>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          </aside>
+        </div>
 
         <footer>
           Decision-support tool. Not investment advice, not a trading system. Talking points are

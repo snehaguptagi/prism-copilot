@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getMe } from "@/lib/api";
 import { LogoMark } from "@/components/Logo";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_ITEMS = [
   { href: "/", label: "Overview" },
@@ -30,7 +29,7 @@ export default function Topbar() {
     <div className="topbar">
       <div className="topbar-inner">
         <Link href="/" className="brand">
-          <LogoMark size={26} />
+          <LogoMark size={34} />
           <span className="brand-word">PRISM</span>
         </Link>
         <nav className="top-nav">
@@ -44,7 +43,6 @@ export default function Topbar() {
           })}
         </nav>
         <div className="topbar-right">
-          <ThemeToggle />
           <div className="user-chip">{managerName}</div>
         </div>
       </div>

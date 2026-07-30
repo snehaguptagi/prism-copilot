@@ -24,99 +24,6 @@
    Reversed from that pass: weight now RISES with size rather than falling, since
    PwC sets headlines bold and a thin display face would be off-brand. */
 :root {
-  --bg: #fbfbfb;
-  --surface: #ffffff;
-  --surface-2: #f4f4f4;
-  --border: #e4e4e4;
-  --border-strong: #cfcfcf;
-  --text: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-faint: #7d7d7d;
-  --accent: #d04a02;
-  --accent-hover: #b03e02;
-  --accent-soft: #d04a0214;
-  /* PwC Orange is a FILL colour, not a text colour. Measured: #D04A02 reaches
-     only 4.50:1 on pure white and drops to 4.35:1 on --bg and 4.10:1 on
-     --surface-2, so as link or label text it fails AA on two of the three
-     grounds it actually sits on. --accent-text is the darkened step used
-     wherever the orange is type; it clears 5.16:1 on the worst of them while
-     still reading unmistakably as the brand orange. Fills, bars and buttons
-     keep the exact brand value. */
-  --accent-text: #b54002;
-
-  /* PwC brand spectrum. Identity and backdrop only — never a data encoding. */
-  --brand-orange: #d04a02;
-  --brand-tangerine: #eb8c00;
-  --brand-yellow: #ffb600;
-  --brand-rose: #e0301e;
-
-  --ink: #1a1a1a;
-  --ink-2: #2e2e2e;
-  --on-ink: #ffffff;
-  --on-ink-faint: #a8a8a8;
-
-  --sev-low: #0f8a72;
-  --sev-moderate: #3f8f45;
-  --sev-elevated: #a67c0c;
-  --sev-high: #c2691f;
-  --sev-vhigh: #bc3a3a;
-
-  --positive: #0e7a55;
-  --negative: #bc3a3a;
-  --tailwind: #0e7a55;
-  --headwind: #c2691f;
-  --mixed: #7d9298;
-
-  /* Categorical chart steps, in fixed assignment order. Validator output on
-     white: all five checks PASS, worst adjacent CVD ΔE 11.6 (protan),
-     normal-vision floor 20.5. Slot 1 is PwC Orange itself, which does clear the
-     floors; the remaining slots go cool, because PwC's own supporting colours are
-     all warm and warm-on-warm is exactly what CVD collapses. */
-  --cat-1: #d04a02;
-  --cat-2: #0e86a6;
-  --cat-3: #4a3aa7;
-  --cat-4: #a8326b;
-  --cat-5: #5a9e4a;
-  --cat-6: #6b4e9e;
-  --cat-neutral: #7d7d7d;
-
-  /* Emil's strong custom easing curves — the built-in CSS easings lack punch */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-
-  /* Shadows tinted with peacock rather than neutral brown, so elevation sits in
-     the same colour world as everything else. */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.09), 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
-
-  --body: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
-
-  /* Display scale. The wide size range is kept — it is what stops a dashboard
-     reading as one flat wall of 13px — but the weights are PwC's, not the
-     previous pass's. PwC headlines are heavy and tightly tracked; a 250-weight
-     display face is the opposite of that brand's voice. */
-  --display-1: clamp(38px, 5.2vw, 62px);
-  --display-2: clamp(28px, 3.4vw, 42px);
-  --display-3: clamp(23px, 2.4vw, 31px);
-  --weight-display: 700; /* PwC sets headlines bold */
-  --weight-figure: 600;  /* figures are confident, not airy */
-
-  --topbar-bg: rgba(251, 251, 251, 0.88);
-}
-
-/* Dark theme: same structure, same semantic tokens, different values. Applied
-   via a data-theme attribute on <html> (set before paint by an inline script
-   in layout.tsx, so there is no flash), never by a bare media query, so a
-   manual toggle always wins over the OS preference. */
-/* Dark mode is SELECTED, not an inverted flip. PwC's dark treatment is neutral
-   charcoal rather than a tinted hue, so the surfaces are true greys; the orange
-   is lifted to #f2884a because #d04a02 only reaches 2.9:1 against #1f1f1f and
-   would fail as link text. The categorical steps were re-validated against
-   #1f1f1f directly rather than lightened arithmetically. */
-:root[data-theme="dark"] {
   --bg: #141414;
   --surface: #1f1f1f;
   --surface-2: #2a2a2a;
@@ -128,10 +35,16 @@
   --accent: #f2884a;
   --accent-hover: #ff9d63;
   --accent-soft: #f2884a22;
-  /* On charcoal the lifted orange already clears 5.74:1 on the lightest dark
-     surface, so text and fill can share one value here. */
+  /* PwC Orange is a FILL colour, not a text colour. Measured: #D04A02 reaches
+     only 4.50:1 on pure white and drops to 4.35:1 on --bg and 4.10:1 on
+     --surface-2, so as link or label text it fails AA on two of the three
+     grounds it actually sits on. --accent-text is the darkened step used
+     wherever the orange is type; it clears 5.16:1 on the worst of them while
+     still reading unmistakably as the brand orange. Fills, bars and buttons
+     keep the exact brand value. */
   --accent-text: #f2884a;
 
+  /* PwC brand spectrum. Identity and backdrop only — never a data encoding. */
   --brand-orange: #f2884a;
   --brand-tangerine: #f5a52e;
   --brand-yellow: #ffc738;
@@ -154,8 +67,11 @@
   --headwind: #e0925c;
   --mixed: #83a3aa;
 
-  /* Re-validated against the #1F1F1F dark surface, not lightened from the light
-     set: all five checks PASS, worst adjacent CVD ΔE 8.2, normal-vision 15.3. */
+  /* Categorical chart steps, in fixed assignment order. Validator output on
+     white: all five checks PASS, worst adjacent CVD ΔE 11.6 (protan),
+     normal-vision floor 20.5. Slot 1 is PwC Orange itself, which does clear the
+     floors; the remaining slots go cool, because PwC's own supporting colours are
+     all warm and warm-on-warm is exactly what CVD collapses. */
   --cat-1: #d9752f;
   --cat-2: #2a9dbd;
   --cat-3: #8272db;
@@ -164,10 +80,34 @@
   --cat-6: #9b7ed0;
   --cat-neutral: #8f8f8f;
 
+  /* Emil's strong custom easing curves — the built-in CSS easings lack punch */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Shadows tinted with peacock rather than neutral brown, so elevation sits in
+     the same colour world as everything else. */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.18);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.18);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Helvetica Neue first, as PwC's brand system specifies. It is a licensed
+     Linotype/Apple face that cannot be embedded or served, so this asks for the
+     locally installed copy: real Helvetica Neue on macOS and iOS, Inter as the
+     fallback everywhere else (closer to Helvetica's skeleton than Arial, and far
+     better hinted at UI sizes). Arial/Helvetica sit behind it as last resorts. */
+  --body: "Helvetica Neue", Helvetica, var(--font-grotesk), Arial, sans-serif;
+  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  /* Display scale. The wide size range is kept — it is what stops a dashboard
+     reading as one flat wall of 13px — but the weights are PwC's, not the
+     previous pass's. PwC headlines are heavy and tightly tracked; a 250-weight
+     display face is the opposite of that brand's voice. */
+  --display-1: clamp(38px, 5.2vw, 62px);
+  --display-2: clamp(28px, 3.4vw, 42px);
+  --display-3: clamp(23px, 2.4vw, 31px);
+  --weight-display: 700; /* PwC sets headlines bold */
+  --weight-figure: 600;  /* figures are confident, not airy */
 
   --topbar-bg: rgba(20, 20, 20, 0.88);
 }
@@ -184,12 +124,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Dark only. color-scheme: dark is what makes the native furniture agree —
+   scrollbars, form widgets, autofill backgrounds, the caret. Without it the app
+   is dark but the browser's own controls stay light and give it away. */
 html {
   height: 100%;
-  color-scheme: light;
-}
-
-html[data-theme="dark"] {
   color-scheme: dark;
 }
 
@@ -291,7 +230,7 @@ a:hover {
   top: 0;
   z-index: 30;
   padding: 0; /* gutter now lives on .topbar-inner, matching .wrap */
-  height: 56px;
+  height: 68px;
   background: var(--topbar-bg);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
@@ -313,7 +252,7 @@ a:hover {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--text);
   transition: opacity 150ms var(--ease-out);
 }
@@ -322,10 +261,13 @@ a:hover {
   opacity: 0.82;
 }
 
+/* The mark was 26px against a 15.5px wordmark, which read as an afterthought next
+   to the nav. Both go up and the wordmark loses some of its tracking, so the lockup
+   has presence proportionate to the rest of the interface. */
 .brand-word {
   font-weight: 700;
-  font-size: 15.5px;
-  letter-spacing: 0.14em;
+  font-size: 20px;
+  letter-spacing: 0.1em;
   color: var(--text);
 }
 
@@ -366,31 +308,6 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-secondary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out), transform 130ms var(--ease-out);
-}
-
-.theme-toggle:hover {
-  background: var(--surface-2);
-  border-color: var(--border-strong);
-  color: var(--text);
-}
-
-.theme-toggle:active {
-  transform: scale(0.92);
 }
 
 /* ---- Hero / page header ---- */
@@ -1390,12 +1307,177 @@ tr.clickable:active td {
   align-items: center;
 }
 
+.kg-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
 .kg-svg {
   width: 100%;
-  max-width: 480px;
+  max-width: 620px; /* was 480: the graph is the point of this tab, give it room */
   height: auto;
-  margin: 4px auto 6px;
+  margin: 4px auto 0;
+  overflow: visible;
 }
+
+/* Nodes are interactive: pointer, a real focus ring, and a transform nudge on
+   hover so the target confirms itself before the click. */
+.kg-node {
+  cursor: pointer;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.kg-node .kg-dot,
+.kg-node circle {
+  transition: transform 160ms var(--ease-out), filter 160ms var(--ease-out);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kg-node:hover .kg-dot,
+.kg-node:focus-visible .kg-dot {
+  transform: scale(1.28);
+  filter: brightness(1.12);
+}
+
+.kg-node:focus {
+  outline: none;
+}
+
+.kg-node:focus-visible .kg-dot {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.kg-node.pinned .kg-dot {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.kg-edge {
+  transition: opacity 180ms var(--ease-out);
+}
+
+.kg-node-label {
+  font-size: 11px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+/* Fixed-height slot shared by the hint and the detail card, so pinning a node
+   does not shift the graph above it. */
+.kg-hint,
+.kg-detail {
+  width: 100%;
+  min-height: 74px;
+  border-radius: 14px;
+  font-size: 12.5px;
+}
+
+.kg-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  border: 1px dashed var(--border);
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.kg-detail {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.kg-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.kg-detail-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.kg-detail-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.kg-detail-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 6px;
+}
+
+.kg-detail-close:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.kg-detail-kind {
+  font-size: 11.5px;
+  color: var(--accent-text);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.kg-detail-why {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* Size, ring colour and dash pattern all encode something; none of it was
+   explained before. */
+.kg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+.kg-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  padding-top: 8px;
+}
+
+.kg-key {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.kg-key-client { background: var(--accent); }
+.kg-key-class { background: var(--cat-3); }
+.kg-key-held { background: var(--cat-1); opacity: 0.85; }
+.kg-key-sugg { background: var(--cat-1); border: 1.5px solid var(--sev-elevated); }
+.kg-key-best { background: var(--cat-1); box-shadow: 0 0 0 2px var(--sev-elevated); }
 
 .kg-class-label {
   font-size: 11px;
@@ -2322,6 +2404,22 @@ tr.clickable:active td {
   }
 }
 
+/* Now that the page is full-bleed, two columns of panels leave a third column's
+   worth of empty space on a 1600px display. The panels themselves are
+   allocation lists and top-holdings tables that read perfectly well narrower, so
+   the extra column is free density rather than a squeeze. */
+@media (min-width: 1500px) {
+  .ov-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Action items were capped around 300px each and wrapped to a second row with a
+     ragged tail; a wider floor fills the row cleanly. */
+  .action-list {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  }
+}
+
 /* asset allocation donut */
 .donut-wrap {
   display: flex;
@@ -2632,11 +2730,120 @@ tr.clickable:active td {
 
 /* ---- News feed ---- */
 /* news category tab bar + reload */
+/* ---- News Feed: newsroom layout ----
+   Was a single stacked column: horizontal category tabs, then TL;DR, then key
+   points, then talking points, then sources. On a full-bleed page that leaves a
+   wide empty right-hand side and pushes the client talking points — the whole
+   point of the tab — below the fold.
+
+   Now a three-column newsroom: categories in a vertical rail (which also removes
+   the horizontally-scrolling tab strip), the briefing in the middle, and the
+   affected clients in a sidebar where they are visible immediately. Columns
+   collapse to one below 1100px. */
+.news-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .news-shell {
+    grid-template-columns: 232px minmax(0, 1fr) 360px;
+  }
+}
+
+.news-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 10px;
+  position: sticky;
+  top: 88px; /* clears the 68px topbar */
+}
+
+.news-rail-head {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-faint);
+  padding: 6px 10px 8px;
+}
+
+.news-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), color 140ms var(--ease-out);
+}
+
+.news-rail-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.news-rail-item.active {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+/* Cached categories get a dot, so it is obvious which ones are instant and which
+   will cost a live call. Previously nothing distinguished them. */
+.news-rail-dot {
+  margin-left: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--positive);
+  flex: none;
+}
+
+.news-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 88px;
+}
+
+.news-side-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* In a 360px sidebar the talking-point grid is one column. */
+.news-side .tp-grid {
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 .news-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
 .news-tabs {
@@ -2772,13 +2979,23 @@ tr.clickable:active td {
 }
 
 /* TL;DR card + key stats */
+/* The headline of the briefing, promoted to the same dark tile the dashboard uses
+   for its lead figure — one per page, so the two never compete. Wash alphas are
+   the same measured-safe values as .stat-hero. */
 .tldr-card {
-  background: linear-gradient(180deg, var(--accent-soft), transparent 90%);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 16px;
-  padding: 14px 18px;
-  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #0f0f0f;
+  background-image:
+    radial-gradient(28rem 20rem at 6% 0%, color-mix(in srgb, var(--brand-orange) 34%, transparent), transparent 70%),
+    radial-gradient(22rem 18rem at 98% 40%, color-mix(in srgb, var(--brand-rose) 20%, transparent), transparent 72%),
+    radial-gradient(20rem 16rem at 60% 108%, color-mix(in srgb, var(--brand-tangerine) 15%, transparent), transparent 70%);
+  border: none;
+  border-radius: 20px;
+  padding: 26px 28px;
+  margin-bottom: 18px;
+  color: var(--on-ink);
   box-shadow: var(--shadow-xs);
 }
 
@@ -2790,17 +3007,18 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent-text);
-  margin-bottom: 7px;
+  color: color-mix(in srgb, var(--on-ink) 72%, transparent);
+  margin-bottom: 10px;
 }
 
 .tldr-text {
-  font-size: 14.5px;
+  font-size: 21px;
   font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  margin-bottom: 10px;
+  line-height: 1.34;
+  letter-spacing: -0.018em;
+  color: var(--on-ink);
+  margin-bottom: 18px;
+  max-width: 60ch;
 }
 
 .tldr-stats {
@@ -2813,9 +3031,9 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent-text);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  color: var(--on-ink);
+  background: color-mix(in srgb, var(--on-ink) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-ink) 22%, transparent);
   border-radius: 8px;
   padding: 5px 10px;
   font-variant-numeric: tabular-nums;

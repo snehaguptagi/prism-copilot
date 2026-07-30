@@ -452,6 +452,37 @@ def test_opinionated_goals_produce_a_quotable_reason():
         assert reasons, f"{goal!r} scores but has no reason text to quote"
 
 
+def test_depositary_receipts_are_never_offered_as_products():
+    """sec_infosys_adr exists so the entity linker can resolve "Infosys ADR" back
+    to the domestic line. It is held by nobody and must never surface as a
+    sellable product: on an India-only desk that means offering a US-listed
+    wrapper around a name most clients already hold. It must still remain in the
+    securities master, because /securities and the linker both need it."""
+    from api import load_data, suggest_products, is_sellable_product
+
+    data = load_data()
+    adrs = [s for s in data["securities"] if s.get("adr_of")]
+    assert adrs, "fixture gone: this test needs at least one ADR in the master"
+    adr_ids = {s["security_id"] for s in adrs}
+
+    assert all(not is_sellable_product(s) for s in adrs)
+
+    # absent from the catalogue
+    for group in client.get("/products").json()["groups"]:
+        for item in group["items"]:
+            assert item["security_id"] not in adr_ids
+
+    # absent from every client's cross-sell suggestions
+    for p in data["portfolios"]:
+        if not p.get("client") or p.get("is_reference"):
+            continue
+        for s in suggest_products(data, p):
+            assert s["security_id"] not in adr_ids
+
+    # still in the master, so linking and the holdings editor keep working
+    assert adr_ids <= {s["security_id"] for s in client.get("/securities").json()}
+
+
 def test_securities_endpoint_lists_the_whole_universe():
     secs = client.get("/securities").json()
     from api import load_data

@@ -2,15 +2,12 @@ import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// PwC's identity is single-family and strictly sans: Helvetica Neue, set bold and
-// black for headlines with orange as the only accent. Inter is the substitute —
-// the closest openly-licensed neo-grotesque to Helvetica in proportion and
-// skeleton, and far better hinted at UI sizes.
-//
-// The serif italic that was here previously came from the Perplexity deck, whose
-// whole typographic idea is a grotesk/serif pairing. PwC has no serif in its
-// system, so keeping that flourish would have read as two brands arguing. It is
-// removed rather than recoloured.
+// Typography is Helvetica Neue first, as PwC's own system specifies. It is a
+// licensed Linotype/Apple face that cannot be embedded or served, so the stack in
+// globals.css asks for the locally installed copy and falls back. On macOS and iOS
+// that means real Helvetica Neue. On Windows and Android, where it is not
+// installed, Inter carries it — the closest openly-licensed neo-grotesque in
+// proportion and skeleton, and better hinted at UI sizes than Arial.
 //
 // Loaded as the VARIABLE cut (no `weight` array) so the display scale can ask for
 // weights between the named stops instead of snapping to the nearest static one.
@@ -33,26 +30,22 @@ export const metadata: Metadata = {
   description: "Portfolio-aware research assistant for buy-side investment teams.",
 };
 
-// Sets data-theme on <html> before first paint (localStorage choice, else the
-// OS preference), so there is never a flash of the wrong theme. A manual
-// toggle (ThemeToggle) always overrides the OS preference once set.
-const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('prism_theme');var t=(s==='light'||s==='dark')?s:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
+    // Dark only. data-theme is set statically here rather than by a pre-paint
+    // script, so there is no theme to detect, persist or flash — and no toggle.
+    // colorScheme: dark in globals.css makes native controls (scrollbars, form
+    // widgets, autofill) match, which is the part people usually forget.
     <html
       lang="en"
+      data-theme="dark"
       className={`${grotesk.variable} ${ibmPlexMono.variable}`}
-      suppressHydrationWarning
     >
-      <body>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
