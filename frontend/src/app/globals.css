@@ -1,42 +1,59 @@
-/* PRISM visual system, retuned to the design language of the Perplexity Ads
-   deck. Values below are measured from that PDF's content streams, not
-   approximated by eye:
-     #FCFCF9  Paper    — warm off-white page ground (34 uses)
-     #13343B  Peacock  — the "ink"; body text and dark surfaces (144 uses, dominant)
-     #20808D  Turquoise— the single accent (30 uses)
-     #FFFFFF  White    — type on dark tiles (82 uses)
-   The deck's whole colour argument is restraint: one accent, applied only to
-   interactive chrome and single-series data, over a warm paper ground, with
-   deep teal standing in for black.
+/* PRISM visual system on PwC's brand palette.
+     #D04A02  Orange     — the primary brand colour and the single UI accent
+     #EB8C00  Tangerine  — brand device only
+     #FFB600  Yellow     — brand device only
+     #E0301E  Rose       — brand device only
+     #1A1A1A  Near-black — headlines and the ink for dark tiles
+     #7D7D7D  Grey       — secondary/faint text
+   PwC's voice is confident rather than airy: white ground, heavy black
+   headlines, orange reserved for interactive chrome, and one warm-spectrum
+   brand device. Type is a single sans throughout.
 
-   Retained from the previous system: Emil Kowalski's motion principles (custom
-   easing, press feedback, transform/opacity-only transitions under 250ms,
-   semi-transparent shadows over hard borders).
+   The warm trio (tangerine/yellow/rose) is confined to identity — the logo and
+   the page backdrop — and never encodes data. That is not a stylistic
+   preference: measured against white, Yellow #FFB600 sits at 1.76:1 contrast and
+   L 0.823 (outside the usable band), and Tangerine/Yellow are ΔE 10.9 apart to
+   NORMAL vision, under the hard floor of 15. PwC's palette is built to be
+   recognised, not to be told apart. Charts therefore use a separate validated
+   set (see lib/colors.ts) anchored on the orange.
 
-   Deliberately NOT collapsed into the accent: status colours (positive/negative,
-   risk severity) and the categorical chart palette. Those encode meaning, and
-   the deck has no equivalent to borrow, so they keep their own hues, merely
-   re-harmonised toward peacock. Every categorical value here is the output of
-   the data-viz validator (lightness band, chroma floor, protan/deutan
-   separation, normal-vision floor, contrast) — see lib/colors.ts. */
+   Retained: Emil Kowalski's motion principles (custom easing, press feedback,
+   transform/opacity-only transitions under 250ms, semi-transparent shadows over
+   hard borders), and the structural typography carried over from the previous
+   pass — sentence-case labels, wide size range, figures with the label above.
+   Reversed from that pass: weight now RISES with size rather than falling, since
+   PwC sets headlines bold and a thin display face would be off-brand. */
 :root {
-  --bg: #fcfcf9;
+  --bg: #fbfbfb;
   --surface: #ffffff;
-  --surface-2: #f7f7f2;
-  --border: #e8e8e0;
-  --border-strong: #d5d5c9;
-  --text: #13343b;
-  --text-secondary: #4a656b;
-  --text-faint: #7d9298;
-  --accent: #20808d;
-  --accent-hover: #196873;
-  --accent-soft: #20808d14;
+  --surface-2: #f4f4f4;
+  --border: #e4e4e4;
+  --border-strong: #cfcfcf;
+  --text: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-faint: #7d7d7d;
+  --accent: #d04a02;
+  --accent-hover: #b03e02;
+  --accent-soft: #d04a0214;
+  /* PwC Orange is a FILL colour, not a text colour. Measured: #D04A02 reaches
+     only 4.50:1 on pure white and drops to 4.35:1 on --bg and 4.10:1 on
+     --surface-2, so as link or label text it fails AA on two of the three
+     grounds it actually sits on. --accent-text is the darkened step used
+     wherever the orange is type; it clears 5.16:1 on the worst of them while
+     still reading unmistakably as the brand orange. Fills, bars and buttons
+     keep the exact brand value. */
+  --accent-text: #b54002;
 
-  /* Peacock-anchored ink ramp, for the deck's dark hero tiles. */
-  --ink: #13343b;
-  --ink-2: #1c474f;
-  --on-ink: #fcfcf9;
-  --on-ink-faint: #9fbcc2;
+  /* PwC brand spectrum. Identity and backdrop only — never a data encoding. */
+  --brand-orange: #d04a02;
+  --brand-tangerine: #eb8c00;
+  --brand-yellow: #ffb600;
+  --brand-rose: #e0301e;
+
+  --ink: #1a1a1a;
+  --ink-2: #2e2e2e;
+  --on-ink: #ffffff;
+  --on-ink-faint: #a8a8a8;
 
   --sev-low: #0f8a72;
   --sev-moderate: #3f8f45;
@@ -50,17 +67,18 @@
   --headwind: #c2691f;
   --mixed: #7d9298;
 
-  /* Categorical chart steps, in fixed assignment order. Validator output on the
-     #FCFCF9 paper surface: all five checks PASS, worst adjacent CVD ΔE 11.6
-     (protan), normal-vision floor 20.7. cat-1 is a chroma-boosted sibling of the
-     accent — the accent itself sits below the categorical chroma floor. */
-  --cat-1: #008c9e;
-  --cat-2: #b0710a;
+  /* Categorical chart steps, in fixed assignment order. Validator output on
+     white: all five checks PASS, worst adjacent CVD ΔE 11.6 (protan),
+     normal-vision floor 20.5. Slot 1 is PwC Orange itself, which does clear the
+     floors; the remaining slots go cool, because PwC's own supporting colours are
+     all warm and warm-on-warm is exactly what CVD collapses. */
+  --cat-1: #d04a02;
+  --cat-2: #0e86a6;
   --cat-3: #4a3aa7;
   --cat-4: #a8326b;
   --cat-5: #5a9e4a;
   --cat-6: #6b4e9e;
-  --cat-neutral: #7d9298;
+  --cat-neutral: #7d7d7d;
 
   /* Emil's strong custom easing curves — the built-in CSS easings lack punch */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -68,54 +86,61 @@
 
   /* Shadows tinted with peacock rather than neutral brown, so elevation sits in
      the same colour world as everything else. */
-  --shadow-xs: 0 1px 2px rgba(19, 52, 59, 0.04);
-  --shadow-sm: 0 1px 3px rgba(19, 52, 59, 0.06), 0 1px 2px rgba(19, 52, 59, 0.04);
-  --shadow-md: 0 4px 12px rgba(19, 52, 59, 0.08), 0 2px 4px rgba(19, 52, 59, 0.04);
-  --shadow-lg: 0 12px 32px rgba(19, 52, 59, 0.11), 0 4px 8px rgba(19, 52, 59, 0.05);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.09), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
 
   --body: var(--font-grotesk), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --serif: var(--font-serif-accent), Georgia, "Times New Roman", serif;
   --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 
-  /* Display type scale. The deck runs 18pt caption to 180pt display on a 1440pt
-     slide — a 10x range. App UI cannot go that far, but the principle (a much
-     wider range than typical dashboard type, with weight dropping as size
-     climbs) is what these steps encode. */
-  --display-1: clamp(38px, 5.2vw, 66px);
-  --display-2: clamp(30px, 3.6vw, 46px);
-  --display-3: clamp(24px, 2.6vw, 34px);
-  --weight-display: 250; /* Thin/ExtraLight territory, for --display-* only */
-  --weight-figure: 300;  /* big numbers: light, never bold */
+  /* Display scale. The wide size range is kept — it is what stops a dashboard
+     reading as one flat wall of 13px — but the weights are PwC's, not the
+     previous pass's. PwC headlines are heavy and tightly tracked; a 250-weight
+     display face is the opposite of that brand's voice. */
+  --display-1: clamp(38px, 5.2vw, 62px);
+  --display-2: clamp(28px, 3.4vw, 42px);
+  --display-3: clamp(23px, 2.4vw, 31px);
+  --weight-display: 700; /* PwC sets headlines bold */
+  --weight-figure: 600;  /* figures are confident, not airy */
 
-  --topbar-bg: rgba(252, 252, 249, 0.85);
+  --topbar-bg: rgba(251, 251, 251, 0.88);
 }
 
 /* Dark theme: same structure, same semantic tokens, different values. Applied
    via a data-theme attribute on <html> (set before paint by an inline script
    in layout.tsx, so there is no flash), never by a bare media query, so a
    manual toggle always wins over the OS preference. */
-/* Dark mode is SELECTED, not an inverted flip: the surfaces are steps down the
-   same peacock hue the deck uses for its dark tiles (#13343B is the mid step,
-   used verbatim as --surface), and the accent is lifted to clear 3:1 against
-   them. The categorical chart steps were re-validated against #13343B rather
-   than lightened arithmetically. */
+/* Dark mode is SELECTED, not an inverted flip. PwC's dark treatment is neutral
+   charcoal rather than a tinted hue, so the surfaces are true greys; the orange
+   is lifted to #f2884a because #d04a02 only reaches 2.9:1 against #1f1f1f and
+   would fail as link text. The categorical steps were re-validated against
+   #1f1f1f directly rather than lightened arithmetically. */
 :root[data-theme="dark"] {
-  --bg: #0c2429;
-  --surface: #13343b;
-  --surface-2: #1a424a;
-  --border: #24545d;
-  --border-strong: #356a74;
-  --text: #f0f4f3;
-  --text-secondary: #b3cbd0;
-  --text-faint: #83a3aa;
-  --accent: #4ab8c7;
-  --accent-hover: #6dcdd9;
-  --accent-soft: #4ab8c722;
+  --bg: #141414;
+  --surface: #1f1f1f;
+  --surface-2: #2a2a2a;
+  --border: #383838;
+  --border-strong: #4d4d4d;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-faint: #8f8f8f;
+  --accent: #f2884a;
+  --accent-hover: #ff9d63;
+  --accent-soft: #f2884a22;
+  /* On charcoal the lifted orange already clears 5.74:1 on the lightest dark
+     surface, so text and fill can share one value here. */
+  --accent-text: #f2884a;
 
-  --ink: #0c2429;
-  --ink-2: #13343b;
-  --on-ink: #f0f4f3;
-  --on-ink-faint: #83a3aa;
+  --brand-orange: #f2884a;
+  --brand-tangerine: #f5a52e;
+  --brand-yellow: #ffc738;
+  --brand-rose: #f05a48;
+
+  --ink: #0d0d0d;
+  --ink-2: #1f1f1f;
+  --on-ink: #f5f5f5;
+  --on-ink-faint: #8f8f8f;
 
   --sev-low: #2bc0a0;
   --sev-moderate: #6dc06d;
@@ -129,22 +154,22 @@
   --headwind: #e0925c;
   --mixed: #83a3aa;
 
-  /* Re-validated against the #13343B dark surface, not lightened from the light
-     set: all five checks PASS, worst adjacent CVD ΔE 9.3, normal-vision 16.3. */
-  --cat-1: #00a2b5;
-  --cat-2: #c1881f;
-  --cat-3: #7e6fd6;
+  /* Re-validated against the #1F1F1F dark surface, not lightened from the light
+     set: all five checks PASS, worst adjacent CVD ΔE 8.2, normal-vision 15.3. */
+  --cat-1: #d9752f;
+  --cat-2: #2a9dbd;
+  --cat-3: #8272db;
   --cat-4: #c9608f;
   --cat-5: #66a751;
   --cat-6: #9b7ed0;
-  --cat-neutral: #83a3aa;
+  --cat-neutral: #8f8f8f;
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.18);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.18);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.2);
 
-  --topbar-bg: rgba(19, 52, 59, 0.85);
+  --topbar-bg: rgba(20, 20, 20, 0.88);
 }
 
 * {
@@ -168,9 +193,30 @@ html[data-theme="dark"] {
   color-scheme: dark;
 }
 
+/* ---- Brand backdrop ----
+   PwC's signature visual device is overlapping translucent forms in the warm
+   spectrum. Rendered here as four fixed radial washes rather than an image or an
+   extra DOM node: no request, no element, nothing to get in front of content,
+   and it cannot be clicked.
+
+   Alpha is kept at 0.05-0.07 deliberately. Anything stronger starts competing
+   with the data, and the whole point of the accent discipline is that colour in
+   this app means something. Measured after adding it: body-text contrast is
+   unchanged to two decimal places, because the washes sit under an opaque
+   --surface on every panel and only show through in the page gutters.
+
+   background-attachment: fixed keeps the composition still while the page
+   scrolls, so it reads as a backdrop rather than as content. */
 body {
   min-height: 100%;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(58rem 42rem at 100% 0%, color-mix(in srgb, var(--brand-orange) 7%, transparent), transparent 68%),
+    radial-gradient(46rem 34rem at 0% 8%, color-mix(in srgb, var(--brand-tangerine) 6%, transparent), transparent 66%),
+    radial-gradient(52rem 40rem at 6% 100%, color-mix(in srgb, var(--brand-yellow) 6%, transparent), transparent 66%),
+    radial-gradient(38rem 30rem at 96% 92%, color-mix(in srgb, var(--brand-rose) 5%, transparent), transparent 68%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: var(--body);
   font-size: 14px;
@@ -178,8 +224,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Forced-colours and reduced-transparency users get the flat ground: the
+   backdrop is pure decoration and carries no information. */
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  body {
+    background-image: none;
+  }
+}
+
 a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   transition: color 150ms var(--ease-out);
 }
@@ -289,7 +343,7 @@ a:hover {
 }
 
 .top-nav a.active {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 
@@ -344,32 +398,30 @@ a:hover {
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
   margin: 0 0 14px;
 }
 
-/* Display heading: large, and LIGHT because it is large. The deck never sets a
-   headline bold; it lets size carry the emphasis and keeps the strokes thin. */
+/* Display heading: large and heavy, tightly tracked. Capped in measure so it
+   wraps to two or three confident lines instead of running as one thin ribbon. */
 h1 {
   font-weight: var(--weight-display);
   font-size: var(--display-2);
-  line-height: 1.08;
-  letter-spacing: -0.022em;
+  line-height: 1.06;
+  letter-spacing: -0.028em;
   color: var(--text);
   margin: 0 0 14px;
-  max-width: 30ch; /* forces the deck's 2-3 line wrap rather than one long line */
+  max-width: 28ch;
 }
 
-/* "Search like *never* before." — the deck's one typographic flourish: a single
-   word in serif italic inside an otherwise grotesk line. Deliberately scoped to
-   an inline element so it can only ever be a word or two, never a whole heading.
-   Sized up slightly because the serif's x-height runs smaller than Inter's. */
-.em-serif {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 1.12em;
-  letter-spacing: 0;
+/* PwC's one graphic flourish is the warm spectrum, not a type contrast, so
+   emphasis inside a headline is carried by the accent colour rather than by a
+   second family. Replaces the serif italic that came from the previous pass. */
+.em-brand {
+  /* Large bold text: the 3:1 threshold applies, so this can carry the exact
+     brand orange rather than the darkened text step. Measured 4.50:1. */
+  color: var(--accent);
+  font-weight: inherit;
 }
 
 .lede {
@@ -501,7 +553,7 @@ h1 {
 
 .section-tabs button.active {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* ---- Controls ---- */
@@ -562,7 +614,7 @@ h1 {
 .controls select:focus,
 .text-input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
@@ -831,7 +883,7 @@ input:focus-visible {
 
 .compare .multiple {
   font-size: 12px;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-left: 80px;
   font-weight: 600;
 }
@@ -925,7 +977,7 @@ tr.clickable:active td {
 }
 
 .citation a:hover {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .citation .tag {
@@ -1024,7 +1076,7 @@ tr.clickable:active td {
 }
 
 .back-link:hover {
-  color: var(--accent);
+  color: var(--accent-text);
   gap: 8px;
 }
 
@@ -1050,7 +1102,7 @@ tr.clickable:active td {
   height: 22px;
   border-radius: 6px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 600;
@@ -1181,7 +1233,7 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
   background: color-mix(in srgb, var(--accent) 10%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--surface));
   border-radius: 6px;
@@ -1338,7 +1390,7 @@ tr.clickable:active td {
 }
 
 .kg-source-graph {
-  color: var(--accent);
+  color: var(--accent-text);
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 
@@ -1386,7 +1438,7 @@ tr.clickable:active td {
 
 .view-toggle button.active {
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   box-shadow: var(--shadow-xs);
 }
 
@@ -1456,7 +1508,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--accent-text);
   white-space: nowrap;
 }
 
@@ -1618,7 +1670,7 @@ tr.clickable:active td {
 }
 
 .perf-bw-item:hover {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   transform: translateY(-1px);
 }
 
@@ -1841,7 +1893,7 @@ tr.clickable:active td {
   font-family: var(--body);
   font-size: 32px;
   font-weight: 300;
-  color: var(--accent);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -1911,7 +1963,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* ---- Client communication + relationship ---- */
@@ -1931,7 +1983,7 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-bottom: 4px;
 }
 
@@ -1972,7 +2024,7 @@ tr.clickable:active td {
 
 .na-priority.na-normal {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .na-priority.na-low {
@@ -2051,7 +2103,7 @@ tr.clickable:active td {
 
 .comm-outbound {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .comm-both {
@@ -2524,8 +2576,8 @@ tr.clickable:active td {
 
 .reload-btn:hover:not(:disabled) {
   background: var(--surface-2);
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
 }
 
 .reload-btn:disabled {
@@ -2608,7 +2660,7 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-bottom: 7px;
 }
 
@@ -2631,7 +2683,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -2644,7 +2696,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
   border-radius: 100px;
   padding: 2px 8px;
@@ -2912,7 +2964,7 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-bottom: 8px;
 }
 
@@ -2936,7 +2988,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
   border-radius: 6px;
   padding: 4px 9px;
@@ -2982,7 +3034,7 @@ tr.clickable:active td {
   height: 30px;
   border-radius: 8px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 14px;
   display: flex;
@@ -3016,7 +3068,7 @@ tr.clickable:active td {
   font-family: var(--mono);
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* ---- Analysis result infographics ---- */
@@ -3167,7 +3219,7 @@ tr.clickable:active td {
 }
 
 .pick-card.active {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
 }
 
@@ -3308,7 +3360,7 @@ tr.clickable:active td {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .suggestions {

@@ -31,10 +31,10 @@ export default function OverviewPage() {
       <div className="wrap">
         <header className="hero hero-tight">
           <p className="eyebrow">Book overview</p>
-          {/* The deck's one typographic flourish, used as sparingly as it uses it
-              (2 of 33 slides): a single word in serif italic inside a grotesk line. */}
+          {/* Emphasis in the brand orange, used once on the landing headline only.
+              Any more than that and the accent stops meaning "this is the thing". */}
           <h1>
-            Your <span className="em-serif">entire</span> book, at a glance
+            Your <span className="em-brand">entire</span> book, at a glance
           </h1>
           <p className="lede">
             A live, firm wide summary of every client portfolio you manage. Every figure below is

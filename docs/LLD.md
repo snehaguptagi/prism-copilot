@@ -311,89 +311,72 @@ repeat visit is instant while a manual control always forces a fresh live pull.
 
 ### 9.1 Visual design system
 
-The UI follows the design language of the Perplexity Ads deck. The values were **measured from
-that PDF** (content-stream colour operators, font resources, `Tf` size operators), not eyeballed
-from screenshots.
+The UI is themed on **PwC's brand palette**, with one constraint that came out of
+measurement rather than preference.
 
-**Palette.** Four colours carry the whole deck, and they carry the app:
+**Palette.**
 
-| Token | Hex | Role | Uses in deck |
-|---|---|---|---|
-| `--bg` | `#FCFCF9` | Paper. Warm off-white page ground, never pure white | 34 |
-| `--text` / `--ink` | `#13343B` | Peacock. The "ink" — body text and dark hero tiles, in place of black | 144 |
-| `--accent` | `#20808D` | Turquoise. The single accent | 30 |
-| `--on-ink` | `#FFFFFF` | Type on dark tiles | 82 |
+| Token | Hex | Role |
+|---|---|---|
+| `--accent` | `#D04A02` | PwC Orange. Fills, bars, buttons, active chrome |
+| `--accent-text` | `#B54002` | The orange *as type*. See below |
+| `--brand-tangerine` / `-yellow` / `-rose` | `#EB8C00` / `#FFB600` / `#E0301E` | Brand device only — logo and page backdrop |
+| `--text` / `--ink` | `#1A1A1A` | Headlines and dark tiles |
+| `--text-faint` | `#7D7D7D` | PwC grey |
+| `--bg` / `--surface` | `#FBFBFB` / `#FFFFFF` | Page and panel grounds |
 
-The argument is restraint: one accent, spent only on interactive chrome and single-series data.
-Dark mode is *selected*, not inverted — its surfaces are steps down the same peacock hue, with
-`#13343B` used verbatim as `--surface`.
+Dark mode is neutral charcoal (`#141414` / `#1F1F1F`), matching PwC's own dark
+treatment, with the orange lifted to `#F2884A` because `#D04A02` reaches only
+2.9:1 against `#1F1F1F`.
 
-**Typography.** The deck pairs a neutral grotesk (FK Grotesk, in Thin/Light/Regular/Bold) with
-Instrument Serif Italic used for exactly one emphasised word inside a grotesk line ("Search like
-*never* before"). FK Grotesk is commercially licensed and cannot ship here, so **Inter** stands in:
-same neo-grotesque genre, and it has the 200–300 weights the display treatment depends on.
-Instrument Serif is openly licensed, so that half is exact. The flourish is applied on one headline
-only — the deck itself uses it on 2 of 33 slides, and overusing it would break the restraint that
-makes it work.
+**Two accessibility findings, both fixed rather than documented around:**
 
-Type runs 18pt→180pt on the deck's 1440pt slide, a 10× range. App UI cannot go that far, but
-`--display-1/2/3` encode the principle: a far wider range than typical dashboard type, with
-**weight falling as size climbs** (`--weight-display: 250`). Nothing large is ever bold.
+1. **PwC Orange is a fill colour, not a text colour.** Measured, `#D04A02` reaches
+   4.50:1 on pure white but only 4.35:1 on `--bg` and 4.10:1 on `--surface-2` — so
+   as link or label text it fails AA on two of the three grounds it actually sits
+   on. `--accent-text` (`#B54002`) is used for all 31 `color:` uses and clears
+   5.16:1 on the worst of them. Fills keep the exact brand value. The one exception
+   is `.em-brand`, a 42px/700 headline span where the large-text threshold is 3:1.
+2. **Three avatar tints failed against their white initials** as first drafted
+   (`#0E86A6` 4.22, `#5A9E4A` 3.27, `#B5610A` 4.49). Darkened; worst case is now
+   4.50:1.
 
-**Figures.** The deck's stats slide sets the pattern, and it inverts the usual KPI card: label
-**above** the number, in sentence case at body size; the figure huge and light-weight; and *no card
-at all* — no border, no fill, no shadow, grouped by whitespace. Big numbers are set in the grotesk
-at Light, not in a bold monospace. Mono survives only for tickers and ids, where cell alignment
-genuinely helps.
-
-**Charts.** The deck's bar chart paints every bar the same turquoise and lets the row label carry
-identity — no gridlines, no axis, no value labels on marks, one hairline baseline. Applied here:
-any mark that is already directly labelled takes the accent, which is why the 14 sector-exposure
-rows went from 14 hues to one. That also retires a genuine anti-pattern, since no categorical
-palette keeps 14 hues distinguishable.
-
-Categorical hues are therefore spent only where a mark *cannot* be labelled in place — the
-allocation donut. Those steps (`--cat-1…6`, `--cat-neutral`) are validator output, not hand-picked:
-both modes PASS the lightness band, chroma floor, protan/deutan adjacent separation,
-normal-vision floor, and contrast-vs-surface checks.
+**PwC's brand colours cannot encode categories.** Validated against white, Yellow
+`#FFB600` sits at 1.76:1 contrast and OKLCH L 0.823 (outside the usable band), and
+Tangerine/Yellow are ΔE 10.9 apart to *normal* colour vision — under the hard floor
+of 15. Orange, Tangerine, Yellow and Rose are four versions of one signal: superb
+for recognition, useless for differentiation. So the warm spectrum is confined to
+identity (the logo's refracted fan, the page backdrop) and charts use a separate
+validated set that keeps PwC Orange in slot 1 and goes cool for the rest.
 
 | Mode | Surface | Worst adjacent CVD ΔE | Normal-vision floor |
 |---|---|---|---|
-| Light | `#FCFCF9` | 11.6 (protan) | 20.7 |
-| Dark | `#13343B` | 9.3 (deutan) | 16.3 |
+| Light | `#FFFFFF` | 11.6 (protan) | 20.5 |
+| Dark | `#1F1F1F` | 8.2 (deutan) | 15.3 |
 
-The previous palette's worst adjacent pair was ΔE 8.6, so this is a measurable improvement rather
-than a lateral restyle.
+**Backdrop.** PwC's signature device is overlapping translucent warm forms. It is
+four fixed `radial-gradient` layers on `body` — no image request, no extra DOM
+node, nothing that can sit in front of content or receive a click. Alpha is held at
+0.05–0.07; panels are fully opaque, so measured text contrast on a panel is
+unaffected (17.4:1 light, 15.1:1 dark) and the wash only shows in the page gutters.
+It is removed under `prefers-reduced-transparency` and `forced-colors`, since it
+carries no information.
 
-Two deliberate departures from the deck:
+**Typography.** Inter throughout — the closest openly-licensed neo-grotesque to
+PwC's Helvetica Neue. Structural habits kept from the earlier pass: sentence-case
+labels (no all-caps micro-labels), a wide size range so a dashboard does not read as
+one flat wall of 13px, and figures with the label **above** the number and no card
+around them, grouped by whitespace. Reversed from that pass: weight now **rises**
+with size (`--weight-display: 700`, figures 600), because PwC sets headlines bold
+and a thin display face would be off-brand. The serif italic used previously was a
+Perplexity brand device; PwC has no serif, so it was removed rather than recoloured,
+and headline emphasis is carried by the accent colour instead.
 
-- **Status colours keep their own hues.** Positive/negative and the five risk tiers encode meaning;
-  the deck has no equivalent to borrow, and collapsing them into the accent would destroy
-  information. They are re-harmonised toward peacock, not replaced.
-- **`--accent` is not a categorical slot.** `#20808D` FAILS the categorical chroma floor
-  (OKLCH C = 0.086 against a 0.10 floor) — at that saturation it reads as grey once it must be told
-  apart from other hues. It is perfect as a lone accent, where there is nothing to distinguish it
-  from. The donut's teal is `#008C9E`: same cyan-teal hue, pushed over the floor.
-
-### Running locally
-
-```
-# Backend
-cd backend
-pip install -r requirements.txt
-cp .env.example .env          # add ANTHROPIC_API_KEY (and NEO4J_* if using the graph)
-python build_dataset.py       # generate prism_data.json
-python build_graph.py         # optional: populate Neo4j (needs NEO4J_* in .env)
-uvicorn api:app --port 8000
-
-# Frontend
-cd frontend
-npm install
-npm run build && npm run start   # http://localhost:3000
-```
-
-Omitting `NEO4J_*` and the `build_graph.py` step is fully supported: the app runs identically,
-just without the graph-powered "Similar clients also hold" section.
+**Charts.** Any mark already carrying its own label takes the accent rather than a
+hue of its own — which is why sector exposure uses one colour across 14 rows instead
+of 14 hues. Categorical hues are spent only where a mark cannot be labelled in
+place (the allocation donut). Status and risk-tier colours keep their own hues
+throughout, because they encode meaning.
 
 ## 10. Roadmap
 

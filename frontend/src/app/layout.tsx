@@ -1,31 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Typography follows the Perplexity deck's pairing: a neutral grotesk carrying
-// everything, at weights from Thin to Semibold, plus a serif italic used for
-// exactly one emphasized word inside a grotesk line ("Search like *never*
-// before.").
+// PwC's identity is single-family and strictly sans: Helvetica Neue, set bold and
+// black for headlines with orange as the only accent. Inter is the substitute —
+// the closest openly-licensed neo-grotesque to Helvetica in proportion and
+// skeleton, and far better hinted at UI sizes.
 //
-// The deck itself sets FK Grotesk, which is commercially licensed and cannot be
-// redistributed here. Inter is the substitute: the same neo-grotesque genre
-// (closed apertures, low contrast, neutral skeleton) and, critically, it ships
-// the 200-300 weights the deck's display treatment depends on. Instrument Serif
-// is the deck's actual accent face and is openly licensed, so that one is exact.
-// Loaded as the VARIABLE font (no `weight` array) rather than a set of static
-// cuts, because the display scale asks for weights between the named stops
-// (--weight-display is 250). With static cuts the browser snaps to the nearest
-// loaded weight and the intended thinness is lost.
+// The serif italic that was here previously came from the Perplexity deck, whose
+// whole typographic idea is a grotesk/serif pairing. PwC has no serif in its
+// system, so keeping that flourish would have read as two brands arguing. It is
+// removed rather than recoloured.
+//
+// Loaded as the VARIABLE cut (no `weight` array) so the display scale can ask for
+// weights between the named stops instead of snapping to the nearest static one.
 const grotesk = Inter({
   variable: "--font-grotesk",
   subsets: ["latin"],
-});
-
-const serifAccent = Instrument_Serif({
-  variable: "--font-serif-accent",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["italic"],
 });
 
 // Retained for tickers, ISINs and holding ids, where character-cell alignment
@@ -55,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${grotesk.variable} ${serifAccent.variable} ${ibmPlexMono.variable}`}
+      className={`${grotesk.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
       <body>

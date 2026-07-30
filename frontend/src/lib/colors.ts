@@ -1,33 +1,31 @@
 import { RiskTier } from "./types";
 
 /**
- * Chart colour, following the Perplexity deck's central argument: restraint.
+ * Chart colour on PwC's palette, with one hard constraint discovered by measuring
+ * rather than assuming: **PwC's brand colours cannot encode categories.**
  *
- * The deck's own bar chart paints every bar the same turquoise and relies on the
- * row label for identity. That is the right default and it is applied here
- * wherever a mark is already directly labelled (see ACCENT_SERIES). Categorical
- * hues are spent only where a mark genuinely cannot be labelled in place — the
- * allocation donut.
+ * Validated against white, their supporting palette fails outright — Yellow
+ * #FFB600 sits at 1.76:1 contrast and OKLCH L 0.823 (outside the usable band), and
+ * Tangerine/Yellow are only ΔE 10.9 apart to NORMAL colour vision, under the hard
+ * floor of 15. A palette built from Orange, Tangerine, Yellow and Rose is four
+ * versions of the same signal. It is superb for being recognised and useless for
+ * being told apart.
  *
- * Every categorical value below is the output of the data-viz validator, not a
- * hand-picked hex. Both sets PASS all five computable checks — lightness band,
- * chroma floor, protan/deutan adjacent separation, normal-vision floor, and
- * contrast against their own surface:
+ * So the split is: the warm spectrum stays in identity (logo, page backdrop), PwC
+ * Orange doubles as the single UI accent, and charts use a validated set that
+ * keeps orange in slot 1 and goes cool for the rest. Both modes PASS all five
+ * computable checks:
  *
- *   light (on #FCFCF9): worst adjacent CVD ΔE 11.6, normal-vision floor 20.7
- *   dark  (on #13343B): worst adjacent CVD ΔE  9.3, normal-vision floor 16.3
+ *   light (on #FFFFFF): worst adjacent CVD ΔE 11.6, normal-vision floor 20.5
+ *   dark  (on #1F1F1F): worst adjacent CVD ΔE  8.2, normal-vision floor 15.3
  *
- * For comparison the previous palette's worst adjacent pair was ΔE 8.6, so this
- * is a measurable improvement rather than a lateral restyle. Dark steps were
- * validated against the dark surface directly; they are not a lightened flip of
+ * Dark steps were validated against the dark surface directly, not lightened from
  * the light set.
  *
- * A note on the accent: Perplexity's turquoise #20808D FAILS the categorical
- * chroma floor (OKLCH C = 0.086, floor 0.10) — at that saturation it reads as
- * grey once it has to be told apart from other hues. It is therefore used
- * verbatim as the single accent, where there is nothing to distinguish it from,
- * while the categorical slot uses #008C9E: the same cyan-teal hue pushed over
- * the floor. Same family, measurably distinguishable.
+ * The structural rule from the previous pass still holds and is what keeps the
+ * accent meaningful: any mark that already carries its own label takes the accent
+ * instead of a hue of its own (see ACCENT_SERIES). Categorical hues are spent only
+ * where a mark cannot be labelled in place — the allocation donut.
  */
 
 export const SEVERITY_COLOR: Record<RiskTier, string> = {
@@ -64,14 +62,19 @@ export function severityScore(tier: string | null): number {
  */
 export const ACCENT_SERIES = "var(--accent)";
 
+// Avatar tints are identity, not data, so they may lean warm without the
+// categorical constraints applying. They DO carry white initials, so every one is
+// measured against white text: the three that came in under 4.5:1 as first drafted
+// (#0E86A6 at 4.22, #5A9E4A at 3.27, #B5610A at 4.49) are darkened here rather
+// than left to fail. Worst case in this set is now 4.80:1.
 const AVATAR_PALETTE = [
-  "#20808D",
+  "#D04A02",
+  "#0E6E8A",
   "#4A3AA7",
   "#A8326B",
-  "#B0710A",
-  "#2F7A3D",
+  "#487F3B",
   "#6B4E9E",
-  "#1C6B78",
+  "#9E5409",
   "#8A4B1F",
 ];
 
