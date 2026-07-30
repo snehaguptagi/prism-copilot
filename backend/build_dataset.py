@@ -10,6 +10,8 @@ Run:
 import json
 import os
 
+from portfolio_risk import compute_portfolio_risk
+
 OUT_PATH = os.path.join(os.path.dirname(__file__), "prism_data.json")
 
 # ---------------------------------------------------------------------------
@@ -617,73 +619,27 @@ PORTFOLIOS = [
 # Assemble holdings list + risk block
 # ---------------------------------------------------------------------------
 def build_holdings_and_risk():
+    """Per-portfolio math (normalize weights, compute risk tier) is shared with
+    the runtime Add Client endpoint via portfolio_risk.compute_portfolio_risk,
+    so a client added at runtime gets a risk tier computed identically to every
+    seeded client. This function just handles the seed-specific bookkeeping:
+    assembling holding_id / as_of_date and the full holdings list."""
     holdings = []
     risk = {}
     hid = 1
     for p in PORTFOLIOS:
-        asset_mix = {}
-        sum_beta = 0.0
-        sum_vol = 0.0
-        sum_sq_weight = 0.0
-        top = (None, 0.0)
-        # Holdings are given as realistic raw weights (not necessarily summing
-        # to 1). Normalize per portfolio so weights sum to exactly 1.0, which
-        # keeps the numbers looking real (e.g. 9.87%, not a round 10%) while
-        # staying internally consistent.
-        raw_total = sum(p["holdings"].values())
-        norm_holdings = {sid: w / raw_total for sid, w in p["holdings"].items()}
+        norm_holdings, market_values, risk_block = compute_portfolio_risk(p["nav"], p["holdings"], SEC_BY_ID)
         for sec_id, weight in norm_holdings.items():
-            s = SEC_BY_ID[sec_id]
             holdings.append({
                 "holding_id": f"hld_{hid:04d}",
                 "portfolio_id": p["portfolio_id"],
                 "security_id": sec_id,
                 "weight": weight,
-                "market_value": round(p["nav"] * weight, 2),
+                "market_value": market_values[sec_id],
                 "as_of_date": "2026-07-23",
             })
             hid += 1
-            asset_mix[s["asset_class"]] = asset_mix.get(s["asset_class"], 0.0) + weight * 100
-            sum_beta += s["beta"] * weight
-            sum_vol += s["vol"] * weight
-            sum_sq_weight += weight ** 2
-            if weight > top[1]:
-                top = (s["name"], weight)
-
-        largest_class = max(asset_mix, key=asset_mix.get)
-        est_vol = round(sum_vol, 1)
-        eq_hhi = round(sum_sq_weight * 10000, 0)
-        # Concentration bump: 1.0x (perfectly diversified) up to 1.5x (single holding).
-        concentration_factor = 1 + (eq_hhi / 10000) * 0.5
-        risk_score = round(est_vol * concentration_factor, 1)
-        # Thresholds tuned to spread the 12 books across the full risk ladder
-        # rather than bunching most into one tier.
-        if risk_score < 8:
-            tier = "Low"
-        elif risk_score < 15:
-            tier = "Moderate"
-        elif risk_score < 20:
-            tier = "Elevated"
-        elif risk_score < 24:
-            tier = "High"
-        else:
-            tier = "Very High"
-
-        risk[p["portfolio_id"]] = {
-            "risk_score": risk_score,
-            "risk_tier": tier,
-            "est_vol": est_vol,
-            "asset_mix": {k: round(v, 1) for k, v in asset_mix.items()},
-            "largest_class": largest_class,
-            "largest_class_pct": round(asset_mix[largest_class], 1),
-            "top1_pct": round(top[1] * 100, 1),
-            "top1_name": top[0],
-            "eq_hhi": eq_hhi,
-            "em_pct": 100.0,  # all-India book; India is classified an emerging market
-            "hy_credit_pct": 0.0,  # no sub-investment-grade credit held
-            "wtd_beta": round(sum_beta, 2),
-            "num_holdings": len(p["holdings"]),
-        }
+        risk[p["portfolio_id"]] = risk_block
     return holdings, risk
 
 

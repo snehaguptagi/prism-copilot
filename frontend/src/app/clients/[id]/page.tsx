@@ -134,6 +134,17 @@ export default function ClientDetailPage() {
           ))}
         </div>
 
+        {tab === "Profile" && !psy && (
+          <div className="panel fade-in">
+            <div className="panel-title">Who they are</div>
+            <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6 }}>{c.persona}</p>
+            <p style={{ color: "var(--text-faint)", fontSize: 12.5, marginTop: 10 }}>
+              No behavioral profile yet. Add goals, communication preferences, and relationship notes as you learn
+              more about this client.
+            </p>
+          </div>
+        )}
+
         {tab === "Profile" && psy && (
           <div className="stagger">
             <div className="panel">
@@ -443,6 +454,13 @@ export default function ClientDetailPage() {
             )}
 
             <div className="panel-title" style={{ margin: "18px 0 10px" }}>Recent interactions</div>
+            {(!c.communications || c.communications.length === 0) && !c.next_action && (
+              <div className="panel">
+                <p style={{ color: "var(--text-faint)", fontSize: 12.5 }}>
+                  No interactions logged yet for this client.
+                </p>
+              </div>
+            )}
             <div className="comm-timeline">
               {(c.communications ?? []).map((m, i) => (
                 <div className="comm-item" key={i}>

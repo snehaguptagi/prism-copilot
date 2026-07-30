@@ -11,10 +11,12 @@ Run:
   uvicorn api:app --reload --port 8000
 """
 
+import json
 import os
 import re
 import time
 from datetime import date
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +24,7 @@ from pydantic import BaseModel
 
 import graph
 from insight_lens import (
+    DATA_PATH,
     NEWS_FEED_CATEGORIES,
     build_query_context,
     compute_factor_impact,
@@ -39,6 +42,7 @@ from insight_lens import (
     run_search,
     securities_in_sector,
 )
+from portfolio_risk import compute_portfolio_risk
 
 app = FastAPI(title="PRISM API")
 
@@ -679,6 +683,105 @@ def get_clients():
             "product_suggestions": suggest_products(data, p),
         })
     return out
+
+
+class AddClientRequest(BaseModel):
+    name: str
+    occupation: str
+    city: str
+    risk_mandate: str
+    initial_aum: float
+    template_portfolio_id: str
+    age: Optional[int] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+
+def _unique_portfolio_id(name, existing_ids):
+    slug = re.sub(r"[^a-z0-9]+", "_", name.strip().lower()).strip("_") or "client"
+    candidate = f"pf_custom_{slug}"
+    n = 2
+    while candidate in existing_ids:
+        candidate = f"pf_custom_{slug}_{n}"
+        n += 1
+    return candidate
+
+
+@app.post("/clients")
+def add_client(req: AddClientRequest):
+    """Add a new client at runtime. Clones an existing portfolio's asset mix as
+    a starting allocation (scaled to the new client's own AUM) and computes
+    risk with the exact same compute_portfolio_risk formula every seeded
+    client's risk is computed with, then persists straight into
+    prism_data.json. Because load_data() always re-reads that file from disk,
+    the new client shows up in every endpoint immediately, no restart needed,
+    and survives one. Deliberately does NOT fabricate psychographics, a
+    communications log, or trailing performance for a client just added; the
+    frontend already renders those as an empty state when absent rather than
+    crashing, since existing code paths (build_performance, the Profile tab)
+    were already written to tolerate a client with no history."""
+    data = load_data()
+
+    if req.risk_mandate.strip().lower() not in _MANDATE_MAX_TIER:
+        raise HTTPException(status_code=400, detail=f"Unknown risk mandate '{req.risk_mandate}'.")
+    if req.initial_aum <= 0:
+        raise HTTPException(status_code=400, detail="initial_aum must be positive.")
+    template = next((p for p in data["portfolios"] if p["portfolio_id"] == req.template_portfolio_id), None)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"No template portfolio '{req.template_portfolio_id}'.")
+
+    template_weights = {
+        h["security_id"]: h["weight"] for h in data["holdings"] if h["portfolio_id"] == req.template_portfolio_id
+    }
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    norm_holdings, market_values, risk_block = compute_portfolio_risk(req.initial_aum, template_weights, sec_by_id)
+
+    existing_ids = {p["portfolio_id"] for p in data["portfolios"]}
+    new_pid = _unique_portfolio_id(req.name, existing_ids)
+    today = date.today().isoformat()
+
+    data["portfolios"].append({
+        "portfolio_id": new_pid,
+        "desk_id": template["desk_id"],
+        "name": f"{req.name}'s Portfolio",
+        "base_ccy": "INR",
+        "risk_driver": template["risk_driver"],
+        "mandate": f"Custom mandate, initial allocation modeled on the {template['name']} strategy.",
+        "manager_name": None,
+        "manager_bio": None,
+        "client": {
+            "name": req.name,
+            "age": req.age,
+            "occupation": req.occupation,
+            "persona": "New client. Full behavioral profile to be added by the relationship manager.",
+            "email": req.email,
+            "phone": req.phone,
+            "city": req.city,
+            "relationship_since": today,
+            "aum_fee_pct": 1.0,
+            "risk_mandate": req.risk_mandate,
+        },
+    })
+
+    hid_nums = [int(h["holding_id"].split("_")[1]) for h in data["holdings"] if h["holding_id"].startswith("hld_")]
+    next_hid = max(hid_nums, default=0) + 1
+    for sec_id, weight in norm_holdings.items():
+        data["holdings"].append({
+            "holding_id": f"hld_{next_hid:04d}",
+            "portfolio_id": new_pid,
+            "security_id": sec_id,
+            "weight": weight,
+            "market_value": market_values[sec_id],
+            "as_of_date": today,
+        })
+        next_hid += 1
+
+    data["risk"][new_pid] = risk_block
+
+    with open(DATA_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+    return {"portfolio_id": new_pid, "client_name": req.name, "risk_tier": risk_block["risk_tier"]}
 
 
 @app.get("/overview")

@@ -38,6 +38,28 @@ export function getClients(): Promise<ClientAccount[]> {
   return getJSON<ClientAccount[]>("/clients");
 }
 
+export interface AddClientRequest {
+  name: string;
+  occupation: string;
+  city: string;
+  risk_mandate: string;
+  initial_aum: number;
+  template_portfolio_id: string;
+  age?: number;
+  email?: string;
+  phone?: string;
+}
+
+export interface AddClientResult {
+  portfolio_id: string;
+  client_name: string;
+  risk_tier: string;
+}
+
+export function addClient(req: AddClientRequest): Promise<AddClientResult> {
+  return postJSON<AddClientResult>("/clients", req);
+}
+
 export function getOverview(): Promise<Overview> {
   return getJSON<Overview>("/overview");
 }

@@ -8,6 +8,7 @@ import { ClientAccount } from "@/lib/types";
 import { avatarColor, initials, severityColor } from "@/lib/colors";
 import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
+import AddClientModal from "@/components/AddClientModal";
 
 const RISK_TIERS = ["All", "Low", "Moderate", "Elevated", "High", "Very High"] as const;
 
@@ -17,12 +18,18 @@ export default function ClientsPage() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [tierFilter, setTierFilter] = useState<(typeof RISK_TIERS)[number]>("All");
+  const [showAddClient, setShowAddClient] = useState(false);
 
   useEffect(() => {
     getClients()
       .then(setClients)
       .catch((e) => setError(String(e)));
   }, []);
+
+  function handleClientCreated(portfolioId: string) {
+    setShowAddClient(false);
+    router.push(`/clients/${portfolioId}`);
+  }
 
   const totalAum = clients.reduce((sum, c) => sum + c.aum, 0);
   const avgFee = clients.length
@@ -137,7 +144,18 @@ export default function ClientsPage() {
             <span style={{ fontSize: 12.5, color: "var(--text-faint)" }}>
               {filtered.length} of {clients.length}
             </span>
+            <button className="btn" onClick={() => setShowAddClient(true)}>
+              + Add client
+            </button>
           </div>
+        )}
+
+        {showAddClient && (
+          <AddClientModal
+            templates={clients}
+            onClose={() => setShowAddClient(false)}
+            onCreated={handleClientCreated}
+          />
         )}
 
         <div className="table-wrap">

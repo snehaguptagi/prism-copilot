@@ -71,6 +71,88 @@ def test_clients_endpoint_returns_one_per_real_portfolio():
     assert len(clients) == 16
 
 
+def test_add_client_creates_a_valid_persisted_client(preserve_dataset):
+    resp = client.post("/clients", json={
+        "name": "Test Client Zzz",
+        "occupation": "Software Engineer",
+        "city": "Pune",
+        "risk_mandate": "Moderate",
+        "initial_aum": 3_000_000,
+        "template_portfolio_id": "pf_largecap_growth",
+    })
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["client_name"] == "Test Client Zzz"
+    new_pid = body["portfolio_id"]
+
+    # shows up immediately, no restart, because load_data() re-reads from disk
+    clients = client.get("/clients").json()
+    match = next((c for c in clients if c["portfolio_id"] == new_pid), None)
+    assert match is not None
+    assert match["aum"] == pytest.approx(3_000_000, abs=1)
+    assert match["aum"] == pytest.approx(sum(h["market_value"] for h in match["holdings"]))
+    assert match["risk_tier"] in ("Low", "Moderate", "Elevated", "High", "Very High")
+    assert match["suitability"]["status"] in ("matched", "aggressive", "conservative")  # never "unknown"
+    assert match["client"]["risk_mandate"] == "Moderate"
+
+    overview = client.get("/overview").json()
+    assert overview["kpis"]["client_count"] == 17  # 16 seeded + this one
+
+
+def test_add_client_risk_tier_matches_shared_formula(preserve_dataset):
+    """The runtime endpoint must compute risk with the exact same formula the
+    seed dataset uses (portfolio_risk.compute_portfolio_risk), so a client
+    added live is never treated differently from a seeded one."""
+    from api import load_data
+    from portfolio_risk import compute_portfolio_risk
+
+    resp = client.post("/clients", json={
+        "name": "Formula Check Client",
+        "occupation": "Consultant",
+        "city": "Delhi",
+        "risk_mandate": "Aggressive",
+        "initial_aum": 1_000_000,
+        "template_portfolio_id": "pf_smallcap_value",
+    })
+    new_pid = resp.json()["portfolio_id"]
+
+    data = load_data()
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    template_weights = {
+        h["security_id"]: h["weight"] for h in data["holdings"] if h["portfolio_id"] == "pf_smallcap_value"
+    }
+    _, _, expected_risk = compute_portfolio_risk(1_000_000, template_weights, sec_by_id)
+    assert data["risk"][new_pid]["risk_tier"] == expected_risk["risk_tier"]
+    assert data["risk"][new_pid]["risk_score"] == expected_risk["risk_score"]
+
+
+def test_add_client_rejects_unknown_mandate(preserve_dataset):
+    resp = client.post("/clients", json={
+        "name": "Bad Mandate Client", "occupation": "X", "city": "Y",
+        "risk_mandate": "Not A Real Mandate", "initial_aum": 1_000_000,
+        "template_portfolio_id": "pf_largecap_growth",
+    })
+    assert resp.status_code == 400
+
+
+def test_add_client_rejects_unknown_template(preserve_dataset):
+    resp = client.post("/clients", json={
+        "name": "Bad Template Client", "occupation": "X", "city": "Y",
+        "risk_mandate": "Moderate", "initial_aum": 1_000_000,
+        "template_portfolio_id": "not-a-real-portfolio",
+    })
+    assert resp.status_code == 404
+
+
+def test_add_client_rejects_non_positive_aum(preserve_dataset):
+    resp = client.post("/clients", json={
+        "name": "Zero AUM Client", "occupation": "X", "city": "Y",
+        "risk_mandate": "Moderate", "initial_aum": 0,
+        "template_portfolio_id": "pf_largecap_growth",
+    })
+    assert resp.status_code == 400
+
+
 def test_clients_endpoint_excludes_reference_book():
     response = client.get("/clients")
     clients = response.json()
