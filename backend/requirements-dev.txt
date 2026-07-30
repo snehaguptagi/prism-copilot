@@ -1,0 +1,13 @@
+# Local development and optional features. Install alongside requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+-r requirements.txt
+
+pytest>=8.0.0
+
+# Optional Neo4j knowledge graph (section 6 of the LLD). graph.py imports the
+# driver lazily, so the app runs normally without this installed.
+neo4j>=5.20.0
+
+# Legacy standalone Streamlit view (app.py). Not used by the Next.js frontend, and
+# deliberately excluded from the runtime list because of its install size.
+streamlit>=1.38.0

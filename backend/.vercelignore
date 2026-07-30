@@ -1,0 +1,23 @@
+# Vercel does NOT honour .gitignore when uploading, so secrets that git ignores
+# will still be bundled into the function unless they are listed here. The first
+# deploy of this project shipped backend/.env into the lambda, which put a live
+# Anthropic key behind a public, unauthenticated endpoint. Hence this file.
+#
+# Real configuration belongs in the project's environment variables, not in a
+# file that rides along with the source.
+.env
+.env.*
+!.env.example
+
+# Local runtime state — the overlay is per-machine and must never be baked in.
+prism_overlay.json
+
+# Not needed at runtime, and large.
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+tests/
+app.py
+build_graph.py
+requirements-dev.txt

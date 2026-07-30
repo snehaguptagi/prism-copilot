@@ -1,9 +1,8 @@
+# Runtime dependencies only. Kept lean because this list is what a serverless
+# deployment installs into the function bundle, and Streamlit's tree (pyarrow,
+# pillow, protobuf) is ~100MB of it for a legacy standalone view that the web app
+# does not use. Dev and optional extras live in requirements-dev.txt.
 anthropic>=0.40.0
 python-dotenv>=1.0.0
-streamlit>=1.38.0
 fastapi>=0.115.0
 uvicorn>=0.30.0
-neo4j>=5.20.0
-
-# dev / test only
-pytest>=8.0.0
