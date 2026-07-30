@@ -272,10 +272,17 @@ a:hover {
   animation: prism-rise 300ms var(--ease-out);
 }
 
+/* Full-bleed. The old 1160px column left most of a 1920 screen as empty gutter,
+   which is what made the dashboard feel like text floating in space. Width is now
+   the viewport, with the gutter scaling instead of the content.
+
+   Nothing here removes the readability ceilings that matter: h1 is capped at 28ch
+   and .lede at 62ch, so prose never runs to a 1900px line. It is the data — tables,
+   bar rows, card grids — that gets the extra room, which is what it wanted. */
 .wrap {
-  max-width: 1160px;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 24px 96px;
+  padding: 0 clamp(20px, 3.2vw, 60px) 96px;
 }
 
 /* ---- Topbar ---- */
@@ -283,16 +290,18 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 0 24px;
+  padding: 0; /* gutter now lives on .topbar-inner, matching .wrap */
   height: 56px;
   background: var(--topbar-bg);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
 
+/* Matches .wrap exactly, so the nav sits flush with the content beneath it. */
 .topbar-inner {
-  max-width: 1160px;
+  max-width: none;
   margin: 0 auto;
+  padding: 0 clamp(20px, 3.2vw, 60px);
   height: 100%;
   width: 100%;
   display: flex;
@@ -477,39 +486,160 @@ h1 {
   margin: 0;
 }
 
-/* Dark hero tile, as on the deck's "230 Million" panel: peacock ground, paper
-   type, generous radius. For the one figure on a page that outranks the others. */
+/* ---- Hero band ----
+   The device the Perplexity deck uses to stop a page of figures reading as a
+   spreadsheet: ONE dark tile with a huge number in it, carrying the whole
+   composition, with the remaining figures set plainly beside it. Without that
+   counterweight, stripping the KPI cards (which the deck's style calls for) just
+   leaves numbers floating on an empty page.
+
+   The deck fills its tile with a photograph. Shipping stock imagery here would be
+   a licensing problem and a payload cost, so the depth comes from a layered
+   gradient in the brand spectrum over ink — same visual job, nothing to load. */
+.hero-band {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+@media (min-width: 900px) {
+  .hero-band {
+    /* Tile gets a real share rather than a sliver: at 1600px this lands ~620px of
+       tile against ~840px of grid, which is three comfortable figures rather than
+       two stretched across a near-1000px plane. */
+    grid-template-columns: minmax(360px, 1fr) 1.35fr;
+    align-items: stretch;
+  }
+}
+
 .stat-hero {
-  background: var(--ink);
-  border-radius: 20px;
-  padding: 28px 30px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  /* Alphas are set by the worst case, not by eye. The four washes are positioned
+     in different corners so their peaks cannot actually coincide, but rather than
+     rely on that, these values were chosen by compositing all four at full
+     strength over the base: white type still holds 7.16:1 and the 88%-white label
+     5.92:1 against that impossible ground. The first draft (0.50/0.34/0.30/0.20)
+     measured 4.27:1 and 3.67:1, which would have failed AA for the label. */
+  background-color: #0f0f0f;
+  background-image:
+    radial-gradient(30rem 22rem at 12% 8%, color-mix(in srgb, var(--brand-orange) 34%, transparent), transparent 70%),
+    radial-gradient(24rem 20rem at 96% 26%, color-mix(in srgb, var(--brand-rose) 20%, transparent), transparent 72%),
+    radial-gradient(26rem 22rem at 78% 104%, color-mix(in srgb, var(--brand-tangerine) 15%, transparent), transparent 70%),
+    radial-gradient(20rem 18rem at 26% 96%, color-mix(in srgb, var(--brand-yellow) 10%, transparent), transparent 72%);
+  border-radius: 22px;
+  padding: 30px 32px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 22px;
   color: var(--on-ink);
+  min-height: 200px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Fine diagonal hatch over the gradient. Reads as material rather than as a
+   flat colour fill, and costs one repeating-linear-gradient. */
+.stat-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    transparent 1px 9px
+  );
 }
 
 .stat-hero .l {
   font-size: 13.5px;
-  color: var(--on-ink-faint);
+  color: color-mix(in srgb, var(--on-ink) 88%, transparent);
 }
 
 .stat-hero .v {
   font-size: var(--display-1);
   font-weight: var(--weight-display);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
   color: var(--on-ink);
   font-variant-numeric: tabular-nums;
 }
 
+/* Sub-figures inside the tile, for context that belongs with the headline number
+   rather than out in the plain grid. */
+.hero-sub {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--on-ink) 22%, transparent);
+}
+
+.hero-sub-item {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+}
+
+.hero-sub-item .v {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--on-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-sub-item .l {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--on-ink) 88%, transparent);
+}
+
+/* The plain figures that sit beside the tile. Given a surface so they read as a
+   deliberate panel rather than as text abandoned on the page — the specific thing
+   that made the dashboard feel bare. */
+.kpi-plane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+}
+
+.kpi-plane .kpi-row {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+/* Section heading. Given real weight and size, because on a full-bleed page a
+   13px grey line is not enough to break the content into readable chapters —
+   which is the other half of why the dashboard read as an undifferentiated wall.
+   Sentence case is kept; it is the size and weight that changed, not the voice. */
 .shead {
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
   text-transform: none;
-  color: var(--text-secondary);
-  margin: 30px 0 14px;
+  color: var(--text);
+  margin: 38px 0 16px;
+}
+
+/* Bare figures on a page with no hero tile (Products) still need a plane under
+   them, for the same reason the dashboard's did. */
+.stats {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow-xs);
 }
 
 /* ---- Sticky section tabs (Screener-style) ---- */
@@ -521,7 +651,7 @@ h1 {
   gap: 3px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 4px;
   margin-bottom: 20px;
   overflow-x: auto;
@@ -564,7 +694,7 @@ h1 {
   align-items: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 13px 15px;
   box-shadow: var(--shadow-xs);
 }
@@ -708,7 +838,7 @@ input:focus-visible {
 .list-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-xs);
 }
@@ -812,7 +942,7 @@ input:focus-visible {
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 18px 20px;
   margin-bottom: 14px;
   box-shadow: var(--shadow-xs);
@@ -891,7 +1021,7 @@ input:focus-visible {
 /* ---- Tables ---- */
 .table-wrap {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-xs);
   background: var(--surface);
@@ -1004,7 +1134,7 @@ tr.clickable:active td {
 .avatar-lg {
   width: 52px;
   height: 52px;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 18px;
 }
 
@@ -1118,7 +1248,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin: 6px 0 12px;
 }
@@ -1199,7 +1329,7 @@ tr.clickable:active td {
   flex-wrap: wrap;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 14px;
   box-shadow: var(--shadow-xs);
@@ -1332,7 +1462,7 @@ tr.clickable:active td {
 .kg-match-row {
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--surface-2);
 }
 
@@ -1715,7 +1845,7 @@ tr.clickable:active td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 12px 14px;
   cursor: pointer;
   font-family: var(--body);
@@ -1859,7 +1989,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin-bottom: 14px;
 }
@@ -2039,7 +2169,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -2515,7 +2645,7 @@ tr.clickable:active td {
   padding: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow-x: auto;
   flex: 1;
   scrollbar-width: thin;
@@ -2646,7 +2776,7 @@ tr.clickable:active td {
   background: linear-gradient(180deg, var(--accent-soft), transparent 90%);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px 18px;
   margin-bottom: 8px;
   box-shadow: var(--shadow-xs);
@@ -2692,7 +2822,7 @@ tr.clickable:active td {
 }
 
 .shead-count {
-  margin-left: 8px;
+  margin-left: 0; /* .shead is now a flex row with its own gap */
   font-family: var(--mono);
   font-size: 10.5px;
   font-weight: 600;
@@ -2714,7 +2844,7 @@ tr.clickable:active td {
 .tp-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   box-shadow: var(--shadow-xs);
   cursor: pointer;
@@ -2865,7 +2995,7 @@ tr.clickable:active td {
   background: linear-gradient(180deg, var(--accent-soft), transparent);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-xs);
@@ -3014,7 +3144,7 @@ tr.clickable:active td {
   gap: 11px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 11px 13px;
   box-shadow: var(--shadow-xs);
   color: var(--text);
@@ -3079,7 +3209,7 @@ tr.clickable:active td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 12px;
   box-shadow: var(--shadow-xs);
@@ -3110,7 +3240,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 14px;
 }
@@ -3200,7 +3330,7 @@ tr.clickable:active td {
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px 15px;
   cursor: pointer;
   box-shadow: var(--shadow-xs);
@@ -3409,7 +3539,7 @@ footer {
   position: sticky;
   top: 0;
   background: var(--surface);
-  border-radius: 14px 14px 0 0;
+  border-radius: 18px 18px 0 0;
 }
 
 .modal-title {

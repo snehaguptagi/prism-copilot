@@ -50,37 +50,50 @@ export default function OverviewPage() {
 
         {data && (
           <div className="fade-in">
-            {/* KPI row */}
-            <div className="kpi-row stagger">
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={crValue(data.kpis.total_aum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
+            {/* Hero band: the headline number carried by a dark tile, with the
+                supporting figures on their own surface beside it. One tile, once
+                per page — the weight only works because it is not repeated. */}
+            <div className="hero-band">
+              <div className="stat-hero">
+                <div>
+                  <div className="l">Total assets under management</div>
+                  <div className="v">
+                    <NumberFlow value={crValue(data.kpis.total_aum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
+                  </div>
                 </div>
-                <div className="kpi-l">Total assets under management</div>
+                {/* The rate that AUM earns at belongs beside it; everything else
+                    goes in the grid, so no figure appears in both places. */}
+                <div className="hero-sub">
+                  <div className="hero-sub-item">
+                    <div className="v">
+                      <NumberFlow value={data.kpis.blended_fee_pct} suffix="%" />
+                    </div>
+                    <div className="l">Blended fee rate</div>
+                  </div>
+                </div>
               </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.client_count} />
+
+              <div className="kpi-plane">
+                <div className="kpi-row stagger">
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.annual_fee_revenue / 1e7} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 2 }} />
+                    </div>
+                    <div className="kpi-l">Annual fee revenue</div>
+                  </div>
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.client_count} />
+                    </div>
+                    <div className="kpi-l">Client accounts</div>
+                  </div>
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.distinct_securities} />
+                    </div>
+                    <div className="kpi-l">Distinct securities held</div>
+                  </div>
                 </div>
-                <div className="kpi-l">Client accounts</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.annual_fee_revenue / 1e7} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 2 }} />
-                </div>
-                <div className="kpi-l">Annual fee revenue</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.blended_fee_pct} suffix="%" />
-                </div>
-                <div className="kpi-l">Blended fee rate</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.distinct_securities} />
-                </div>
-                <div className="kpi-l">Distinct securities held</div>
               </div>
             </div>
 

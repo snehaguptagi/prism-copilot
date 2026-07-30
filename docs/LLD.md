@@ -354,6 +354,34 @@ validated set that keeps PwC Orange in slot 1 and goes cool for the rest.
 | Light | `#FFFFFF` | 11.6 (protan) | 20.5 |
 | Dark | `#1F1F1F` | 8.2 (deutan) | 15.3 |
 
+**Layout.** Full-bleed: `.wrap` has no max-width and a `clamp(20px, 3.2vw, 60px)`
+gutter, so the content is the viewport and the gutter scales. The previous 1160px
+column left most of a 1920 screen as empty margin, which is what made the dashboard
+read as text floating in space. Prose keeps its own ceilings (h1 at 28ch, `.lede` at
+62ch), so only the data — tables, bar rows, card grids — takes the extra width.
+
+**Hero band.** The device that stops a page of figures reading as a spreadsheet,
+taken from the Perplexity deck's stats slide: ONE dark tile carrying the headline
+number, with the remaining figures on a plain surface beside it. This is the
+counterweight that the earlier pass was missing — the deck's style calls for
+stripping KPI cards, but without a heavy tile to balance them, bare figures on an
+empty page just look unfinished.
+
+The deck fills its tile with a photograph. Shipping stock imagery would be a
+licensing and payload problem, so depth comes from four layered brand-spectrum
+washes over `#0F0F0F` plus a 1px diagonal hatch — same visual job, nothing to load.
+**The wash alphas are set by the worst case, not by eye:** compositing all four at
+full strength (which their corner positions make impossible) still leaves white type
+at 7.16:1 and the 88%-white label at 5.92:1. The first draft measured 4.27:1 and
+3.67:1, which would have failed AA on the label.
+
+One tile, once per page. The weight only works because it is not repeated, and no
+figure appears both on the tile and in the grid beside it.
+
+**Section headings** are 17px/600 rather than 13px/400, because on a full-bleed page
+a small grey line cannot break content into chapters. Corner radii were lifted
+(12→16, 10→14) so the 22px tiles read as the top of a coherent ladder.
+
 **Backdrop.** PwC's signature device is overlapping translucent warm forms. It is
 four fixed `radial-gradient` layers on `body` — no image request, no extra DOM
 node, nothing that can sit in front of content or receive a click. Alpha is held at
