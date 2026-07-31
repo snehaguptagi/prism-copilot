@@ -2,10 +2,20 @@ import { ClientAccount, GraphStatus, GraphSuggestionsResult, GraphViewResult, Le
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
+async function errorMessage(res: Response, path: string): Promise<string> {
+  try {
+    const payload = (await res.json()) as { detail?: string };
+    if (payload.detail) return payload.detail;
+  } catch {
+    // Fall back to the status label below when the response is not JSON.
+  }
+  return `${path} failed (${res.status} ${res.statusText})`;
+}
+
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
   if (!res.ok) {
-    throw new Error(`${path} failed: ${res.status} ${await res.text()}`);
+    throw new Error(await errorMessage(res, path));
   }
   return res.json();
 }
@@ -17,13 +27,27 @@ async function postJSON<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-    throw new Error(`${path} failed: ${res.status} ${await res.text()}`);
+    throw new Error(await errorMessage(res, path));
   }
   return res.json();
 }
 
-export function getMe(): Promise<{ manager_name: string }> {
-  return getJSON<{ manager_name: string }>("/me");
+async function deleteJSON<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, { method: "DELETE" });
+  if (!res.ok) {
+    throw new Error(await errorMessage(res, path));
+  }
+  return res.json();
+}
+
+export interface ManagerProfile {
+  manager_name: string;
+  role: string;
+  firm: string;
+}
+
+export function getMe(): Promise<ManagerProfile> {
+  return getJSON<ManagerProfile>("/me");
 }
 
 export function getSectors(): Promise<string[]> {
@@ -58,6 +82,16 @@ export interface AddClientResult {
 
 export function addClient(req: AddClientRequest): Promise<AddClientResult> {
   return postJSON<AddClientResult>("/clients", req);
+}
+
+export interface DeleteClientResult {
+  portfolio_id: string;
+  client_name: string;
+  removed_holdings: number;
+}
+
+export function deleteClient(portfolioId: string): Promise<DeleteClientResult> {
+  return deleteJSON<DeleteClientResult>(`/clients/${encodeURIComponent(portfolioId)}`);
 }
 
 export function getOverview(): Promise<Overview> {

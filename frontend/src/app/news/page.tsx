@@ -38,12 +38,30 @@ function saveStore(store: Record<string, StoredEntry>) {
   }
 }
 
+function cachedResults(): Record<string, NewsFeedResult> {
+  return Object.fromEntries(Object.entries(loadStore()).map(([category, entry]) => [category, entry.result]));
+}
+
+function cachedTimes(): Record<string, number> {
+  return Object.fromEntries(Object.entries(loadStore()).map(([category, entry]) => [category, entry.fetchedAt]));
+}
+
+function formatUpdatedAt(timestamp?: number): string {
+  if (!timestamp) return "";
+  return new Date(timestamp).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function NewsFeedPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<string[]>([]);
   const [category, setCategory] = useState<string>("");
-  const [cache, setCache] = useState<Record<string, NewsFeedResult>>({});
-  const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
+  const [cache, setCache] = useState<Record<string, NewsFeedResult>>(cachedResults);
+  const [fetchedAt, setFetchedAt] = useState<Record<string, number>>(cachedTimes);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,29 +96,7 @@ export default function NewsFeedPage() {
     }
   }
 
-  function timeAgo(ts?: number): string {
-    if (!ts) return "";
-    const mins = Math.round((Date.now() - ts) / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins} min ago`;
-    const hrs = Math.round(mins / 60);
-    if (hrs < 24) return `${hrs} hr ago`;
-    return `${Math.round(hrs / 24)} d ago`;
-  }
-
   useEffect(() => {
-    // hydrate everything we've ever fetched from localStorage so opening the
-    // tab shows instantly and never re-fetches on its own
-    const store = loadStore();
-    const hydratedCache: Record<string, NewsFeedResult> = {};
-    const hydratedAt: Record<string, number> = {};
-    for (const [cat, entry] of Object.entries(store)) {
-      hydratedCache[cat] = entry.result;
-      hydratedAt[cat] = entry.fetchedAt;
-    }
-    setCache(hydratedCache);
-    setFetchedAt(hydratedAt);
-
     getNewsCategories()
       .then((cats) => {
         setCategories(cats);
@@ -112,7 +108,6 @@ export default function NewsFeedPage() {
         loadCategory(first);
       })
       .catch((e) => setError(String(e)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const result = cache[category];
@@ -157,7 +152,7 @@ export default function NewsFeedPage() {
           <div className="news-fresh-line">
             {refreshing
               ? "Refreshing with the latest..."
-              : `Last fetched ${timeAgo(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
+              : `Last fetched ${formatUpdatedAt(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
           </div>
         )}
 

@@ -17,33 +17,47 @@ export default function Donut({
   const C = 2 * Math.PI * R;
   const cx = size / 2;
   const cy = size / 2;
-  let acc = 0;
+  const renderedSegments = segments.reduce<{
+    total: number;
+    items: { label: string; pct: number; color: string; dash: number; offset: number }[];
+  }>(
+    (state, segment) => {
+      const fraction = segment.pct / 100;
+      return {
+        total: state.total + fraction,
+        items: [
+          ...state.items,
+          {
+            ...segment,
+            dash: Math.max(fraction * C - 2, 0),
+            offset: -state.total * C,
+          },
+        ],
+      };
+    },
+    { total: 0, items: [] },
+  ).items;
+
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="donut" role="img">
       <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} />
-      {segments.map((s) => {
-        const frac = s.pct / 100;
-        const dash = Math.max(frac * C - 2, 0); // 2px surface gap between segments
-        const offset = -acc * C;
-        acc += frac;
-        return (
-          <circle
-            key={s.label}
-            cx={cx}
-            cy={cy}
-            r={R}
-            fill="none"
-            stroke={s.color}
-            strokeWidth={stroke}
-            strokeDasharray={`${dash} ${C - dash}`}
-            strokeDashoffset={offset}
-            transform={`rotate(-90 ${cx} ${cy})`}
-            style={{ transition: "stroke-dasharray 700ms var(--ease-out)" }}
-          >
-            <title>{`${s.label}: ${s.pct}%`}</title>
-          </circle>
-        );
-      })}
+      {renderedSegments.map((segment) => (
+        <circle
+          key={segment.label}
+          cx={cx}
+          cy={cy}
+          r={R}
+          fill="none"
+          stroke={segment.color}
+          strokeWidth={stroke}
+          strokeDasharray={`${segment.dash} ${C - segment.dash}`}
+          strokeDashoffset={segment.offset}
+          transform={`rotate(-90 ${cx} ${cy})`}
+          style={{ transition: "stroke-dasharray 700ms var(--ease-out)" }}
+        >
+          <title>{`${segment.label}: ${segment.pct}%`}</title>
+        </circle>
+      ))}
       <text x={cx} y={cy - 3} textAnchor="middle" className="donut-center-top" fill="var(--text)">
         {centerTop}
       </text>

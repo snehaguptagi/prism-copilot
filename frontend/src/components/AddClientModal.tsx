@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { addClient } from "@/lib/api";
 import { ClientAccount } from "@/lib/types";
 
@@ -45,7 +45,16 @@ export default function AddClientModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submit() {
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !submitting) onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose, submitting]);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!name.trim() || !occupation.trim() || !city.trim() || !templateId) {
       setError("Name, occupation, city, and a starting strategy are required.");
       return;
@@ -70,43 +79,47 @@ export default function AddClientModal({
         phone: phone.trim() || undefined,
       });
       onCreated(result.portfolio_id);
-    } catch (e) {
-      setError(String(e));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to add this client.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" role="presentation" onMouseDown={() => !submitting && onClose()}>
+      <form
+        className="modal-panel add-client-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-client-title"
+        onSubmit={submit}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <div className="modal-head">
-          <div className="modal-title">Add a client</div>
-          <button className="modal-close" onClick={onClose} aria-label="Close">
+          <div>
+            <div className="modal-kicker">New relationship</div>
+            <div className="modal-title" id="add-client-title">Add a client</div>
+          </div>
+          <button className="modal-close" type="button" onClick={onClose} aria-label="Close" disabled={submitting}>
             ×
           </button>
         </div>
 
         <div className="modal-body">
-          {error && (
-            <div className="panel" style={{ borderLeft: "3px solid var(--negative)", marginBottom: 12 }}>
-              <p style={{ color: "var(--negative)", fontSize: 13 }}>{error}</p>
-            </div>
-          )}
-
-          <p style={{ fontSize: 12.5, color: "var(--text-faint)", marginBottom: 14 }}>
-            Picks a starting portfolio allocation from an existing strategy, scaled to this client&apos;s AUM.
-            Behavioral profile and communication history can be added later as you learn more about them.
+          <p className="modal-intro">
+            Create the client profile and seed a portfolio from an existing strategy. PRISM scales
+            the holdings to the opening AUM and calculates the resulting risk profile automatically.
           </p>
 
           <div className="form-grid">
             <label className="form-field">
               <span>Name</span>
-              <input className="text-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Client's full name" />
+              <input className="text-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Client's full name" autoFocus required />
             </label>
             <label className="form-field">
               <span>Age</span>
-              <input className="text-input" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Optional" />
+              <input className="text-input" type="number" min="18" max="100" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Optional" />
             </label>
             <label className="form-field">
               <span>Occupation</span>
@@ -115,19 +128,20 @@ export default function AddClientModal({
                 value={occupation}
                 onChange={(e) => setOccupation(e.target.value)}
                 placeholder="e.g. Senior product manager"
+                required
               />
             </label>
             <label className="form-field">
               <span>City</span>
-              <input className="text-input" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai" />
+              <input className="text-input" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai" required />
             </label>
             <label className="form-field">
               <span>Email</span>
-              <input className="text-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Optional" />
+              <input className="text-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" />
             </label>
             <label className="form-field">
               <span>Phone</span>
-              <input className="text-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Optional" />
+              <input className="text-input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
             </label>
             <label className="form-field">
               <span>Risk mandate</span>
@@ -143,10 +157,10 @@ export default function AddClientModal({
             </label>
             <label className="form-field">
               <span>Initial AUM (₹)</span>
-              <input className="text-input" type="number" value={aum} onChange={(e) => setAum(e.target.value)} placeholder="e.g. 5000000" />
+              <input className="text-input" type="number" min="1" step="1000" value={aum} onChange={(e) => setAum(e.target.value)} placeholder="e.g. 5000000" required />
             </label>
             <label className="form-field" style={{ gridColumn: "1 / -1" }}>
-              <span>Starting strategy</span>
+              <span>Starting portfolio strategy</span>
               <div className="select-wrap">
                 <select value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
                   {templates.map((t) => (
@@ -158,18 +172,20 @@ export default function AddClientModal({
               </div>
             </label>
           </div>
+
+          {error && <p className="form-error" role="alert">{error}</p>}
         </div>
 
         <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={submitting}>
+          <button className="btn btn-secondary" type="button" onClick={onClose} disabled={submitting}>
             Cancel
           </button>
-          <button className="btn" onClick={submit} disabled={submitting}>
+          <button className="btn" type="submit" disabled={submitting || !templateId}>
             {submitting && <span className="spinner" />}
             {submitting ? "Adding…" : "Add client"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

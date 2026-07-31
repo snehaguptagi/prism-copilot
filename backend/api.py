@@ -14,6 +14,7 @@ Run:
 import json
 import os
 import re
+import tempfile
 import time
 from datetime import date
 from typing import Optional
@@ -54,11 +55,17 @@ app.add_middleware(
 )
 
 PM_NAME = os.environ.get("PM_NAME", "Ananya Rao")
+PM_ROLE = os.environ.get("PM_ROLE", "Portfolio Manager")
+PM_FIRM = os.environ.get("PM_FIRM", "PwC India")
 
 
 @app.get("/me")
 def get_me():
-    return {"manager_name": PM_NAME}
+    return {
+        "manager_name": PM_NAME,
+        "role": PM_ROLE,
+        "firm": PM_FIRM,
+    }
 
 
 class LensRequest(BaseModel):
@@ -84,6 +91,28 @@ def sector_breakdown(portfolio_id, data):
         reverse=True,
     )
     return ranked
+
+
+def _is_removable_portfolio(portfolio):
+    """Only user-created client records are removable from the demo workspace."""
+    return (
+        portfolio.get("created_via") == "client_form"
+        or portfolio.get("portfolio_id", "").startswith("pf_custom_")
+    )
+
+
+def _persist_data(data):
+    """Write the dataset atomically so an interrupted mutation cannot corrupt it."""
+    data_dir = os.path.dirname(DATA_PATH)
+    fd, temp_path = tempfile.mkstemp(prefix=".prism_data_", suffix=".json", dir=data_dir)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as temp_file:
+            json.dump(data, temp_file, indent=2)
+            temp_file.write("\n")
+        os.replace(temp_path, DATA_PATH)
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 FACTOR_LABELS = {
@@ -215,6 +244,30 @@ _ASSET_CLASS_LABEL = {
     "Cash": "cash",
 }
 
+PRODUCT_FAMILY_ORDER = ("Gold", "Commodities", "Mutual Funds")
+
+
+def _product_family(security):
+    """Map the wider security master to PRISM's client-facing product shelf."""
+    if security.get("instrument_type") == "Mutual Fund":
+        return "Mutual Funds"
+    if security.get("asset_class") == "Commodity":
+        searchable = f"{security.get('name', '')} {security.get('primary_ticker', '')}".lower()
+        return "Gold" if "gold" in searchable or security.get("primary_ticker") == "SGB" else "Commodities"
+    return None
+
+
+def _normalise_graph_suggestions(data, suggestions):
+    """Keep graph recommendations on the same approved product shelf."""
+    sec_by_id = {s["security_id"]: s for s in data["securities"]}
+    offered = []
+    for suggestion in suggestions:
+        security = sec_by_id.get(suggestion["security_id"])
+        family = _product_family(security) if security else None
+        if family:
+            offered.append({**suggestion, "asset_class": family})
+    return offered
+
 
 def _vol_band_rank(vol):
     """Map a security's volatility to the same 0 to 4 risk ladder used for
@@ -318,8 +371,9 @@ def suggest_products(data, portfolio, max_n=3):
         sid = s["security_id"]
         if sid in held:
             continue
-        if s["asset_class"] == "Cash" or s.get("instrument_type") == "cash":
-            continue  # cash is not a product to cross-sell
+        family = _product_family(s)
+        if not family:
+            continue  # PRISM currently offers Gold, Commodities, and Mutual Funds
         if _vol_band_rank(s.get("vol")) > max_band:
             continue  # too risky for this client's mandate
         cls = s["asset_class"]
@@ -335,6 +389,7 @@ def suggest_products(data, portfolio, max_n=3):
 
     def _entry(s):
         cls = s["asset_class"]
+        family = _product_family(s)
         label = _ASSET_CLASS_LABEL.get(cls, cls.lower())
         if cls in reasons:
             why = f"Matches {reasons[cls]}, and fits {article} {mandate} mandate."
@@ -347,19 +402,19 @@ def suggest_products(data, portfolio, max_n=3):
             "name": s["name"],
             "ticker": s["primary_ticker"],
             "sector": s["sector"],
-            "asset_class": cls,
+            "asset_class": family,
             "instrument_type": s["instrument_type"],
             "rationale": why,
         }
 
-    # Lead with the best preference matches, but cap at 2 of any one asset class
+    # Lead with the best preference matches, but cap at 2 of any one product family
     # so a strong preference dominates without becoming monotonous.
     out, per_class = [], {}
     for _score, s in candidates:
-        cls = s["asset_class"]
-        if per_class.get(cls, 0) >= 2:
+        family = _product_family(s)
+        if per_class.get(family, 0) >= 2:
             continue
-        per_class[cls] = per_class.get(cls, 0) + 1
+        per_class[family] = per_class.get(family, 0) + 1
         out.append(_entry(s))
         if len(out) >= max_n:
             break
@@ -427,7 +482,8 @@ def build_graph_view(data, portfolio, max_held=6):
 
     rule_suggestions = suggest_products(data, portfolio, max_n=4)
     graph_enabled = graph.graph_enabled()
-    graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
+    raw_graph_suggestions = graph.recommend_products(pid, max_n=8) if graph_enabled else []
+    graph_suggestions = _normalise_graph_suggestions(data, raw_graph_suggestions)[:4]
     top_matches = compute_ranked_matches(rule_suggestions, graph_suggestions, max_n=4)
     best_match = top_matches[0] if top_matches else None
 
@@ -509,7 +565,8 @@ def build_overview_graph_view(data):
         pid = p["portfolio_id"]
         client = p["client"]
         rule_suggestions = suggest_products(data, p, max_n=4)
-        graph_suggestions = graph.recommend_products(pid, max_n=4) if graph_enabled else []
+        raw_graph_suggestions = graph.recommend_products(pid, max_n=8) if graph_enabled else []
+        graph_suggestions = _normalise_graph_suggestions(data, raw_graph_suggestions)[:4]
         best = compute_best_match(rule_suggestions, graph_suggestions)
 
         client_nodes.append({
@@ -667,6 +724,7 @@ def get_clients():
         out.append({
             "portfolio_id": pid,
             "portfolio_name": p["name"],
+            "can_delete": _is_removable_portfolio(p),
             "mandate": p["mandate"],
             "risk_driver": p["risk_driver"],
             "risk_tier": r.get("risk_tier"),
@@ -722,12 +780,19 @@ def add_client(req: AddClientRequest):
     were already written to tolerate a client with no history."""
     data = load_data()
 
+    name = req.name.strip()
+    occupation = req.occupation.strip()
+    city = req.city.strip()
+    if not name or not occupation or not city:
+        raise HTTPException(status_code=400, detail="Name, occupation, and city are required.")
     if req.risk_mandate.strip().lower() not in _MANDATE_MAX_TIER:
         raise HTTPException(status_code=400, detail=f"Unknown risk mandate '{req.risk_mandate}'.")
     if req.initial_aum <= 0:
         raise HTTPException(status_code=400, detail="initial_aum must be positive.")
+    if req.age is not None and not 18 <= req.age <= 100:
+        raise HTTPException(status_code=400, detail="age must be between 18 and 100.")
     template = next((p for p in data["portfolios"] if p["portfolio_id"] == req.template_portfolio_id), None)
-    if not template:
+    if not template or template.get("is_reference") or not template.get("client"):
         raise HTTPException(status_code=404, detail=f"No template portfolio '{req.template_portfolio_id}'.")
 
     template_weights = {
@@ -737,26 +802,27 @@ def add_client(req: AddClientRequest):
     norm_holdings, market_values, risk_block = compute_portfolio_risk(req.initial_aum, template_weights, sec_by_id)
 
     existing_ids = {p["portfolio_id"] for p in data["portfolios"]}
-    new_pid = _unique_portfolio_id(req.name, existing_ids)
+    new_pid = _unique_portfolio_id(name, existing_ids)
     today = date.today().isoformat()
 
     data["portfolios"].append({
         "portfolio_id": new_pid,
+        "created_via": "client_form",
         "desk_id": template["desk_id"],
-        "name": f"{req.name}'s Portfolio",
+        "name": f"{name}'s Portfolio",
         "base_ccy": "INR",
         "risk_driver": template["risk_driver"],
         "mandate": f"Custom mandate, initial allocation modeled on the {template['name']} strategy.",
-        "manager_name": None,
-        "manager_bio": None,
+        "manager_name": PM_NAME,
+        "manager_bio": f"{PM_ROLE} at {PM_FIRM}.",
         "client": {
-            "name": req.name,
+            "name": name,
             "age": req.age,
-            "occupation": req.occupation,
+            "occupation": occupation,
             "persona": "New client. Full behavioral profile to be added by the relationship manager.",
             "email": req.email,
             "phone": req.phone,
-            "city": req.city,
+            "city": city,
             "relationship_since": today,
             "aum_fee_pct": 1.0,
             "risk_mandate": req.risk_mandate,
@@ -777,11 +843,35 @@ def add_client(req: AddClientRequest):
         next_hid += 1
 
     data["risk"][new_pid] = risk_block
+    _persist_data(data)
+    globals().get("_NEWS_CACHE", {}).clear()
 
-    with open(DATA_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+    return {"portfolio_id": new_pid, "client_name": name, "risk_tier": risk_block["risk_tier"]}
 
-    return {"portfolio_id": new_pid, "client_name": req.name, "risk_tier": risk_block["risk_tier"]}
+
+@app.delete("/clients/{portfolio_id}")
+def delete_client(portfolio_id: str):
+    """Remove a client created through PRISM, including its holdings and risk data."""
+    data = load_data()
+    portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
+    if not portfolio or not portfolio.get("client"):
+        raise HTTPException(status_code=404, detail=f"No client portfolio found for '{portfolio_id}'.")
+    if not _is_removable_portfolio(portfolio):
+        raise HTTPException(status_code=403, detail="Seeded demonstration clients cannot be removed.")
+
+    client_name = portfolio["client"]["name"]
+    removed_holdings = sum(1 for h in data["holdings"] if h["portfolio_id"] == portfolio_id)
+    data["portfolios"] = [p for p in data["portfolios"] if p["portfolio_id"] != portfolio_id]
+    data["holdings"] = [h for h in data["holdings"] if h["portfolio_id"] != portfolio_id]
+    data["risk"].pop(portfolio_id, None)
+    _persist_data(data)
+    globals().get("_NEWS_CACHE", {}).clear()
+
+    return {
+        "portfolio_id": portfolio_id,
+        "client_name": client_name,
+        "removed_holdings": removed_holdings,
+    }
 
 
 @app.get("/overview")
@@ -968,10 +1058,7 @@ def get_overview():
 
 @app.get("/products")
 def get_products():
-    """The investable universe the desk can offer clients: every security in
-    the securities master, grouped by asset class, with how many client books
-    currently hold each (so the manager sees what is already in use vs. idle).
-    Deterministic, no model."""
+    """The approved PRISM product shelf: Gold, Commodities, and Mutual Funds."""
     data = load_data()
     client_pids = {p["portfolio_id"] for p in data["portfolios"] if p.get("client") and not p.get("is_reference")}
     held_count = {}
@@ -981,23 +1068,28 @@ def get_products():
 
     by_class = {}
     for s in data["securities"]:
+        family = _product_family(s)
+        if not family:
+            continue
         item = {
             "security_id": s["security_id"],
             "name": s["name"],
             "ticker": s["primary_ticker"],
             "sector": s["sector"],
             "instrument_type": s["instrument_type"],
-            "asset_class": s["asset_class"],
+            "asset_class": family,
             "vol": s.get("vol"),
             "beta": s.get("beta"),
             "credit_quality": s.get("credit_quality"),
             "held_by_count": len(held_count.get(s["security_id"], set())),
         }
-        by_class.setdefault(s["asset_class"], []).append(item)
+        by_class.setdefault(family, []).append(item)
 
-    # order groups by size, names within a group by usage then name
+    # Keep the three client-facing product lines in a predictable order.
     groups = []
-    for asset_class in sorted(by_class, key=lambda k: len(by_class[k]), reverse=True):
+    for asset_class in PRODUCT_FAMILY_ORDER:
+        if asset_class not in by_class:
+            continue
         items = sorted(by_class[asset_class], key=lambda x: (-x["held_by_count"], x["name"]))
         groups.append({"asset_class": asset_class, "count": len(items), "items": items})
 
@@ -1024,9 +1116,10 @@ def client_graph_suggestions(portfolio_id: str):
     portfolio = next((p for p in data["portfolios"] if p["portfolio_id"] == portfolio_id), None)
     if not portfolio or not portfolio.get("client"):
         raise HTTPException(status_code=404, detail=f"No client portfolio found for '{portfolio_id}'.")
+    raw_suggestions = graph.recommend_products(portfolio_id, max_n=8)
     return {
         "enabled": graph.graph_enabled(),
-        "suggestions": graph.recommend_products(portfolio_id),
+        "suggestions": _normalise_graph_suggestions(data, raw_suggestions)[:4],
     }
 
 

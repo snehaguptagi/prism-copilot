@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/snehaguptagi/prism-copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/snehaguptagi/prism-copilot/actions/workflows/ci.yml)
 
-A portfolio-aware research assistant for buy-side relationship managers, focused on the
+A PwC-styled portfolio intelligence workspace for portfolio managers, focused on the
 Indian market. It turns live market news into cited, book-specific insight: which of your
 clients a development actually touches, by how much, and what to tell them.
 
@@ -29,10 +29,10 @@ The running system uses a single external API: the Anthropic Claude API, includi
 ## What it does
 
 - **Overview** - firm-wide book summary (AUM, risk spread, asset/sector allocation, top holdings), all computed from real holdings.
-- **Clients** - a roster of 16 distinct client personas, from a ₹38 lakh young trader to a ₹46 crore business promoter, each with a full profile: behavioral psychographics, relationship insights, portfolio metrics, holdings, performance vs the Nifty, a suitability check, and a PM-to-client communication log with the next action due.
+- **Clients** - a roster of 16 seeded client personas plus end-to-end onboarding for new clients. Each client has a profile, portfolio allocation, holdings, risk and suitability checks, and communication history. User-added clients can be removed safely without affecting the seeded demo book.
 - **Portfolio Analysis** - pick a client's book, run live market analysis on its dominant exposure, get exposure vs. a normal book plus tailored talking points.
 - **News Feed** - categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and per-client talking points. Cached so it does not reload on its own; manual Reload button.
-- **Products** - the investable universe the desk can offer, grouped by asset class.
+- **Products** - a focused approved shelf across Gold, Commodities, and Mutual Funds, with current adoption across the client book.
 - **Product Fit** - a visual map, per client, of their holdings, preferences, and the products worth raising with them, with the single strongest pick highlighted. Suggestions are matched to each client's stated preferences (goal, horizon, loss aversion, life stage) and risk mandate; an optional knowledge graph adds a second, similar-client layer on top. The app works identically without it.
 - **Light and dark theme** - a toggle in the top bar; the choice persists across visits and otherwise follows the system preference.
 

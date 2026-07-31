@@ -7,6 +7,21 @@ import { assetClassColor, sectorColor } from "@/lib/colors";
 import Topbar from "@/components/Topbar";
 import Donut from "@/components/Donut";
 
+const PRODUCT_LINE_COPY: Record<string, { symbol: string; description: string }> = {
+  Gold: {
+    symbol: "Au",
+    description: "Gold ETFs and sovereign gold exposure for diversification and inflation-aware allocations.",
+  },
+  Commodities: {
+    symbol: "Ag",
+    description: "Exchange-traded commodity exposure for clients whose mandate can accommodate price volatility.",
+  },
+  "Mutual Funds": {
+    symbol: "MF",
+    description: "Professionally managed equity, debt, and hybrid strategies across risk profiles.",
+  },
+};
+
 export default function ProductsPage() {
   const [data, setData] = useState<Products | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,22 +56,22 @@ export default function ProductsPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Investable universe</p>
-          <h1>Products you can offer</h1>
+          <p className="eyebrow">Approved product shelf</p>
+          <h1>Focused products for client portfolios</h1>
           <p className="lede">
-            Every security and fund on the desk&apos;s shelf, grouped by asset class, with how many
-            client books already hold each. Idle products are ones no client holds yet.
+            PRISM is intentionally focused on three product lines: Gold, Commodities, and Mutual
+            Funds. Review mandate fit and current client adoption before starting a conversation.
           </p>
 
           {data && (
             <div className="stats">
               <div className="stat-tile">
                 <div className="v">{data.total}</div>
-                <div className="l">Products on the shelf</div>
+                <div className="l">Approved products</div>
               </div>
               <div className="stat-tile">
                 <div className="v">{data.groups.length}</div>
-                <div className="l">Asset classes</div>
+                <div className="l">Product lines</div>
               </div>
               <div className="stat-tile">
                 <div className="v">{idleCount}</div>
@@ -74,10 +89,36 @@ export default function ProductsPage() {
 
         {data && (
           <>
+            <div className="product-family-grid stagger">
+              {data.groups.map((productGroup) => {
+                const copy = PRODUCT_LINE_COPY[productGroup.asset_class];
+                return (
+                  <button
+                    className={`product-family-card${group === productGroup.asset_class ? " active" : ""}`}
+                    key={productGroup.asset_class}
+                    type="button"
+                    onClick={() => setGroup(group === productGroup.asset_class ? "All" : productGroup.asset_class)}
+                  >
+                    <span
+                      className="product-family-symbol"
+                      style={{ color: assetClassColor(productGroup.asset_class), background: `color-mix(in srgb, ${assetClassColor(productGroup.asset_class)} 12%, var(--surface))` }}
+                    >
+                      {copy?.symbol ?? productGroup.asset_class.slice(0, 2)}
+                    </span>
+                    <span className="product-family-body">
+                      <span className="product-family-name">{productGroup.asset_class}</span>
+                      <span className="product-family-description">{copy?.description}</span>
+                    </span>
+                    <span className="product-family-count">{productGroup.count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="ov-grid" style={{ marginBottom: 16 }}>
               {/* shelf composition donut */}
               <div className="panel">
-                <div className="panel-title">Shelf composition by asset class</div>
+                <div className="panel-title">Shelf composition by product line</div>
                 <div className="donut-wrap">
                   <Donut
                     size={140}
@@ -137,7 +178,7 @@ export default function ProductsPage() {
               />
               <div className="select-wrap">
                 <select value={group} onChange={(e) => setGroup(e.target.value)}>
-                  <option value="All">All asset classes</option>
+                  <option value="All">All product lines</option>
                   {data.groups.map((g) => (
                     <option key={g.asset_class} value={g.asset_class}>{g.asset_class}</option>
                   ))}

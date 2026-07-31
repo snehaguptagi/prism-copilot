@@ -9,26 +9,35 @@ import { avatarColor, initials, severityColor } from "@/lib/colors";
 import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import AddClientModal from "@/components/AddClientModal";
+import DeleteClientModal from "@/components/DeleteClientModal";
 
 const RISK_TIERS = ["All", "Low", "Moderate", "Elevated", "High", "Very High"] as const;
 
 export default function ClientsPage() {
   const router = useRouter();
   const [clients, setClients] = useState<ClientAccount[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [tierFilter, setTierFilter] = useState<(typeof RISK_TIERS)[number]>("All");
   const [showAddClient, setShowAddClient] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<ClientAccount | null>(null);
 
   useEffect(() => {
     getClients()
       .then(setClients)
-      .catch((e) => setError(String(e)));
+      .catch((caught) => setError(caught instanceof Error ? caught.message : "Unable to load clients."))
+      .finally(() => setLoading(false));
   }, []);
 
   function handleClientCreated(portfolioId: string) {
     setShowAddClient(false);
     router.push(`/clients/${portfolioId}`);
+  }
+
+  function handleClientDeleted(portfolioId: string) {
+    setClients((current) => current.filter((client) => client.portfolio_id !== portfolioId));
+    setClientToDelete(null);
   }
 
   const totalAum = clients.reduce((sum, c) => sum + c.aum, 0);
@@ -59,11 +68,11 @@ export default function ClientsPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero">
-          <p className="eyebrow">Relationship manager view</p>
+          <p className="eyebrow">Portfolio manager workspace</p>
           <h1>Your clients</h1>
           <p className="lede">
-            Every client is a distinct person with a distinct reason for investing.
-            Click any row for contact details, contract terms, and their portfolio.
+            Manage each relationship from onboarding through portfolio review. Open a client to
+            see mandate fit, allocation, holdings, performance, and next actions in one place.
           </p>
 
           {clients.length > 0 && (
@@ -158,6 +167,15 @@ export default function ClientsPage() {
           />
         )}
 
+        {clientToDelete && (
+          <DeleteClientModal
+            portfolioId={clientToDelete.portfolio_id}
+            clientName={clientToDelete.client.name}
+            onClose={() => setClientToDelete(null)}
+            onDeleted={handleClientDeleted}
+          />
+        )}
+
         <div className="table-wrap">
           <table>
             <thead>
@@ -169,6 +187,7 @@ export default function ClientsPage() {
                 <th>1Y vs Nifty</th>
                 <th>Fee</th>
                 <th style={{ textAlign: "right" }}>AUM</th>
+                <th aria-label="Actions" />
               </tr>
             </thead>
             <tbody className="stagger">
@@ -179,6 +198,10 @@ export default function ClientsPage() {
                     key={c.portfolio_id}
                     className="clickable"
                     onClick={() => router.push(`/clients/${c.portfolio_id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") router.push(`/clients/${c.portfolio_id}`);
+                    }}
+                    tabIndex={0}
                   >
                     <td>
                       <div className="client-row-name">
@@ -230,6 +253,22 @@ export default function ClientsPage() {
                     </td>
                     <td>{c.client.aum_fee_pct}%</td>
                     <td className="num">{inr(c.aum)}</td>
+                    <td className="row-actions">
+                      {c.can_delete && (
+                        <button
+                          className="icon-action danger"
+                          type="button"
+                          aria-label={`Remove ${c.client.name}`}
+                          title={`Remove ${c.client.name}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setClientToDelete(c);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -243,7 +282,7 @@ export default function ClientsPage() {
           </div>
         )}
 
-        {clients.length === 0 && !error && (
+        {loading && !error && (
           <div className="panel">
             <p>Loading client roster…</p>
           </div>

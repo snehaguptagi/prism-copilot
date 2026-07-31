@@ -10,12 +10,13 @@ import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import Donut from "@/components/Donut";
 import PerfHorizons from "@/components/PerfHorizons";
+import DeleteClientModal from "@/components/DeleteClientModal";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
 }
 
-const TABS = ["Profile", "Portfolio", "Holdings", "Communication"] as const;
+const TABS = ["Portfolio", "Profile", "Holdings", "Communication"] as const;
 type Tab = (typeof TABS)[number];
 
 function channelIcon(channel: string): string {
@@ -33,9 +34,10 @@ export default function ClientDetailPage() {
   const router = useRouter();
   const [account, setAccount] = useState<ClientAccount | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("Profile");
+  const [tab, setTab] = useState<Tab>("Portfolio");
   const [graphSuggestions, setGraphSuggestions] = useState<GraphSuggestion[] | null>(null);
   const [graphEnabled, setGraphEnabled] = useState(false);
+  const [showDeleteClient, setShowDeleteClient] = useState(false);
 
   useEffect(() => {
     getClients()
@@ -44,7 +46,7 @@ export default function ClientDetailPage() {
         if (!found) setError("Client not found.");
         else setAccount(found);
       })
-      .catch((e) => setError(String(e)));
+      .catch((caught) => setError(caught instanceof Error ? caught.message : "Unable to load this client."));
 
     // Knowledge-graph suggestions are additive: if the graph is not configured
     // this quietly returns { enabled: false, suggestions: [] } and the section
@@ -103,7 +105,9 @@ export default function ClientDetailPage() {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="detail-name">{c.name}</div>
-            <div className="detail-sub">{c.age} · {c.occupation} · {c.city}</div>
+            <div className="detail-sub">
+              {[c.age ? `Age ${c.age}` : null, c.occupation, c.city].filter(Boolean).join(" · ")}
+            </div>
             <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
               <span className="chip" style={{ background: `color-mix(in srgb, ${tierColor} 14%, var(--surface))`, color: tierColor }}>
                 <span className="chip-dot" />{account.risk_tier ?? "n/a"} risk
@@ -113,20 +117,34 @@ export default function ClientDetailPage() {
               </span>
             </div>
           </div>
-          <div style={{ textAlign: "right" }}>
+          <div className="detail-actions">
             <div className="kpi" style={{ border: "1px solid var(--border)", borderRadius: 10 }}>
               <div className="kpi-v">{inr(account.aum)}</div>
               <div className="kpi-l">AUM · {c.aum_fee_pct}% fee</div>
             </div>
+            {account.can_delete && (
+              <button className="btn btn-secondary btn-remove" type="button" onClick={() => setShowDeleteClient(true)}>
+                Remove client
+              </button>
+            )}
           </div>
         </div>
 
         {/* quick contact strip */}
         <div className="contact-strip">
-          <span><b>Email</b> {c.email}</span>
-          <span><b>Phone</b> {c.phone}</span>
+          <span><b>Email</b> {c.email || "Not provided"}</span>
+          <span><b>Phone</b> {c.phone || "Not provided"}</span>
           <span><b>Client since</b> {formatDate(c.relationship_since)}</span>
         </div>
+
+        {showDeleteClient && (
+          <DeleteClientModal
+            portfolioId={account.portfolio_id}
+            clientName={c.name}
+            onClose={() => setShowDeleteClient(false)}
+            onDeleted={() => router.push("/clients")}
+          />
+        )}
 
         <div className="section-tabs">
           {TABS.map((t) => (
@@ -227,6 +245,16 @@ export default function ClientDetailPage() {
                     <PerfHorizons horizons={account.performance.horizons} benchmarkName="Nifty 50" />
                   </div>
                 )}
+              </div>
+            )}
+
+            {!account.performance && (
+              <div className="panel portfolio-new-note">
+                <div className="panel-title">Performance tracking begins now</div>
+                <p>
+                  This portfolio has just been established. Return history and benchmark comparisons
+                  will appear after the first completed reporting period.
+                </p>
               </div>
             )}
 
@@ -346,10 +374,10 @@ export default function ClientDetailPage() {
 
             {account.product_suggestions && account.product_suggestions.length > 0 && (
               <div className="panel">
-                <div className="panel-title">Products suited to {c.name.split(" ")[0]}</div>
+                <div className="panel-title">Approved products suited to {c.name.split(" ")[0]}</div>
                 <p className="cross-sell-note">
-                  Matched to this client&apos;s stated preferences and risk mandate, drawn from the sellable
-                  universe. Ideas to raise in conversation, not a recommendation to buy.
+                  Selected from PRISM&apos;s Gold, Commodities, and Mutual Funds shelf, matched to this
+                  client&apos;s preferences and risk mandate. Ideas to raise in conversation, not a recommendation to buy.
                 </p>
                 <div className="cross-sell-grid stagger">
                   {account.product_suggestions.map((p) => (

@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-plex-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
 export const metadata: Metadata = {
-  title: "PRISM · Investment Research & Portfolio Insight Copilot",
-  description: "Portfolio-aware research assistant for buy-side investment teams.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: "PRISM · PwC Portfolio Intelligence",
+  description: "PwC portfolio intelligence workspace for client onboarding, portfolio oversight, and product fit.",
+  openGraph: {
+    title: "PRISM · PwC Portfolio Intelligence",
+    description: "Portfolio intelligence for every client.",
+    type: "website",
+    images: [{ url: "/og.png", width: 1736, height: 909, alt: "PRISM portfolio intelligence dashboard" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PRISM · PwC Portfolio Intelligence",
+    description: "Portfolio intelligence for every client.",
+    images: ["/og.png"],
+  },
 };
 
 // Sets data-theme on <html> before first paint (localStorage choice, else the
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {children}

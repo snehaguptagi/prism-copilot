@@ -1,21 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 const STORAGE_KEY = "prism_theme";
 
 export default function ThemeToggle() {
-  // Mirrors whatever the boot script (layout.tsx) already set on <html>, so
-  // this never causes a flash or a hydration mismatch on the icon itself.
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
-  }, []);
-
   function toggle() {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     try {
       localStorage.setItem(STORAGE_KEY, next);
@@ -28,10 +18,11 @@ export default function ThemeToggle() {
     <button
       className="theme-toggle"
       onClick={toggle}
-      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title="Switch colour theme"
       aria-label="Toggle light and dark theme"
     >
-      {theme === "dark" ? "☀" : "☾"}
+      <span className="theme-icon theme-icon-light" aria-hidden="true">☀</span>
+      <span className="theme-icon theme-icon-dark" aria-hidden="true">☾</span>
     </button>
   );
 }

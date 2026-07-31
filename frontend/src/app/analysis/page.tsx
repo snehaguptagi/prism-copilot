@@ -78,7 +78,6 @@ export default function AnalysisPage() {
         }
       })
       .catch((e) => setError(String(e)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Show a previously-cached run for a (client, sector) instantly if we have

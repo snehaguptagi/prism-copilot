@@ -20,6 +20,8 @@ def test_me_returns_manager_name():
     response = client.get("/me")
     assert response.status_code == 200
     assert response.json()["manager_name"]
+    assert response.json()["role"] == "Portfolio Manager"
+    assert response.json()["firm"]
 
 
 def test_sectors_endpoint_returns_known_sector():
@@ -94,9 +96,43 @@ def test_add_client_creates_a_valid_persisted_client(preserve_dataset):
     assert match["risk_tier"] in ("Low", "Moderate", "Elevated", "High", "Very High")
     assert match["suitability"]["status"] in ("matched", "aggressive", "conservative")  # never "unknown"
     assert match["client"]["risk_mandate"] == "Moderate"
+    assert match["can_delete"] is True
 
     overview = client.get("/overview").json()
     assert overview["kpis"]["client_count"] == 17  # 16 seeded + this one
+
+
+def test_add_then_delete_client_end_to_end(preserve_dataset):
+    created = client.post("/clients", json={
+        "name": "Removable Client",
+        "occupation": "Founder",
+        "city": "Mumbai",
+        "risk_mandate": "Moderate-Growth",
+        "initial_aum": 7_500_000,
+        "template_portfolio_id": "pf_largecap_growth",
+        "email": "removable@example.com",
+        "phone": "+91 99999 00000",
+    })
+    assert created.status_code == 200
+    portfolio_id = created.json()["portfolio_id"]
+
+    removed = client.delete(f"/clients/{portfolio_id}")
+    assert removed.status_code == 200
+    assert removed.json()["client_name"] == "Removable Client"
+    assert removed.json()["removed_holdings"] > 0
+
+    assert all(c["portfolio_id"] != portfolio_id for c in client.get("/clients").json())
+    assert client.get("/overview").json()["kpis"]["client_count"] == 16
+
+    from api import load_data
+    data = load_data()
+    assert portfolio_id not in data["risk"]
+    assert all(h["portfolio_id"] != portfolio_id for h in data["holdings"])
+
+
+def test_seeded_client_cannot_be_deleted():
+    response = client.delete("/clients/pf_largecap_growth")
+    assert response.status_code == 403
 
 
 def test_add_client_risk_tier_matches_shared_formula(preserve_dataset):
@@ -458,9 +494,11 @@ def test_graph_overview_agrees_with_per_client_best_match():
         assert client_entry["best_match"] == expected_name
 
 
-def test_products_groups_cover_all_securities():
+def test_products_expose_only_approved_families():
     resp = client.get("/products").json()
     assert resp["total"] == sum(g["count"] for g in resp["groups"])
+    assert [g["asset_class"] for g in resp["groups"]] == ["Gold", "Commodities", "Mutual Funds"]
+    assert resp["total"] == 16
     # every group's items are ranked by usage then name
     for g in resp["groups"]:
         counts = [i["held_by_count"] for i in g["items"]]

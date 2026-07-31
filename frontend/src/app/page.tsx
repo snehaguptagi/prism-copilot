@@ -30,11 +30,11 @@ export default function OverviewPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Book overview</p>
-          <h1>Your entire book, at a glance</h1>
+          <p className="eyebrow">Portfolio manager dashboard</p>
+          <h1>Your client book, clearly organised</h1>
           <p className="lede">
-            A live, firm wide summary of every client portfolio you manage. Every figure below is
-            computed directly from current holdings, nothing estimated.
+            A live, firm-wide view of every portfolio you manage, bringing performance, allocation,
+            risk, and upcoming client actions into one decision-ready workspace.
           </p>
         </header>
 

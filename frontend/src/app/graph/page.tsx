@@ -35,7 +35,6 @@ export default function GraphPage() {
     getOverviewGraphView()
       .then(setBookView)
       .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function pick(c: ClientAccount) {

@@ -207,6 +207,7 @@ export interface Overview {
 export interface ClientAccount {
   portfolio_id: string;
   portfolio_name: string;
+  can_delete: boolean;
   mandate: string;
   risk_driver?: string;
   risk_tier: RiskTier | null;

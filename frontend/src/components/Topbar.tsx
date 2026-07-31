@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getMe } from "@/lib/api";
-import { LogoMark } from "@/components/Logo";
+import { getMe, ManagerProfile } from "@/lib/api";
+import { Logo } from "@/components/Logo";
+import { initials } from "@/lib/colors";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_ITEMS = [
@@ -18,11 +19,15 @@ const NAV_ITEMS = [
 
 export default function Topbar() {
   const pathname = usePathname();
-  const [managerName, setManagerName] = useState<string>("Portfolio Manager");
+  const [manager, setManager] = useState<ManagerProfile>({
+    manager_name: "Ananya Rao",
+    role: "Portfolio Manager",
+    firm: "PwC India",
+  });
 
   useEffect(() => {
     getMe()
-      .then((me) => setManagerName(me.manager_name))
+      .then(setManager)
       .catch(() => {});
   }, []);
 
@@ -30,8 +35,7 @@ export default function Topbar() {
     <div className="topbar">
       <div className="topbar-inner">
         <Link href="/" className="brand">
-          <LogoMark size={26} />
-          <span className="brand-word">PRISM</span>
+          <Logo />
         </Link>
         <nav className="top-nav">
           {NAV_ITEMS.map((item) => {
@@ -45,7 +49,13 @@ export default function Topbar() {
         </nav>
         <div className="topbar-right">
           <ThemeToggle />
-          <div className="user-chip">{managerName}</div>
+          <div className="manager-profile" aria-label={`${manager.manager_name}, ${manager.role} at ${manager.firm}`}>
+            <span className="manager-avatar">{initials(manager.manager_name)}</span>
+            <span className="manager-profile-copy">
+              <span className="manager-name">{manager.manager_name}</span>
+              <span className="manager-role">{manager.role} · {manager.firm}</span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
