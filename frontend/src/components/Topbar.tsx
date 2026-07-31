@@ -30,7 +30,7 @@ export default function Topbar() {
       <div className="topbar-inner">
         <Link href="/" className="brand">
           <LogoMark size={34} />
-          <span className="brand-word">PRISM</span>
+          <span className="brand-word">Client Impact</span>
         </Link>
         <nav className="top-nav">
           {NAV_ITEMS.map((item) => {

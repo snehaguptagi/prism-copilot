@@ -26,7 +26,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PRISM · Investment Research & Portfolio Insight Copilot",
+  title: "Client Impact Copilot · What today's markets mean for each of your clients",
   description: "Portfolio-aware research assistant for buy-side investment teams.",
 };
 

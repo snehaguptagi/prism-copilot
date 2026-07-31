@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GraphViewEdge, GraphViewNode } from "@/lib/types";
 import { assetClassColor } from "@/lib/colors";
 
@@ -105,6 +105,65 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
 
   const { positions, viewBox } = layout;
 
+  // Zoom and pan. The layout already crops the viewBox to the content's bounding
+  // box; zoom narrows that window around its centre and pan slides it, so the
+  // node geometry never has to be recomputed. Panning is measured in viewBox
+  // units so a drag tracks the cursor at any zoom level.
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const dragFrom = useRef<{ x: number; y: number } | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const [baseX, baseY, baseW, baseH] = useMemo(() => viewBox.split(" ").map(Number), [viewBox]);
+  const viewW = baseW / zoom;
+  const viewH = baseH / zoom;
+  const liveViewBox = [
+    baseX + (baseW - viewW) / 2 - pan.x,
+    baseY + (baseH - viewH) / 2 - pan.y,
+    viewW,
+    viewH,
+  ].join(" ");
+
+  const atRest = zoom === 1 && pan.x === 0 && pan.y === 0;
+  const resetView = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Wheel-to-zoom has to be a non-passive native listener: React's onWheel is
+  // registered passively, so preventDefault there is ignored and the page
+  // scrolls out from under the graph while you are trying to zoom it.
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => Math.min(4, Math.max(0.6, z * (e.deltaY < 0 ? 1.12 : 1 / 1.12))));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  function onPointerDown(e: React.PointerEvent<SVGSVGElement>) {
+    dragFrom.current = { x: e.clientX, y: e.clientY };
+  }
+
+  function onPointerMove(e: React.PointerEvent<SVGSVGElement>) {
+    const from = dragFrom.current;
+    const el = svgRef.current;
+    if (!from || !el) return;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const dx = (e.clientX - from.x) * (viewW / rect.width);
+    const dy = (e.clientY - from.y) * (viewH / rect.height);
+    dragFrom.current = { x: e.clientX, y: e.clientY };
+    setPan((p) => ({ x: p.x + dx, y: p.y + dy }));
+  }
+
+  const endDrag = () => {
+    dragFrom.current = null;
+  };
+
   // Everything one hop from the active node stays lit. Computed once per active
   // change rather than per rendered element.
   const lit = useMemo(() => {
@@ -174,7 +233,28 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
 
   return (
     <div className="kg-wrap">
-      <svg viewBox={viewBox} className="kg-svg" role="img" aria-label="Client, asset classes, holdings and suggested products">
+      {/* Buttons as well as the wheel: wheel-only zoom is undiscoverable and
+          unusable without a mouse. Reset only appears once the view has moved. */}
+      <div className="kg-zoom">
+        <button onClick={() => setZoom((z) => Math.min(4, z * 1.25))} aria-label="Zoom in" title="Zoom in">+</button>
+        <button onClick={() => setZoom((z) => Math.max(0.6, z / 1.25))} aria-label="Zoom out" title="Zoom out">-</button>
+        {!atRest && (
+          <button className="kg-zoom-reset" onClick={resetView} aria-label="Reset view" title="Reset view">
+            Reset
+          </button>
+        )}
+      </div>
+      <svg
+        ref={svgRef}
+        viewBox={liveViewBox}
+        className={`kg-svg${dragFrom.current ? " kg-dragging" : ""}`}
+        role="img"
+        aria-label="Client, asset classes, holdings and suggested products"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+      >
         {edges.map((e, i) => {
           const s = positions[e.source];
           const t = positions[e.target];

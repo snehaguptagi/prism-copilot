@@ -104,7 +104,10 @@
      previous pass's. PwC headlines are heavy and tightly tracked; a 250-weight
      display face is the opposite of that brand's voice. */
   --display-1: clamp(38px, 5.2vw, 62px);
-  --display-2: clamp(28px, 3.4vw, 42px);
+  /* Was 42px at the top end, which towered over the 20px product wordmark and
+     made every page title outrank the platform itself. Pulled back so the
+     lockup and the page heading read as the same system. */
+  --display-2: clamp(26px, 2.8vw, 34px);
   --display-3: clamp(23px, 2.4vw, 31px);
   --weight-display: 700; /* PwC sets headlines bold */
   --weight-figure: 600;  /* figures are confident, not airy */
@@ -261,13 +264,16 @@ a:hover {
   opacity: 0.82;
 }
 
-/* The mark was 26px against a 15.5px wordmark, which read as an afterthought next
-   to the nav. Both go up and the wordmark loses some of its tracking, so the lockup
-   has presence proportionate to the rest of the interface. */
+/* The wordmark sat at 20px against page headings that reach 42px, so the product
+   name read as smaller than any single page's title, which inverts the hierarchy:
+   the platform should not look subordinate to the view you happen to be on. It
+   now scales with the viewport like the display sizes do, and drops the wide
+   tracking a two-word mark cannot afford next to a six-item nav. */
 .brand-word {
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.1em;
+  font-size: clamp(21px, 1.8vw, 26px);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
   color: var(--text);
 }
 
@@ -1308,6 +1314,7 @@ tr.clickable:active td {
 }
 
 .kg-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1319,7 +1326,51 @@ tr.clickable:active td {
   max-width: 620px; /* was 480: the graph is the point of this tab, give it room */
   height: auto;
   margin: 4px auto 0;
-  overflow: visible;
+  overflow: hidden; /* was visible: zoomed-in nodes would spill past the panel */
+  cursor: grab;
+  touch-action: none; /* let pointer-drag pan instead of scrolling the page */
+}
+
+.kg-svg.kg-dragging {
+  cursor: grabbing;
+}
+
+/* Zoom controls, floated over the top-right of the graph so they never push the
+   diagram off-centre. */
+.kg-zoom {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kg-zoom button {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out);
+}
+
+.kg-zoom button:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.kg-zoom-reset {
+  font-size: 11.5px !important;
+  letter-spacing: 0.01em;
 }
 
 /* Nodes are interactive: pointer, a real focus ring, and a transform nudge on
