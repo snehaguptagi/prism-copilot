@@ -45,7 +45,7 @@ from insight_lens import (
 )
 from portfolio_risk import compute_portfolio_risk
 
-app = FastAPI(title="Client Impact Copilot API")
+app = FastAPI(title="PRISM API")
 
 app.add_middleware(
     CORSMiddleware,

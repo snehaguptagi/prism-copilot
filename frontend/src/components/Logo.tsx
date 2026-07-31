@@ -1,4 +1,4 @@
-/** Client Impact Copilot logo — a prism refracting a single beam of light into a
+/** PRISM logo — a prism refracting a single beam of light into a
  * restrained spectrum, which is the product's whole thesis in one mark: one
  * market event enters, and it fans out into what it means for each distinct
  * client. The spectrum stays confined to the brand mark and never appears in
@@ -45,7 +45,7 @@ export function Logo({ size = 26 }: { size?: number }) {
   return (
     <span className="brand">
       <LogoMark size={size} />
-      <span className="brand-word">Client Impact</span>
+      <span className="brand-word">PRISM</span>
     </span>
   );
 }
