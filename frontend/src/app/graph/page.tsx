@@ -53,8 +53,7 @@ export default function GraphPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Product fit</p>
-          <h1>Find the right product for each client</h1>
+          <h1>Find the <span className="em-brand">right product</span> for each client</h1>
           <p className="lede">
             Pick a client to see their current holdings, what they care about, and the products most
             worth raising in conversation. The highlighted pick is the strongest match, confirmed by
@@ -228,7 +227,7 @@ export default function GraphPage() {
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                <p style={{ fontSize: "var(--fs-sm)", color: "var(--text-secondary)" }}>
                   No suitable product surfaced for this client today.
                 </p>
               )}

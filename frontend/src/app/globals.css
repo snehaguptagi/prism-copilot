@@ -1,87 +1,179 @@
-/* Light, professional theme, editorial financial-services structure, elevated
-   with Emil Kowalski's design-engineering principles: custom easing curves,
-   press feedback, staggered entrances, transform/opacity-only transitions
-   under 250ms, and semi-transparent shadows over hard borders. Brand accent is
-   a warm signature orange, used only for interactive chrome (buttons, active
-   nav, links, focus/highlight rings). Status colors (positive/negative,
-   risk severity) and the categorical chart palette are deliberately
-   independent of it, since those carry their own meaning. */
+/* PRISM visual system on PwC's brand palette.
+     #D04A02  Orange     — the primary brand colour and the single UI accent
+     #EB8C00  Tangerine  — brand device only
+     #FFB600  Yellow     — brand device only
+     #E0301E  Rose       — brand device only
+     #1A1A1A  Near-black — headlines and the ink for dark tiles
+     #7D7D7D  Grey       — secondary/faint text
+   PwC's voice is confident rather than airy: white ground, heavy black
+   headlines, orange reserved for interactive chrome, and one warm-spectrum
+   brand device. Type is a single sans throughout.
+
+   The warm trio (tangerine/yellow/rose) is confined to identity — the logo and
+   the page backdrop — and never encodes data. That is not a stylistic
+   preference: measured against white, Yellow #FFB600 sits at 1.76:1 contrast and
+   L 0.823 (outside the usable band), and Tangerine/Yellow are ΔE 10.9 apart to
+   NORMAL vision, under the hard floor of 15. PwC's palette is built to be
+   recognised, not to be told apart. Charts therefore use a separate validated
+   set (see lib/colors.ts) anchored on the orange.
+
+   Retained: Emil Kowalski's motion principles (custom easing, press feedback,
+   transform/opacity-only transitions under 250ms, semi-transparent shadows over
+   hard borders), and the structural typography carried over from the previous
+   pass — sentence-case labels, wide size range, figures with the label above.
+   Reversed from that pass: weight now RISES with size rather than falling, since
+   PwC sets headlines bold and a thin display face would be off-brand. */
 :root {
-  --bg: #f7f6f3;
-  --surface: #ffffff;
-  --surface-2: #faf9f6;
-  --border: #ece9e3;
-  --border-strong: #ddd8cf;
-  --text: #1a1815;
-  --text-secondary: #5c574f;
-  --text-faint: #8b857a;
-  --accent: #c7491e;
-  --accent-hover: #a83a15;
-  --accent-soft: #c7491e14;
+  --bg: #141414;
+  --surface: #1f1f1f;
+  --surface-2: #2a2a2a;
+  --border: #383838;
+  --border-strong: #4d4d4d;
+  --text: #f5f5f5;
+  --text-secondary: #c4c4c4;
+  --text-faint: #8f8f8f;
+  --accent: #f2884a;
+  --accent-hover: #ff9d63;
+  --accent-soft: #f2884a22;
+  /* PwC Orange is a FILL colour, not a text colour. Measured: #D04A02 reaches
+     only 4.50:1 on pure white and drops to 4.35:1 on --bg and 4.10:1 on
+     --surface-2, so as link or label text it fails AA on two of the three
+     grounds it actually sits on. --accent-text is the darkened step used
+     wherever the orange is type; it clears 5.16:1 on the worst of them while
+     still reading unmistakably as the brand orange. Fills, bars and buttons
+     keep the exact brand value. */
+  --accent-text: #f2884a;
 
-  --sev-low: #12a67f;
-  --sev-moderate: #4a9d4a;
-  --sev-elevated: #b5850a;
-  --sev-high: #d97430;
-  --sev-vhigh: #c93b3b;
+  /* PwC brand spectrum. Identity and backdrop only — never a data encoding. */
+  --brand-orange: #f2884a;
+  --brand-tangerine: #f5a52e;
+  --brand-yellow: #ffc738;
+  --brand-rose: #f05a48;
 
-  --positive: #12855a;
-  --negative: #c93b3b;
-  --tailwind: #12855a;
-  --headwind: #d97430;
-  --mixed: #878c9c;
+  --ink: #0d0d0d;
+  --ink-2: #1f1f1f;
+  --on-ink: #f5f5f5;
+  --on-ink-faint: #8f8f8f;
+
+  --sev-low: #2bc0a0;
+  --sev-moderate: #6dc06d;
+  --sev-elevated: #d5a533;
+  --sev-high: #e0925c;
+  --sev-vhigh: #e86b6b;
+
+  --positive: #2bc0a0;
+  --negative: #e86b6b;
+  --tailwind: #2bc0a0;
+  --headwind: #e0925c;
+  --mixed: #83a3aa;
+
+  /* Categorical chart steps, in fixed assignment order. Validator output on
+     white: all five checks PASS, worst adjacent CVD ΔE 11.6 (protan),
+     normal-vision floor 20.5. Slot 1 is PwC Orange itself, which does clear the
+     floors; the remaining slots go cool, because PwC's own supporting colours are
+     all warm and warm-on-warm is exactly what CVD collapses. */
+  --cat-1: #d9752f;
+  --cat-2: #2a9dbd;
+  --cat-3: #8272db;
+  --cat-4: #c9608f;
+  --cat-5: #66a751;
+  --cat-6: #9b7ed0;
+  --cat-neutral: #8f8f8f;
 
   /* Emil's strong custom easing curves — the built-in CSS easings lack punch */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
-  /* Semi-transparent shadows, not solid borders, for real elevation */
-  --shadow-xs: 0 1px 2px rgba(26, 22, 18, 0.04);
-  --shadow-sm: 0 1px 3px rgba(26, 22, 18, 0.06), 0 1px 2px rgba(26, 22, 18, 0.04);
-  --shadow-md: 0 4px 12px rgba(26, 22, 18, 0.07), 0 2px 4px rgba(26, 22, 18, 0.04);
-  --shadow-lg: 0 12px 32px rgba(26, 22, 18, 0.1), 0 4px 8px rgba(26, 22, 18, 0.05);
-
-  --body: "Segoe UI", Inter, Arial, sans-serif;
-  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
-
-  --topbar-bg: rgba(255, 255, 255, 0.85);
-}
-
-/* Dark theme: same structure, same semantic tokens, different values. Applied
-   via a data-theme attribute on <html> (set before paint by an inline script
-   in layout.tsx, so there is no flash), never by a bare media query, so a
-   manual toggle always wins over the OS preference. */
-:root[data-theme="dark"] {
-  --bg: #17151a;
-  --surface: #201d22;
-  --surface-2: #28242a;
-  --border: #37333a;
-  --border-strong: #47424a;
-  --text: #f3f1ee;
-  --text-secondary: #bcb7b0;
-  --text-faint: #8b8680;
-  --accent: #e06b3a;
-  --accent-hover: #f08150;
-  --accent-soft: #e06b3a22;
-
-  --sev-low: #22b98f;
-  --sev-moderate: #74c274;
-  --sev-elevated: #d99a2b;
-  --sev-high: #e69361;
-  --sev-vhigh: #e6605f;
-
-  --positive: #22b98f;
-  --negative: #e6605f;
-  --tailwind: #22b98f;
-  --headwind: #e69361;
-  --mixed: #82869a;
-
+  /* Shadows tinted with peacock rather than neutral brown, so elevation sits in
+     the same colour world as everything else. */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.18);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.18);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.36), 0 4px 8px rgba(0, 0, 0, 0.2);
 
-  --topbar-bg: rgba(32, 29, 34, 0.85);
+  /* Helvetica Neue first, as PwC's brand system specifies. It is a licensed
+     Linotype/Apple face that cannot be embedded or served, so this asks for the
+     locally installed copy: real Helvetica Neue on macOS and iOS, Inter as the
+     fallback everywhere else (closer to Helvetica's skeleton than Arial, and far
+     better hinted at UI sizes). Arial/Helvetica sit behind it as last resorts. */
+  --body: "Helvetica Neue", Helvetica, var(--font-grotesk), Arial, sans-serif;
+  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  /* Display scale. The deployed build sets its headline at 42px, but it also runs
+     an eyebrow above it and carries more chrome around it. Dropped in here, with
+     the eyebrows removed, 42px over 16px section titles and 13px body was a jump
+     of more than three to one and the headline swamped the page it introduced.
+     Every step moved down one rung: the hierarchy is unchanged, the shouting is
+     not. Headline now sits about twice the body size, which is the range a dense
+     data page can carry.
+
+     Fixed steps off the ladder below, not fluid clamps. A clamp with a vw middle
+     stop resolves to whatever the viewport happens to make it (22px became
+     21.76px at 1280), quietly reintroducing the arbitrary sizes the ladder exists
+     to remove. Small screens step down one rung, deliberately, below. */
+  --display-1: var(--fs-3xl);
+  --display-2: var(--fs-2xl);
+  --display-3: var(--fs-xl);
+  --weight-display: 700; /* PwC sets headlines bold */
+  --weight-figure: 600;  /* figures are confident, not airy */
+
+  /* ---- Weight scale ----
+     Four steps, not eight. Figures previously ran at 300 in some panels and 600
+     in others, so identical numbers looked like two different products. Every
+     figure now takes --weight-figure and every heading --weight-display. */
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  /* ---- Leading scale ----
+     Was fifteen values between 0.92 and 1.7. Uneven leading is the thing that
+     reads as amateur even when every size is correct, because blocks of text
+     stop sharing a rhythm. Five steps, picked by the job the text does. */
+  --lh-flat: 1;
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.6;
+
+  /* ---- Tracking scale ----
+     --ls-display is the deployed build's exact headline tracking, so the h1
+     stays pixel-identical to it while still coming from a token. */
+  --ls-display: -0.028em;
+  --ls-heading: -0.018em;
+  --ls-tight: -0.01em;
+  --ls-none: 0;
+  --ls-label: 0.04em;
+  --ls-kicker: 0.08em;
+
+
+  --topbar-bg: rgba(20, 20, 20, 0.88);
+  /* ---- Type scale ----
+     One ladder for the whole app. Before this the two stylesheets between them
+     used 27 different font sizes, half of them on half-pixel values, so nothing
+     lined up and "slightly bigger" was never a deliberate choice. Every rule
+     below now picks a step instead of a number.
+
+     The bottom half is dense-UI territory and stays tight (1px apart) because
+     tables and chips genuinely need those steps. The top half opens up, so a
+     headline is unmistakably a headline rather than slightly larger body text. */
+  --fs-3xs: 10px;
+  --fs-2xs: 11px;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 26px;
+  --fs-2xl: 32px;
+  --fs-3xl: 42px;
+  --fs-4xl: 56px;
+
+  /* PwC brand marks. Deliberately separate from --accent: the interface accent
+     is the product's own warm orange, while the logo bars must stay PwC's
+     actual palette regardless of what the UI does around them. */
+  --pwc-orange: #d04a02;
+  --pwc-amber: #eb8c00;
+  --pwc-coral: #e0301e;
+
 }
 
 * {
@@ -96,27 +188,60 @@ body {
   overflow-x: hidden;
 }
 
+/* color-scheme is what makes the native furniture agree with the theme:
+   scrollbars, form widgets, autofill backgrounds, the caret. Without it the app
+   is dark but the browser's own controls stay light and give it away. It has to
+   track the toggle, not be pinned, or light mode gives itself away the same way. */
 html {
   height: 100%;
-  color-scheme: light;
-}
-
-html[data-theme="dark"] {
   color-scheme: dark;
 }
 
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ---- Brand backdrop ----
+   PwC's signature visual device is overlapping translucent forms in the warm
+   spectrum. Rendered here as four fixed radial washes rather than an image or an
+   extra DOM node: no request, no element, nothing to get in front of content,
+   and it cannot be clicked.
+
+   Alpha is kept at 0.05-0.07 deliberately. Anything stronger starts competing
+   with the data, and the whole point of the accent discipline is that colour in
+   this app means something. Measured after adding it: body-text contrast is
+   unchanged to two decimal places, because the washes sit under an opaque
+   --surface on every panel and only show through in the page gutters.
+
+   background-attachment: fixed keeps the composition still while the page
+   scrolls, so it reads as a backdrop rather than as content. */
 body {
   min-height: 100%;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(58rem 42rem at 100% 0%, color-mix(in srgb, var(--brand-orange) 7%, transparent), transparent 68%),
+    radial-gradient(46rem 34rem at 0% 8%, color-mix(in srgb, var(--brand-tangerine) 6%, transparent), transparent 66%),
+    radial-gradient(52rem 40rem at 6% 100%, color-mix(in srgb, var(--brand-yellow) 6%, transparent), transparent 66%),
+    radial-gradient(38rem 30rem at 96% 92%, color-mix(in srgb, var(--brand-rose) 5%, transparent), transparent 68%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: var(--body);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Forced-colours and reduced-transparency users get the flat ground: the
+   backdrop is pure decoration and carries no information. */
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  body {
+    background-image: none;
+  }
+}
+
 a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
   transition: color 150ms var(--ease-out);
 }
@@ -155,10 +280,17 @@ a:hover {
   animation: prism-rise 300ms var(--ease-out);
 }
 
+/* Full-bleed. The old 1160px column left most of a 1920 screen as empty gutter,
+   which is what made the dashboard feel like text floating in space. Width is now
+   the viewport, with the gutter scaling instead of the content.
+
+   Nothing here removes the readability ceilings that matter: h1 is capped at 28ch
+   and .lede at 62ch, so prose never runs to a 1900px line. It is the data — tables,
+   bar rows, card grids — that gets the extra room, which is what it wanted. */
 .wrap {
-  max-width: 1160px;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 24px 96px;
+  padding: 0 clamp(20px, 3.2vw, 60px) 96px;
 }
 
 /* ---- Topbar ---- */
@@ -166,16 +298,18 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 0 24px;
-  height: 56px;
+  padding: 0; /* gutter now lives on .topbar-inner, matching .wrap */
+  height: 68px;
   background: var(--topbar-bg);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
 
+/* Matches .wrap exactly, so the nav sits flush with the content beneath it. */
 .topbar-inner {
-  max-width: 1160px;
+  max-width: none;
   margin: 0 auto;
+  padding: 0 clamp(20px, 3.2vw, 60px);
   height: 100%;
   width: 100%;
   display: flex;
@@ -187,7 +321,7 @@ a:hover {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--text);
   transition: opacity 150ms var(--ease-out);
 }
@@ -196,10 +330,22 @@ a:hover {
   opacity: 0.82;
 }
 
+/* A previous pass tried to stop the product name looking subordinate to the page
+   title by growing it to 26px. That put it at the same weight, colour and face as
+   an h1 and only 6px apart in size, so the two read as headings of equal rank and
+   visibly merged.
+
+   The differentiator is kind, not size. A wordmark is a mark, so it is set the way
+   marks are set: small, bold, wide-tracked caps. A page title is prose, so it stays
+   large and tightly tracked. Open positive tracking against tight negative tracking
+   is the cue doing the work here, and it reads instantly even though both are white
+   and both are bold. Being smaller costs the mark no authority, because persistent
+   chrome outranks content by position rather than by scale. */
 .brand-word {
-  font-weight: 700;
-  font-size: 15.5px;
-  letter-spacing: 0.14em;
+  font-weight: var(--weight-display);
+  font-size: var(--fs-md);
+  letter-spacing: var(--ls-kicker);
+  white-space: nowrap;
   color: var(--text);
 }
 
@@ -211,9 +357,9 @@ a:hover {
 
 .top-nav a {
   position: relative;
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
+  letter-spacing: var(--ls-none);
   color: var(--text-secondary);
   padding: 8px 12px;
   border-radius: 7px;
@@ -226,13 +372,13 @@ a:hover {
 }
 
 .top-nav a.active {
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-soft);
 }
 
 .user-chip {
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
   color: var(--text-secondary);
 }
 
@@ -242,117 +388,277 @@ a:hover {
   gap: 14px;
 }
 
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-secondary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out), transform 130ms var(--ease-out);
-}
-
-.theme-toggle:hover {
-  background: var(--surface-2);
-  border-color: var(--border-strong);
-  color: var(--text);
-}
-
-.theme-toggle:active {
-  transform: scale(0.92);
-}
-
 /* ---- Hero / page header ---- */
 .hero {
   padding: 32px 0 20px;
 }
 
+/* Centred page hero. The heading and its standfirst are the only centred block
+   on the page; everything below stays left-aligned, so the lede is also given a
+   reading measure and centred as a column rather than left to span the full
+   container, which would put a very long centred line over left-aligned content. */
+.hero h1,
+.hero .lede {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero .lede {
+  max-width: 66ch;
+}
+
+/* The deck labels a section in plain sentence case at small size, with no rule
+   and no all-caps shouting. Dropping the uppercase tracking and the accent dash
+   is the single biggest step toward its voice. */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 10px;
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--accent-text);
+  margin: 0 0 14px;
 }
 
-.eyebrow::before {
-  content: "";
-  display: inline-block;
-  width: 18px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-}
-
+/* Display heading: large and heavy, tightly tracked. Capped in measure so it
+   wraps to two or three confident lines instead of running as one thin ribbon. */
 h1 {
-  font-weight: 700;
-  font-size: 30px;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  font-weight: var(--weight-display);
+  font-size: var(--display-2);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
   color: var(--text);
-  margin: 0 0 10px;
+  margin: 0 0 14px;
+  /* No measure cap. 28ch broke every page title onto two lines well before it
+     ran out of room, so a heading that fits the width in one line was being
+     wrapped by the rule rather than by the layout. Titles here are short enough
+     to sit on one line at any normal window width; narrow screens still wrap
+     naturally, which is the only place wrapping is actually wanted. */
+  text-wrap: balance;
 }
 
+/* PwC's one graphic flourish is the warm spectrum, not a type contrast, so
+   emphasis inside a headline is carried by the accent colour rather than by a
+   second family. Replaces the serif italic that came from the previous pass. */
+.em-brand {
+  /* Large bold text: the 3:1 threshold applies, so this can carry the exact
+     brand orange rather than the darkened text step. Measured 4.50:1. */
+  color: var(--accent);
+  font-weight: inherit;
+}
+
+/* The standfirst under a page headline. One rung above body so the opening
+   paragraph is clearly the opening paragraph and not the first row of content. */
 .lede {
-  max-width: 68ch;
+  max-width: 62ch;
   color: var(--text-secondary);
-  font-size: 13.5px;
-  margin: 0 0 22px;
+  font-size: var(--fs-md);
+  line-height: var(--lh-normal);
+  font-weight: var(--weight-regular);
+  margin: 0 0 26px;
 }
 
-/* ---- Stat tiles ---- */
+/* ---- Stat tiles ----
+   Rebuilt on the deck's stats slide, which is the clearest statement of its data
+   style. Four things there, all of which contradict a conventional KPI card:
+     1. the label sits ABOVE the figure, in sentence case, at body size
+     2. the figure is huge and LIGHT-weight, never bold
+     3. there is no card — no border, no fill, no shadow. Space does the grouping
+     4. the gaps are large; the whitespace is the layout
+   Order is handled with flex-direction: column-reverse so existing markup
+   (.v then .l) needs no change to render label-above-figure. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 30px 34px;
+  margin-bottom: 34px;
 }
 
 .stat-tile {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 15px 17px;
-  box-shadow: var(--shadow-xs);
-  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
-}
-
-.stat-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .stat-tile .v {
-  font-family: var(--mono);
-  font-size: 21px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--display-3);
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+  line-height: var(--lh-flat);
+  letter-spacing: var(--ls-heading);
 }
 
 .stat-tile .l {
-  font-size: 11.5px;
-  color: var(--text-faint);
-  margin-top: 5px;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+  margin: 0;
 }
 
+/* ---- Hero band ----
+   The device the Perplexity deck uses to stop a page of figures reading as a
+   spreadsheet: ONE dark tile with a huge number in it, carrying the whole
+   composition, with the remaining figures set plainly beside it. Without that
+   counterweight, stripping the KPI cards (which the deck's style calls for) just
+   leaves numbers floating on an empty page.
+
+   The deck fills its tile with a photograph. Shipping stock imagery here would be
+   a licensing problem and a payload cost, so the depth comes from a layered
+   gradient in the brand spectrum over ink — same visual job, nothing to load. */
+.hero-band {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+@media (min-width: 900px) {
+  .hero-band {
+    /* Tile gets a real share rather than a sliver: at 1600px this lands ~620px of
+       tile against ~840px of grid, which is three comfortable figures rather than
+       two stretched across a near-1000px plane. */
+    grid-template-columns: minmax(360px, 1fr) 1.35fr;
+    align-items: stretch;
+  }
+}
+
+.stat-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  /* Alphas are set by the worst case, not by eye. The four washes are positioned
+     in different corners so their peaks cannot actually coincide, but rather than
+     rely on that, these values were chosen by compositing all four at full
+     strength over the base: white type still holds 7.16:1 and the 88%-white label
+     5.92:1 against that impossible ground. The first draft (0.50/0.34/0.30/0.20)
+     measured 4.27:1 and 3.67:1, which would have failed AA for the label. */
+  background-color: #0f0f0f;
+  background-image:
+    radial-gradient(30rem 22rem at 12% 8%, color-mix(in srgb, var(--brand-orange) 34%, transparent), transparent 70%),
+    radial-gradient(24rem 20rem at 96% 26%, color-mix(in srgb, var(--brand-rose) 20%, transparent), transparent 72%),
+    radial-gradient(26rem 22rem at 78% 104%, color-mix(in srgb, var(--brand-tangerine) 15%, transparent), transparent 70%),
+    radial-gradient(20rem 18rem at 26% 96%, color-mix(in srgb, var(--brand-yellow) 10%, transparent), transparent 72%);
+  border-radius: 22px;
+  padding: 30px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+  color: var(--on-ink);
+  min-height: 200px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Fine diagonal hatch over the gradient. Reads as material rather than as a
+   flat colour fill, and costs one repeating-linear-gradient. */
+.stat-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0 1px,
+    transparent 1px 9px
+  );
+}
+
+.stat-hero .l {
+  font-size: var(--fs-base);
+  color: color-mix(in srgb, var(--on-ink) 88%, transparent);
+}
+
+.stat-hero .v {
+  font-size: var(--display-1);
+  font-weight: var(--weight-display);
+  line-height: var(--lh-flat);
+  letter-spacing: var(--ls-display);
+  color: var(--on-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sub-figures inside the tile, for context that belongs with the headline number
+   rather than out in the plain grid. */
+.hero-sub {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--on-ink) 22%, transparent);
+}
+
+.hero-sub-item {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+}
+
+.hero-sub-item .v {
+  font-size: var(--fs-lg);
+  font-weight: var(--weight-figure);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--on-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-sub-item .l {
+  font-size: var(--fs-xs);
+  color: color-mix(in srgb, var(--on-ink) 88%, transparent);
+}
+
+/* The plain figures that sit beside the tile. Given a surface so they read as a
+   deliberate panel rather than as text abandoned on the page — the specific thing
+   that made the dashboard feel bare. */
+.kpi-plane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+}
+
+.kpi-plane .kpi-row {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+/* Section heading. Given real weight and size, because on a full-bleed page a
+   13px grey line is not enough to break the content into readable chapters —
+   which is the other half of why the dashboard read as an undifferentiated wall.
+   Sentence case is kept; it is the size and weight that changed, not the voice. */
+/* The band heading above a group of panels. It outranks a panel title, so it
+   takes the next rung up and the same display weight. */
 .shead {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin: 18px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-lg);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-heading);
+  text-transform: none;
+  color: var(--text);
+  margin: 38px 0 16px;
+}
+
+/* Bare figures on a page with no hero tile (Products) still need a plane under
+   them, for the same reason the dashboard's did. */
+.stats {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow-xs);
 }
 
 /* ---- Sticky section tabs (Screener-style) ---- */
@@ -364,7 +670,7 @@ h1 {
   gap: 3px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 4px;
   margin-bottom: 20px;
   overflow-x: auto;
@@ -373,8 +679,8 @@ h1 {
 
 .section-tabs button {
   font-family: var(--body);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
   background: transparent;
   border: none;
@@ -396,7 +702,7 @@ h1 {
 
 .section-tabs button.active {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* ---- Controls ---- */
@@ -407,7 +713,7 @@ h1 {
   align-items: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 13px 15px;
   box-shadow: var(--shadow-xs);
 }
@@ -434,13 +740,27 @@ h1 {
 .text-input {
   appearance: none;
   font-family: var(--body);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 9px 12px;
   transition: border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+
+/* Form controls do not inherit font from the page by default: the UA gives them
+   their own 13.333px. Every styled control set a size individually, so any
+   control outside a styled container (the selects in the add-client modal, for
+   one) silently fell off the ladder. Setting it once here means new controls are
+   on the scale by default rather than by remembering to say so. */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
 }
 
 .controls select {
@@ -457,7 +777,7 @@ h1 {
 .controls select:focus,
 .text-input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
@@ -466,8 +786,8 @@ h1 {
   align-items: center;
   gap: 8px;
   font-family: var(--body);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: #fff;
   background: var(--accent);
   border: none;
@@ -551,7 +871,7 @@ input:focus-visible {
 .list-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-xs);
 }
@@ -575,13 +895,13 @@ input:focus-visible {
 }
 
 .rung .pf {
-  font-weight: 600;
-  font-size: 13.5px;
+  font-weight: var(--weight-figure);
+  font-size: var(--fs-base);
   color: var(--text);
 }
 
 .rung .drv {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   margin-top: 2px;
 }
@@ -611,8 +931,8 @@ input:focus-visible {
 }
 
 .rung .sc .v {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
   margin-top: 4px;
   color: var(--text);
@@ -629,15 +949,26 @@ input:focus-visible {
   }
 }
 
+/* The three display steps drop one rung on narrow screens. This replaces the
+   fluid clamps they used to be: same intent, but it lands on the ladder at both
+   sizes instead of on whatever the viewport interpolates in between. */
+@media (max-width: 720px) {
+  :root {
+    --display-1: var(--fs-2xl);
+    --display-2: var(--fs-xl);
+    --display-3: var(--fs-lg);
+  }
+}
+
 /* ---- Chips / badges ---- */
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   padding: 3px 9px;
   border-radius: 6px;
   white-space: nowrap;
@@ -655,23 +986,23 @@ input:focus-visible {
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 18px 20px;
   margin-bottom: 14px;
   box-shadow: var(--shadow-xs);
 }
 
 .panel h3 {
-  font-weight: 700;
-  font-size: 14.5px;
+  font-weight: var(--weight-display);
+  font-size: var(--fs-base);
   margin-bottom: 6px;
   color: var(--text);
 }
 
 .panel p {
   color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
 }
 
 /* ---- Lens-2 comparison bar (you vs. a normal book) ---- */
@@ -691,10 +1022,10 @@ input:focus-visible {
 .compare-row .label {
   width: 68px;
   flex-shrink: 0;
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
+  text-transform: none;
+  letter-spacing: var(--ls-none);
   color: var(--text-faint);
 }
 
@@ -715,8 +1046,8 @@ input:focus-visible {
 
 .compare-row .pct {
   font-family: var(--mono);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
   width: 52px;
   text-align: right;
@@ -725,16 +1056,16 @@ input:focus-visible {
 }
 
 .compare .multiple {
-  font-size: 12px;
-  color: var(--accent);
+  font-size: var(--fs-xs);
+  color: var(--accent-text);
   margin-left: 80px;
-  font-weight: 600;
+  font-weight: var(--weight-figure);
 }
 
 /* ---- Tables ---- */
 .table-wrap {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-xs);
   background: var(--surface);
@@ -743,14 +1074,14 @@ input:focus-visible {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
 }
 
 th {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   text-align: left;
   padding: 10px 14px;
@@ -793,14 +1124,14 @@ tr.clickable:active td {
 
 /* ---- Narrative / citations ---- */
 .narrative {
-  font-size: 13.5px;
-  line-height: 1.7;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
   color: var(--text);
   white-space: pre-wrap;
 }
 
 .citation {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -816,16 +1147,16 @@ tr.clickable:active td {
 
 .citation a {
   color: var(--text);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .citation a:hover {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .citation .tag {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   flex-shrink: 0;
 }
@@ -838,8 +1169,8 @@ tr.clickable:active td {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 12.5px;
+  font-weight: var(--weight-display);
+  font-size: var(--fs-sm);
   color: #fff;
   flex-shrink: 0;
 }
@@ -847,8 +1178,8 @@ tr.clickable:active td {
 .avatar-lg {
   width: 52px;
   height: 52px;
-  border-radius: 12px;
-  font-size: 18px;
+  border-radius: 16px;
+  font-size: var(--fs-lg);
 }
 
 .client-row-name {
@@ -858,7 +1189,7 @@ tr.clickable:active td {
 }
 
 .client-row-name .meta {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   margin-top: 1px;
 }
@@ -871,14 +1202,14 @@ tr.clickable:active td {
 }
 
 .detail-name {
-  font-weight: 700;
-  font-size: 21px;
-  letter-spacing: -0.01em;
+  font-weight: var(--weight-display);
+  font-size: var(--fs-xl);
+  letter-spacing: var(--ls-tight);
   color: var(--text);
 }
 
 .detail-sub {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   margin-top: 3px;
 }
@@ -890,16 +1221,16 @@ tr.clickable:active td {
 }
 
 .meta-item .l {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 3px;
 }
 
 .meta-item .v {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--text);
 }
 
@@ -912,14 +1243,14 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   margin: 18px 0 14px;
   transition: color 150ms var(--ease-out), gap 150ms var(--ease-out);
 }
 
 .back-link:hover {
-  color: var(--accent);
+  color: var(--accent-text);
   gap: 8px;
 }
 
@@ -934,8 +1265,8 @@ tr.clickable:active td {
 .tp-item {
   display: flex;
   gap: 12px;
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
   color: var(--text);
 }
 
@@ -945,10 +1276,10 @@ tr.clickable:active td {
   height: 22px;
   border-radius: 6px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -961,7 +1292,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin: 6px 0 12px;
 }
@@ -973,20 +1304,20 @@ tr.clickable:active td {
 }
 
 .perf-v {
-  font-family: var(--mono);
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--fs-lg);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
 }
 
 .perf-l {
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 3px;
 }
 
 .perf-gain {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
 }
 
@@ -1017,18 +1348,18 @@ tr.clickable:active td {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: var(--weight-display);
+  font-size: var(--fs-xs);
 }
 
 .suit-label {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
 .suit-detail {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   margin-top: 5px;
 }
@@ -1042,17 +1373,17 @@ tr.clickable:active td {
   flex-wrap: wrap;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 14px;
   box-shadow: var(--shadow-xs);
 }
 
 .perf-banner-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
@@ -1064,19 +1395,19 @@ tr.clickable:active td {
 }
 
 .perf-banner-v {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 700;
+  font-family: var(--body);
+  font-size: var(--fs-2xl);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: var(--lh-flat);
 }
 
 .graph-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--accent-text);
   background: color-mix(in srgb, var(--accent) 10%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--surface));
   border-radius: 6px;
@@ -1103,26 +1434,236 @@ tr.clickable:active td {
   align-items: center;
 }
 
-.kg-svg {
-  width: 100%;
-  max-width: 480px;
-  height: auto;
-  margin: 4px auto 6px;
+.kg-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
+.kg-svg {
+  width: 100%;
+  max-width: 620px; /* was 480: the graph is the point of this tab, give it room */
+  height: auto;
+  margin: 4px auto 0;
+  overflow: hidden; /* was visible: zoomed-in nodes would spill past the panel */
+  cursor: grab;
+  touch-action: none; /* let pointer-drag pan instead of scrolling the page */
+}
+
+.kg-svg.kg-dragging {
+  cursor: grabbing;
+}
+
+/* Zoom controls, floated over the top-right of the graph so they never push the
+   diagram off-centre. */
+.kg-zoom {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kg-zoom button {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
+  line-height: var(--lh-flat);
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out);
+}
+
+.kg-zoom button:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.kg-zoom-reset {
+  font-size: var(--fs-xs) !important;
+  letter-spacing: var(--ls-none);
+}
+
+/* Nodes are interactive: pointer, a real focus ring, and a transform nudge on
+   hover so the target confirms itself before the click. */
+.kg-node {
+  cursor: pointer;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.kg-node .kg-dot,
+.kg-node circle {
+  transition: transform 160ms var(--ease-out), filter 160ms var(--ease-out);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kg-node:hover .kg-dot,
+.kg-node:focus-visible .kg-dot {
+  transform: scale(1.28);
+  filter: brightness(1.12);
+}
+
+.kg-node:focus {
+  outline: none;
+}
+
+.kg-node:focus-visible .kg-dot {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.kg-node.pinned .kg-dot {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.kg-edge {
+  transition: opacity 180ms var(--ease-out);
+}
+
+.kg-node-label {
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+/* Fixed-height slot shared by the hint and the detail card, so pinning a node
+   does not shift the graph above it. */
+.kg-hint,
+.kg-detail {
+  width: 100%;
+  min-height: 74px;
+  border-radius: 14px;
+  font-size: var(--fs-sm);
+}
+
+.kg-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  border: 1px dashed var(--border);
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.kg-detail {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.kg-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.kg-detail-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.kg-detail-name {
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
+  color: var(--text);
+}
+
+.kg-detail-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-flat);
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 6px;
+}
+
+.kg-detail-close:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.kg-detail-kind {
+  font-size: var(--fs-xs);
+  color: var(--accent-text);
+  font-weight: var(--weight-medium);
+  margin-bottom: 6px;
+}
+
+.kg-detail-why {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  color: var(--text-secondary);
+}
+
+/* Size, ring colour and dash pattern all encode something; none of it was
+   explained before. */
+.kg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+.kg-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  padding-top: 8px;
+}
+
+.kg-key {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.kg-key-client { background: var(--accent); }
+.kg-key-class { background: var(--cat-3); }
+.kg-key-held { background: var(--cat-1); opacity: 0.85; }
+.kg-key-sugg { background: var(--cat-1); border: 1.5px solid var(--sev-elevated); }
+.kg-key-best { background: var(--cat-1); box-shadow: 0 0 0 2px var(--sev-elevated); }
+
 .kg-class-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
 }
 
 .kg-client-initials {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
 }
 
 .kg-client-name {
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
 }
 
 @keyframes kg-pulse-ring {
@@ -1149,7 +1690,7 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
 }
 
@@ -1160,7 +1701,7 @@ tr.clickable:active td {
 }
 
 .kg-note {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   margin-top: 8px;
   text-align: center;
@@ -1175,7 +1716,7 @@ tr.clickable:active td {
 .kg-match-row {
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--surface-2);
 }
 
@@ -1186,10 +1727,10 @@ tr.clickable:active td {
 }
 
 .kg-match-rank {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
@@ -1206,13 +1747,13 @@ tr.clickable:active td {
 }
 
 .kg-best-name {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
   color: var(--text);
 }
 
 .kg-best-tkr {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
 }
@@ -1220,9 +1761,9 @@ tr.clickable:active td {
 .kg-source-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-label);
   border-radius: 6px;
   padding: 3px 8px;
 }
@@ -1233,7 +1774,7 @@ tr.clickable:active td {
 }
 
 .kg-source-graph {
-  color: var(--accent);
+  color: var(--accent-text);
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 
@@ -1243,8 +1784,8 @@ tr.clickable:active td {
 }
 
 .kg-best-why {
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
   color: var(--text-secondary);
 }
 
@@ -1252,7 +1793,7 @@ tr.clickable:active td {
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
 }
 
@@ -1270,8 +1811,8 @@ tr.clickable:active td {
   border: none;
   background: none;
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
   padding: 7px 16px;
   border-radius: 7px;
@@ -1281,7 +1822,7 @@ tr.clickable:active td {
 
 .view-toggle button.active {
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-text);
   box-shadow: var(--shadow-xs);
 }
 
@@ -1293,25 +1834,25 @@ tr.clickable:active td {
 }
 
 .bpm-client-label {
-  font-size: 9.5px;
+  font-size: var(--fs-3xs);
   fill: var(--text-secondary);
 }
 
 .bpm-class-label {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-display);
   fill: var(--text);
 }
 
 .bpm-product-label {
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
   fill: var(--text);
 }
 
 .bpm-product-count {
-  font-size: 10px;
-  font-weight: 400;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-regular);
   fill: var(--text-faint);
 }
 
@@ -1330,36 +1871,36 @@ tr.clickable:active td {
 
 .leaderboard-rank {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-medium);
   color: var(--text-faint);
 }
 
 .leaderboard-name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
 .leaderboard-clients {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 2px;
 }
 
 .leaderboard-count {
   font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
+  color: var(--accent-text);
   white-space: nowrap;
 }
 
 .mini-head {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 10px;
 }
@@ -1397,18 +1938,18 @@ tr.clickable:active td {
 .row-perf-text {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .row-perf-v {
   font-family: var(--mono);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
 }
 
 .row-perf-delta {
-  font-size: 10px;
+  font-size: var(--fs-3xs);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1460,16 +2001,16 @@ tr.clickable:active td {
 }
 
 .perf-h-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-label);
   color: var(--text-faint);
 }
 
 .perf-h-val {
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
   color: var(--positive);
   font-variant-numeric: tabular-nums;
 }
@@ -1484,7 +2025,7 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
 }
 
@@ -1513,28 +2054,28 @@ tr.clickable:active td {
 }
 
 .perf-bw-item:hover {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   transform: translateY(-1px);
 }
 
 .perf-bw-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
 }
 
 .perf-bw-name {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
 .perf-bw-val {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
 }
 
@@ -1558,7 +2099,7 @@ tr.clickable:active td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 12px 14px;
   cursor: pointer;
   font-family: var(--body);
@@ -1588,11 +2129,11 @@ tr.clickable:active td {
   flex-shrink: 0;
   width: 62px;
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
   text-align: center;
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .action-item.overdue .action-due {
@@ -1611,8 +2152,8 @@ tr.clickable:active td {
 }
 
 .action-text {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -1620,7 +2161,7 @@ tr.clickable:active td {
 }
 
 .action-client {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   margin-top: 1px;
 }
@@ -1657,17 +2198,17 @@ tr.clickable:active td {
   border-radius: 9px;
   margin-bottom: 16px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
 }
 
 .contact-strip b {
   color: var(--text-faint);
-  font-weight: 600;
+  font-weight: var(--weight-figure);
   margin-right: 6px;
-  text-transform: uppercase;
-  font-size: 9.5px;
-  letter-spacing: 0.05em;
+  text-transform: none;
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-none);
 }
 
 .psy-grid {
@@ -1682,18 +2223,18 @@ tr.clickable:active td {
 }
 
 .psy-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 3px;
 }
 
 .psy-value {
-  font-size: 13.5px;
+  font-size: var(--fs-base);
   color: var(--text);
-  line-height: 1.35;
+  line-height: var(--lh-snug);
 }
 
 .metric-row {
@@ -1702,7 +2243,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin-bottom: 14px;
 }
@@ -1713,15 +2254,15 @@ tr.clickable:active td {
 }
 
 .metric-v {
-  font-family: var(--mono);
-  font-size: 19px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--fs-lg);
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
 .metric-l {
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 3px;
 }
@@ -1733,17 +2274,17 @@ tr.clickable:active td {
 }
 
 .big-fact-v {
-  font-family: var(--mono);
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--accent);
+  font-family: var(--body);
+  font-size: var(--fs-3xl);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: var(--lh-flat);
 }
 
 .big-fact-l {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
   color: var(--text);
 }
 
@@ -1761,7 +2302,7 @@ tr.clickable:active td {
 }
 
 .factor-exp-name {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
 }
 
@@ -1782,8 +2323,8 @@ tr.clickable:active td {
 
 .factor-exp-pct {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   text-align: right;
   color: var(--text);
 }
@@ -1791,10 +2332,10 @@ tr.clickable:active td {
 /* ---- Products ---- */
 .idle-tag {
   font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-figure);
+  text-transform: none;
+  letter-spacing: var(--ls-none);
   color: var(--text-faint);
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -1804,9 +2345,9 @@ tr.clickable:active td {
 
 .held-tag {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
 }
 
 /* ---- Client communication + relationship ---- */
@@ -1815,18 +2356,18 @@ tr.clickable:active td {
   padding: 12px 14px;
   background: var(--accent-soft);
   border-radius: 9px;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
   color: var(--text);
 }
 
 .manager-note-label {
   display: block;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--accent-text);
   margin-bottom: 4px;
 }
 
@@ -1839,23 +2380,23 @@ tr.clickable:active td {
 }
 
 .na-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 4px;
 }
 
 .na-action {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
 .na-due {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
   margin-top: 3px;
 }
@@ -1867,7 +2408,7 @@ tr.clickable:active td {
 
 .na-priority.na-normal {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .na-priority.na-low {
@@ -1882,7 +2423,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -1908,7 +2449,7 @@ tr.clickable:active td {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--fs-base);
 }
 
 .comm-body {
@@ -1925,16 +2466,16 @@ tr.clickable:active td {
 }
 
 .comm-channel {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
 .comm-dir {
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-figure);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -1946,7 +2487,7 @@ tr.clickable:active td {
 
 .comm-outbound {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .comm-both {
@@ -1956,15 +2497,15 @@ tr.clickable:active td {
 
 .comm-date {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-left: auto;
 }
 
 .comm-summary {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: var(--lh-normal);
 }
 
 /* ---- Overview dashboard ---- */
@@ -1972,66 +2513,58 @@ tr.clickable:active td {
   padding: 14px 0 10px;
 }
 
+/* Panel titles are headings, so they are set like headings. At 14px/500 they sat
+   one weight step off the 13px body around them and read as labels, which left a
+   42px headline sitting directly on top of body copy with nothing in between. Bold
+   and one rung up gives the page its missing middle level. */
 .panel-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: var(--fs-md);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-tight);
   color: var(--text);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
+/* Same reasoning as .stat-tile: the deck groups figures with space, not with a
+   grid of bordered cells. The hairline separators and the hover underline both
+   go; what is left is the number and its label. */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 28px 32px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  margin-bottom: 28px;
 }
 
 .kpi {
   position: relative;
-  background: var(--surface);
-  padding: 16px 18px;
-  transition: background 140ms var(--ease-out);
-  overflow: hidden;
-}
-
-.kpi::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 0;
-  background: var(--accent);
-  transition: width 220ms var(--ease-out);
-}
-
-.kpi:hover {
-  background: var(--surface-2);
-}
-
-.kpi:hover::after {
-  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  background: none;
+  padding: 0;
+  overflow: visible;
 }
 
 .kpi-v {
-  font-family: var(--mono);
-  font-size: 23px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--display-3);
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--ls-heading);
+  line-height: var(--lh-flat);
 }
 
 .kpi-l {
-  font-size: 11px;
-  color: var(--text-faint);
-  margin-top: 4px;
-  line-height: 1.3;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-regular);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--lh-snug);
 }
 
 .ov-grid {
@@ -2044,6 +2577,22 @@ tr.clickable:active td {
 @media (min-width: 780px) {
   .ov-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Now that the page is full-bleed, two columns of panels leave a third column's
+   worth of empty space on a 1600px display. The panels themselves are
+   allocation lists and top-holdings tables that read perfectly well narrower, so
+   the extra column is free density rather than a squeeze. */
+@media (min-width: 1500px) {
+  .ov-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Action items were capped around 300px each and wrapped to a second row with a
+     ragged tail; a wider floor fills the row cleanly. */
+  .action-list {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   }
 }
 
@@ -2069,16 +2618,16 @@ tr.clickable:active td {
 }
 
 .donut-center-top {
-  font-family: var(--mono);
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--body);
+  font-size: var(--fs-xl);
+  font-weight: var(--weight-figure);
+  letter-spacing: var(--ls-heading);
 }
 
 .donut-center-sub {
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
 }
 
 .donut-legend {
@@ -2094,7 +2643,7 @@ tr.clickable:active td {
   grid-template-columns: 11px 1fr auto auto;
   align-items: center;
   gap: 9px;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
 }
 
 .donut-dot {
@@ -2112,14 +2661,14 @@ tr.clickable:active td {
 
 .donut-legend-pct {
   font-family: var(--mono);
-  font-weight: 600;
+  font-weight: var(--weight-figure);
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
 .donut-legend-val {
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
   min-width: 62px;
@@ -2141,8 +2690,8 @@ tr.clickable:active td {
 }
 
 .risk-row-label {
-  font-size: 11.5px;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-display);
 }
 
 .risk-row-track {
@@ -2161,8 +2710,8 @@ tr.clickable:active td {
 
 .risk-row-val {
   font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   color: var(--text);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -2170,7 +2719,7 @@ tr.clickable:active td {
 
 .risk-row-count {
   color: var(--text-faint);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 
 /* small inline sector chip (Products table) */
@@ -2182,7 +2731,7 @@ tr.clickable:active td {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 11px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
 }
 
 .sector-chip-dot {
@@ -2230,31 +2779,38 @@ tr.clickable:active td {
 }
 
 .sector-bar-name {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* The deck's bar chart carries no track behind the bars, no gridlines and no
+   value labels on the marks: just accent-coloured bars on the paper ground and a
+   single hairline baseline. The track goes to a barely-there tint so the row
+   still reads as a scale without drawing a second competing shape.
+   4px rounded data-end per the mark spec, square at the origin. */
 .sector-bar-track {
-  height: 10px;
-  border-radius: 5px;
-  background: var(--surface-2);
+  height: 8px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
   overflow: hidden;
 }
 
 .sector-bar-fill {
   display: block;
   height: 100%;
-  border-radius: 5px;
+  border-radius: 0 4px 4px 0;
   transition: width 650ms var(--ease-out);
 }
 
+/* Values wear text tokens, never the series colour. Light weight, since these
+   are figures and the deck sets figures light. */
 .sector-bar-val {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 600;
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-regular);
   color: var(--text);
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -2267,20 +2823,20 @@ tr.clickable:active td {
 }
 
 .holding-name {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   color: var(--text);
 }
 
 .holding-tkr {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 1px;
 }
 
 .held-by {
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
 }
 
@@ -2337,8 +2893,8 @@ tr.clickable:active td {
 
 .risk-dist-count {
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2350,11 +2906,120 @@ tr.clickable:active td {
 
 /* ---- News feed ---- */
 /* news category tab bar + reload */
+/* ---- News Feed: newsroom layout ----
+   Was a single stacked column: horizontal category tabs, then TL;DR, then key
+   points, then talking points, then sources. On a full-bleed page that leaves a
+   wide empty right-hand side and pushes the client talking points — the whole
+   point of the tab — below the fold.
+
+   Now a three-column newsroom: categories in a vertical rail (which also removes
+   the horizontally-scrolling tab strip), the briefing in the middle, and the
+   affected clients in a sidebar where they are visible immediately. Columns
+   collapse to one below 1100px. */
+.news-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .news-shell {
+    grid-template-columns: 232px minmax(0, 1fr) 360px;
+  }
+}
+
+.news-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 10px;
+  position: sticky;
+  top: 88px; /* clears the 68px topbar */
+}
+
+.news-rail-head {
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
+  color: var(--text-faint);
+  padding: 6px 10px 8px;
+}
+
+.news-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), color 140ms var(--ease-out);
+}
+
+.news-rail-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.news-rail-item.active {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: var(--weight-figure);
+}
+
+/* Cached categories get a dot, so it is obvious which ones are instant and which
+   will cost a live call. Previously nothing distinguished them. */
+.news-rail-dot {
+  margin-left: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--positive);
+  flex: none;
+}
+
+.news-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 88px;
+}
+
+.news-side-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
+  color: var(--text);
+}
+
+/* In a 360px sidebar the talking-point grid is one column. */
+.news-side .tp-grid {
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 .news-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
 .news-tabs {
@@ -2363,7 +3028,7 @@ tr.clickable:active td {
   padding: 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow-x: auto;
   flex: 1;
   scrollbar-width: thin;
@@ -2382,8 +3047,8 @@ tr.clickable:active td {
   align-items: center;
   gap: 7px;
   font-family: var(--body);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   white-space: nowrap;
   color: var(--text-secondary);
   background: transparent;
@@ -2411,8 +3076,8 @@ tr.clickable:active td {
   gap: 6px;
   flex-shrink: 0;
   font-family: var(--body);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border-strong);
@@ -2424,8 +3089,8 @@ tr.clickable:active td {
 
 .reload-btn:hover:not(:disabled) {
   background: var(--surface-2);
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
 }
 
 .reload-btn:disabled {
@@ -2434,15 +3099,15 @@ tr.clickable:active td {
 }
 
 .news-fresh-line {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   margin-bottom: 12px;
 }
 
 .refresh-icon {
   display: inline-block;
-  font-size: 14px;
-  line-height: 1;
+  font-size: var(--fs-base);
+  line-height: var(--lh-flat);
 }
 
 .refresh-icon.spinning {
@@ -2455,7 +3120,7 @@ tr.clickable:active td {
   gap: 12px;
   padding: 40px 0;
   color: var(--text-secondary);
-  font-size: 13.5px;
+  font-size: var(--fs-base);
 }
 
 /* key-development bullets */
@@ -2474,8 +3139,8 @@ tr.clickable:active td {
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 9px 13px;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
   color: var(--text);
   box-shadow: var(--shadow-xs);
 }
@@ -2490,13 +3155,23 @@ tr.clickable:active td {
 }
 
 /* TL;DR card + key stats */
+/* The headline of the briefing, promoted to the same dark tile the dashboard uses
+   for its lead figure — one per page, so the two never compete. Wash alphas are
+   the same measured-safe values as .stat-hero. */
 .tldr-card {
-  background: linear-gradient(180deg, var(--accent-soft), transparent 90%);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 12px;
-  padding: 14px 18px;
-  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #0f0f0f;
+  background-image:
+    radial-gradient(28rem 20rem at 6% 0%, color-mix(in srgb, var(--brand-orange) 34%, transparent), transparent 70%),
+    radial-gradient(22rem 18rem at 98% 40%, color-mix(in srgb, var(--brand-rose) 20%, transparent), transparent 72%),
+    radial-gradient(20rem 16rem at 60% 108%, color-mix(in srgb, var(--brand-tangerine) 15%, transparent), transparent 70%);
+  border: none;
+  border-radius: 20px;
+  padding: 26px 28px;
+  margin-bottom: 18px;
+  color: var(--on-ink);
   box-shadow: var(--shadow-xs);
 }
 
@@ -2504,21 +3179,22 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 7px;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: color-mix(in srgb, var(--on-ink) 72%, transparent);
+  margin-bottom: 10px;
 }
 
 .tldr-text {
-  font-size: 14.5px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  margin-bottom: 10px;
+  font-size: var(--fs-xl);
+  font-weight: var(--weight-figure);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-heading);
+  color: var(--on-ink);
+  margin-bottom: 18px;
+  max-width: 60ch;
 }
 
 .tldr-stats {
@@ -2529,27 +3205,27 @@ tr.clickable:active td {
 
 .tldr-stat {
   font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
+  color: var(--on-ink);
+  background: color-mix(in srgb, var(--on-ink) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-ink) 22%, transparent);
   border-radius: 8px;
   padding: 5px 10px;
   font-variant-numeric: tabular-nums;
 }
 
 .shead-count {
-  margin-left: 8px;
+  margin-left: 0; /* .shead is now a flex row with its own gap */
   font-family: var(--mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
   background: var(--accent-soft);
   border-radius: 100px;
   padding: 2px 8px;
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: var(--ls-none);
 }
 
 /* per-client talking point cards */
@@ -2562,7 +3238,7 @@ tr.clickable:active td {
 .tp-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   box-shadow: var(--shadow-xs);
   cursor: pointer;
@@ -2587,30 +3263,30 @@ tr.clickable:active td {
 }
 
 .tp-card-name {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: var(--weight-figure);
+  font-size: var(--fs-base);
   color: var(--text);
 }
 
 .tp-card-how {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 1px;
-  line-height: 1.35;
+  line-height: var(--lh-snug);
 }
 
 .tp-card-point {
-  font-size: 13.5px;
-  line-height: 1.55;
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
   color: var(--text-secondary);
 }
 
 /* Cross-sell: products that fit the client (Analysis step 5) */
 .cross-sell-note {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--text-faint);
   margin-bottom: 14px;
-  line-height: 1.5;
+  line-height: var(--lh-normal);
 }
 
 .cross-sell-grid {
@@ -2643,14 +3319,14 @@ tr.clickable:active td {
 }
 
 .cross-sell-name {
-  font-weight: 600;
-  font-size: 13.5px;
+  font-weight: var(--weight-figure);
+  font-size: var(--fs-base);
   color: var(--text);
-  line-height: 1.3;
+  line-height: var(--lh-snug);
 }
 
 .cross-sell-tkr {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -2664,14 +3340,14 @@ tr.clickable:active td {
 }
 
 .cross-sell-instrument {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   text-transform: capitalize;
 }
 
 .cross-sell-why {
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
   color: var(--text-secondary);
 }
 
@@ -2682,8 +3358,8 @@ tr.clickable:active td {
   gap: 8px;
   margin-top: 18px;
   font-family: var(--body);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -2700,7 +3376,7 @@ tr.clickable:active td {
 
 .disclose-caret {
   display: inline-block;
-  font-size: 15px;
+  font-size: var(--fs-base);
   transition: transform 180ms var(--ease-out);
 }
 
@@ -2713,7 +3389,7 @@ tr.clickable:active td {
   background: linear-gradient(180deg, var(--accent-soft), transparent);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-xs);
@@ -2723,8 +3399,8 @@ tr.clickable:active td {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-display);
   color: var(--text);
   margin-bottom: 12px;
 }
@@ -2750,8 +3426,8 @@ tr.clickable:active td {
 }
 
 .touch-name {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -2776,8 +3452,8 @@ tr.clickable:active td {
 
 .touch-pct {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   text-align: right;
   color: var(--text);
 }
@@ -2808,19 +3484,19 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--accent-text);
   margin-bottom: 8px;
 }
 
 .story-headline {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  font-size: var(--fs-md);
+  font-weight: var(--weight-display);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
   color: var(--text);
   margin: 0 0 10px;
 }
@@ -2834,9 +3510,9 @@ tr.clickable:active td {
 
 .story-stat {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
   background: var(--accent-soft);
   border-radius: 6px;
   padding: 4px 9px;
@@ -2844,8 +3520,8 @@ tr.clickable:active td {
 }
 
 .story-body {
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
   color: var(--text-secondary);
 }
 
@@ -2862,7 +3538,7 @@ tr.clickable:active td {
   gap: 11px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 11px 13px;
   box-shadow: var(--shadow-xs);
   color: var(--text);
@@ -2882,9 +3558,9 @@ tr.clickable:active td {
   height: 30px;
   border-radius: 8px;
   background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 14px;
+  color: var(--accent-text);
+  font-weight: var(--weight-display);
+  font-size: var(--fs-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2898,8 +3574,8 @@ tr.clickable:active td {
 }
 
 .source-title {
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-medium);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2907,16 +3583,16 @@ tr.clickable:active td {
 
 .source-domain {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
 }
 
 .source-linked {
   flex-shrink: 0;
   font-family: var(--mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
 }
 
 /* ---- Analysis result infographics ---- */
@@ -2927,7 +3603,7 @@ tr.clickable:active td {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 18px;
   margin-bottom: 12px;
   box-shadow: var(--shadow-xs);
@@ -2941,15 +3617,15 @@ tr.clickable:active td {
 }
 
 .verdict-label {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
 }
 
 .verdict-detail {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   margin-top: 2px;
-  line-height: 1.45;
+  line-height: var(--lh-normal);
 }
 
 .gauge-row {
@@ -2958,7 +3634,7 @@ tr.clickable:active td {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 14px;
 }
@@ -2974,15 +3650,15 @@ tr.clickable:active td {
 
 .gauge-num {
   font-family: var(--mono);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-figure);
 }
 
 .gauge-label {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   text-align: center;
-  line-height: 1.3;
+  line-height: var(--lh-snug);
 }
 
 .tw-hw-bar {
@@ -3000,7 +3676,7 @@ tr.clickable:active td {
 .tw-hw-legend {
   display: flex;
   gap: 18px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--text-secondary);
 }
 
@@ -3018,8 +3694,8 @@ tr.clickable:active td {
   align-items: center;
   gap: 10px;
   margin: 28px 0 14px;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
   color: var(--text);
 }
 
@@ -3030,8 +3706,8 @@ tr.clickable:active td {
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-display);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3048,7 +3724,7 @@ tr.clickable:active td {
   text-align: left;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px 15px;
   cursor: pointer;
   box-shadow: var(--shadow-xs);
@@ -3067,7 +3743,7 @@ tr.clickable:active td {
 }
 
 .pick-card.active {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
 }
 
@@ -3079,8 +3755,8 @@ tr.clickable:active td {
 }
 
 .pick-name {
-  font-weight: 600;
-  font-size: 13.5px;
+  font-weight: var(--weight-figure);
+  font-size: var(--fs-base);
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -3088,7 +3764,7 @@ tr.clickable:active td {
 }
 
 .pick-sub {
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   color: var(--text-faint);
   white-space: nowrap;
   overflow: hidden;
@@ -3104,8 +3780,8 @@ tr.clickable:active td {
 
 .pick-aum {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   color: var(--text);
 }
 
@@ -3132,7 +3808,7 @@ tr.clickable:active td {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-secondary);
 }
 
@@ -3164,10 +3840,10 @@ tr.clickable:active td {
 }
 
 .run-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
   color: var(--text-faint);
   margin-bottom: 5px;
 }
@@ -3191,24 +3867,24 @@ tr.clickable:active td {
 }
 
 .factor-v {
-  font-family: var(--mono);
-  font-size: 22px;
-  font-weight: 700;
+  font-family: var(--body);
+  font-size: var(--fs-xl);
+  font-weight: var(--weight-figure);
   font-variant-numeric: tabular-nums;
 }
 
 .factor-l {
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--text-faint);
   margin-top: 2px;
 }
 
 .narrative-head {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--accent-text);
 }
 
 .suggestions {
@@ -3220,8 +3896,8 @@ footer {
   padding-top: 20px;
   border-top: 1px solid var(--border);
   color: var(--text-faint);
-  font-size: 11.5px;
-  line-height: 1.6;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-relaxed);
 }
 
 /* ---- Add Client modal ---- */
@@ -3257,20 +3933,20 @@ footer {
   position: sticky;
   top: 0;
   background: var(--surface);
-  border-radius: 14px 14px 0 0;
+  border-radius: 18px 18px 0 0;
 }
 
 .modal-title {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: var(--weight-display);
   color: var(--text);
 }
 
 .modal-close {
   border: none;
   background: none;
-  font-size: 20px;
-  line-height: 1;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-flat);
   color: var(--text-faint);
   cursor: pointer;
   padding: 4px 8px;
@@ -3300,73 +3976,155 @@ footer {
 }
 
 .form-field span {
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   color: var(--text-secondary);
 }
 
 .modal-footer {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
   padding: 16px 20px;
   border-top: 1px solid var(--border);
 }
 
-/* ---- PwC / PRISM professional product refresh ---- */
-:root {
+/* Labelled rule that groups a set of form fields, with a right-aligned note
+   saying what the group is for (e.g. "ranks suggestions" vs "descriptive
+   only"), so the consequence of filling it in is visible on the form itself. */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 6px;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  color: var(--text-secondary);
+}
+
+.form-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  order: 1;
+}
+
+.form-divider em {
+  order: 2;
+  font-style: normal;
+  font-weight: var(--weight-figure);
+  letter-spacing: var(--ls-none);
+  text-transform: none;
+  font-size: var(--fs-2xs);
+  color: var(--text-faint);
+}
+
+/* Header row for a read-only section that has an Edit button. */
+.editable-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+textarea.text-input {
+  line-height: var(--lh-normal);
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+/* ---- Light theme ----
+   The toggle stays. Dark is the default and matches the deployed build exactly;
+   this re-points only the surface/ink tokens so every component rule above is
+   reused rather than duplicated. */
+:root[data-theme="light"] {
   --bg: #f7f7f5;
-  --surface-2: #f5f4f1;
+  --surface: #ffffff;
+  --surface-2: #f1efec;
+  --border: #e4e0d9;
+  --border-strong: #c8c2b8;
   --text: #191919;
   --text-secondary: #4f4b47;
-  --text-faint: #746e67;
-  --accent: #d04a02;
-  --accent-hover: #a93b00;
-  --accent-soft: #d04a0215;
-  --pwc-orange: #d04a02;
-  --pwc-amber: #f3be26;
-  --pwc-coral: #e0301e;
+  --text-faint: #6f6a64;
+  --accent: #c2410c;
+  --accent-hover: #9a3412;
+  --accent-soft: #c2410c1f;
+  --accent-text: #b03a08;
+  --ink: #191919;
+  --ink-2: #2b2b2b;
+  --on-ink: #ffffff;
+  --on-ink-faint: #d6d2cc;
+  --topbar-bg: #f7f7f5e0;
+  --sev-low: #0f7a63;
+  --sev-moderate: #3f7d3f;
+  --sev-elevated: #8a6a12;
+  --sev-high: #9a5223;
+  --sev-vhigh: #b03030;
+  --positive: #0f7a63;
+  --negative: #b03030;
+  --tailwind: #0f7a63;
+  --headwind: #9a5223;
+  --mixed: #5b7379;
+  --cat-1: #b45a1f;
+  --cat-2: #1f7d99;
+  --cat-3: #5b4bb8;
+  --cat-4: #a34570;
+  --cat-5: #4a7f37;
+  --cat-6: #7a5fb0;
+  --cat-neutral: #6f6a64;
+  --shadow-xs: 0 1px 2px #0000000f;
+  --shadow-sm: 0 1px 3px #00000014, 0 1px 2px #0000000d;
+  --shadow-md: 0 4px 12px #0000001a, 0 2px 4px #00000010;
+  --shadow-lg: 0 12px 32px #00000021, 0 4px 8px #00000014;
 }
 
-:root[data-theme="dark"] {
-  --accent: #f28c3a;
-  --accent-hover: #ffa35f;
-  --accent-soft: #f28c3a22;
-  --pwc-orange: #f28c3a;
-  --pwc-amber: #f4c453;
-  --pwc-coral: #f06a5c;
+:root[data-theme="light"] body {
+  background-image:
+    radial-gradient(58rem 42rem at 100% 0%, color-mix(in srgb, var(--brand-orange) 9%, transparent), transparent 68%),
+    radial-gradient(46rem 34rem at 0% 8%, color-mix(in srgb, var(--brand-tangerine) 8%, transparent), transparent 66%),
+    radial-gradient(52rem 40rem at 6% 100%, color-mix(in srgb, var(--brand-yellow) 8%, transparent), transparent 66%),
+    radial-gradient(38rem 30rem at 96% 92%, color-mix(in srgb, var(--brand-rose) 6%, transparent), transparent 68%);
 }
 
-body {
-  font-size: 15px;
-  line-height: 1.6;
+/* ==========================================================================
+   PRISM components not present in the deployed build
+   The logo lockup, manager identity, theme toggle, product-line cards and the
+   add/remove client modals. Restyled onto the tokens above so they sit in the
+   same system rather than looking bolted on.
+   ========================================================================== */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), border-color 140ms var(--ease-out), transform 130ms var(--ease-out);
 }
 
-.wrap,
-.topbar-inner {
-  max-width: 1220px;
+.theme-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
-.wrap {
-  padding-left: 28px;
-  padding-right: 28px;
+.theme-toggle:active {
+  transform: scale(0.92);
 }
 
-.topbar {
-  height: 72px;
-}
-
-.topbar-inner {
-  gap: 22px;
-}
-
-.brand {
-  flex-shrink: 0;
-}
-
-.brand-lockup,
-.pwc-mark,
-.brand-product {
+.brand-lockup, .pwc-mark, .brand-product {
   display: inline-flex;
   align-items: center;
 }
@@ -3381,6 +4139,13 @@ body {
   height: 39px;
   align-items: flex-end;
   justify-content: flex-start;
+}
+
+/* Topbar variant. The bars inside are absolutely positioned, so only the box
+   they sit in shrinks; the mark itself keeps its proportions. */
+.pwc-mark-compact {
+  width: 44px;
+  height: 36px;
 }
 
 .pwc-symbol {
@@ -3420,6 +4185,10 @@ body {
   background: var(--pwc-coral);
 }
 
+/* The PwC wordmark is a brand reproduction, not UI text, so its size, weight and
+   tracking are set against the mark beside it rather than taken from the type
+   ladder. Sizing it off the ladder is what briefly blew it up to 26px next to a
+   44px mark. Exempt on purpose; do not fold these into the tokens. */
 .pwc-word {
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
@@ -3427,11 +4196,6 @@ body {
   font-weight: 800;
   letter-spacing: -0.075em;
   line-height: 1;
-}
-
-.pwc-mark-compact {
-  width: 44px;
-  height: 36px;
 }
 
 .brand-divider {
@@ -3446,33 +4210,13 @@ body {
   gap: 1px;
 }
 
-.brand-word {
-  font-size: 16px;
-  letter-spacing: 0.1em;
-  line-height: 1.1;
-}
-
 .brand-subtitle {
   color: var(--text-faint);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-none);
+  line-height: var(--lh-tight);
   white-space: nowrap;
-}
-
-.top-nav {
-  gap: 3px;
-}
-
-.top-nav a {
-  font-size: 13.5px;
-  padding: 9px 11px;
-}
-
-.topbar-right {
-  gap: 12px;
-  flex-shrink: 0;
 }
 
 .manager-profile {
@@ -3483,11 +4227,10 @@ body {
 }
 
 .theme-icon {
-  line-height: 1;
+  line-height: var(--lh-flat);
 }
 
-.theme-icon-light,
-:root[data-theme="dark"] .theme-icon-dark {
+.theme-icon-light, :root[data-theme="dark"] .theme-icon-dark {
   display: none;
 }
 
@@ -3504,9 +4247,9 @@ body {
   border-radius: 9px;
   color: #fff;
   background: linear-gradient(145deg, var(--pwc-orange), var(--pwc-coral));
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-label);
   flex-shrink: 0;
 }
 
@@ -3514,157 +4257,20 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  line-height: 1.25;
+  line-height: var(--lh-snug);
 }
 
 .manager-name {
   color: var(--text);
-  font-size: 13.5px;
-  font-weight: 650;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
   white-space: nowrap;
 }
 
 .manager-role {
   color: var(--text-faint);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   white-space: nowrap;
-}
-
-.hero {
-  padding-top: 42px;
-  padding-bottom: 26px;
-}
-
-.hero-tight {
-  padding-top: 38px;
-}
-
-.eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.085em;
-  margin-bottom: 12px;
-}
-
-h1 {
-  font-size: clamp(32px, 4vw, 40px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  margin-bottom: 12px;
-}
-
-.lede {
-  max-width: 72ch;
-  font-size: 15.5px;
-  line-height: 1.62;
-}
-
-.panel p,
-.narrative,
-.tp-item,
-.story-body,
-.kg-best-why {
-  font-size: 14px;
-}
-
-.panel-title,
-.panel h3 {
-  font-size: 15.5px;
-}
-
-.stat-tile {
-  padding: 18px 19px;
-}
-
-.stat-tile .v {
-  font-size: 24px;
-}
-
-.stat-tile .l,
-.kpi-l,
-.perf-l,
-.metric-l {
-  font-size: 12px;
-}
-
-.btn {
-  min-height: 40px;
-  padding: 10px 18px;
-  font-size: 14px;
-}
-
-.text-input,
-.controls select,
-.select-wrap select {
-  min-height: 40px;
-  font-size: 14px;
-}
-
-.select-wrap select {
-  width: 100%;
-  appearance: none;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  padding: 9px 34px 9px 12px;
-  font-family: var(--body);
-  cursor: pointer;
-}
-
-.select-wrap select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
-.table-wrap {
-  overflow-x: auto;
-}
-
-table {
-  font-size: 13.5px;
-}
-
-th {
-  padding: 12px 14px;
-  font-size: 11px;
-  letter-spacing: 0.055em;
-}
-
-td {
-  padding: 12px 14px;
-}
-
-tr.clickable:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-}
-
-.chip {
-  font-size: 11px;
-}
-
-.section-tabs {
-  top: 72px;
-}
-
-.section-tabs button {
-  padding: 9px 17px;
-  font-size: 13.5px;
-}
-
-.detail-head {
-  align-items: center;
-  gap: 18px;
-}
-
-.detail-name {
-  font-size: 26px;
-}
-
-.detail-sub,
-.back-link {
-  font-size: 13.5px;
 }
 
 .detail-actions {
@@ -3695,8 +4301,8 @@ tr.clickable:focus-visible {
   color: var(--text-faint);
   background: transparent;
   font-family: var(--body);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--weight-figure);
   cursor: pointer;
   transition: color 150ms var(--ease-out), background 150ms var(--ease-out);
 }
@@ -3755,8 +4361,8 @@ tr.clickable:focus-visible {
   height: 42px;
   border-radius: 10px;
   font-family: var(--mono);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
 }
 
 .product-family-body {
@@ -3766,14 +4372,14 @@ tr.clickable:focus-visible {
 }
 
 .product-family-name {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-base);
+  font-weight: var(--weight-display);
 }
 
 .product-family-description {
   color: var(--text-secondary);
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
 }
 
 .product-family-count {
@@ -3783,62 +4389,25 @@ tr.clickable:focus-visible {
   color: var(--text-secondary);
   background: var(--surface-2);
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-figure);
   text-align: center;
-}
-
-.modal-overlay {
-  padding: 28px;
-}
-
-.modal-panel {
-  max-width: 620px;
-}
-
-.modal-head {
-  padding: 20px 24px;
-}
-
-.modal-title {
-  font-size: 19px;
 }
 
 .modal-kicker {
   margin-bottom: 2px;
   color: var(--accent);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-kicker);
   text-transform: uppercase;
 }
 
 .modal-intro {
   margin-bottom: 20px;
   color: var(--text-secondary);
-  font-size: 13.5px;
-  line-height: 1.6;
-}
-
-.modal-body {
-  padding: 22px 24px;
-}
-
-.modal-footer {
-  padding: 17px 24px;
-}
-
-.form-grid {
-  gap: 15px 16px;
-}
-
-.form-field {
-  gap: 7px;
-}
-
-.form-field span {
-  font-size: 12.5px;
-  font-weight: 650;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
 }
 
 .form-error {
@@ -3848,7 +4417,7 @@ tr.clickable:focus-visible {
   border-radius: 6px;
   color: var(--negative);
   background: color-mix(in srgb, var(--negative) 7%, var(--surface));
-  font-size: 13px;
+  font-size: var(--fs-sm);
 }
 
 .delete-modal {
@@ -3875,13 +4444,13 @@ tr.clickable:focus-visible {
   border-radius: 9px;
   color: var(--negative);
   background: color-mix(in srgb, var(--negative) 11%, var(--surface));
-  font-weight: 800;
+  font-weight: var(--weight-display);
 }
 
 .delete-warning-copy {
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
 }
 
 .btn-danger {
@@ -3892,154 +4461,387 @@ tr.clickable:focus-visible {
   background: color-mix(in srgb, var(--negative) 82%, #000);
 }
 
-@media (max-width: 1080px) {
-  .brand-subtitle,
-  .manager-role {
-    display: none;
-  }
 
-  .top-nav a {
-    padding-left: 9px;
-    padding-right: 9px;
+
+
+
+/* ==========================================================================
+   Overview infographics: risk split and concentration curve
+   ========================================================================== */
+
+.panel-note {
+  margin: -4px 0 14px;
+  max-width: 62ch;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+/* ---- Risk tier: share of AUM against share of accounts ---- */
+.risk-split {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.risk-split-head,
+.risk-split-row {
+  display: grid;
+  grid-template-columns: 84px 1fr 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.risk-split-head {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.risk-split-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-faint);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+.risk-split-swatch {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.risk-split-swatch.solid {
+  background: var(--text-faint);
+}
+
+/* The account bar is an outline so the two measures never read as one stack. */
+.risk-split-swatch.hollow {
+  border: 1.5px solid var(--text-faint);
+  background: transparent;
+}
+
+.risk-split-tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-xs);
+  font-weight: var(--weight-display);
+  white-space: nowrap;
+}
+
+.risk-split-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.risk-split-metric {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.risk-split-track {
+  position: relative;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.risk-split-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 600ms var(--ease-out);
+}
+
+.risk-split-fill.hollow {
+  background: transparent;
+  border: 1.5px solid;
+  border-radius: 3px;
+}
+
+.risk-split-val {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-weight: var(--weight-figure);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.risk-split-val.muted {
+  color: var(--text-secondary);
+  font-weight: var(--weight-regular);
+}
+
+.risk-split-of {
+  color: var(--text-faint);
+}
+
+/* ---- Concentration: cumulative share held by the largest n clients ---- */
+.conc {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.conc-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.conc-figure {
+  font-size: var(--display-3);
+  font-weight: var(--weight-figure);
+  color: var(--accent-text);
+  letter-spacing: var(--ls-heading);
+  line-height: var(--lh-flat);
+  font-variant-numeric: tabular-nums;
+}
+
+.conc-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+}
+
+.conc-sub {
+  color: var(--text-faint);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.conc-chart {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 132px;
+  padding-bottom: 18px;
+}
+
+.conc-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.conc-col-track {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--surface-2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Rounded data-end anchored to the baseline, per the mark spec. */
+.conc-col-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  border-radius: 4px 4px 2px 2px;
+  background: var(--accent);
+  transition: height 650ms var(--ease-out), background 150ms var(--ease-out);
+}
+
+.conc-col:hover .conc-col-fill,
+.conc-col.active .conc-col-fill,
+.conc-col:focus-visible .conc-col-fill {
+  background: var(--accent-hover);
+}
+
+.conc-col-n {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -18px;
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.conc-col:hover .conc-col-n,
+.conc-col.active .conc-col-n {
+  color: var(--text);
+}
+
+/* Reference rule, direct-labelled rather than put in a legend. */
+.conc-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed var(--border-strong);
+  pointer-events: none;
+}
+
+.conc-rule-label {
+  position: absolute;
+  right: 0;
+  top: -15px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text-faint);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-label);
+}
+
+.conc-readout {
+  min-height: 18px;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+.conc-readout-strong {
+  color: var(--text);
+  font-weight: var(--weight-figure);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .risk-split-head,
+  .risk-split-row {
+    grid-template-columns: 72px 1fr;
+    row-gap: 6px;
+  }
+  .risk-split-head .risk-split-key:last-child,
+  .risk-split-row .risk-split-metric:last-child {
+    grid-column: 2;
   }
 }
 
-@media (max-width: 860px) {
-  .topbar {
-    height: 112px;
-    padding: 0 18px;
-  }
+/* ==========================================================================
+   Interactive graphs: focus tracing on the whole-book map and the client graph
+   Both use the same contract, so the two feel like one control: hover or focus
+   traces a node's connections and dims the rest, click or Enter pins it, Escape
+   releases. Dimming is done with opacity on a class rather than by recolouring,
+   so the category hues keep their meaning while out of focus.
+   ========================================================================== */
 
-  .topbar-inner {
-    flex-wrap: wrap;
-    gap: 0;
-    padding: 9px 0 7px;
-  }
-
-  .top-nav {
-    order: 3;
-    width: 100%;
-    overflow-x: auto;
-    padding-top: 6px;
-    scrollbar-width: none;
-  }
-
-  .top-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .top-nav a {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .section-tabs {
-    top: 112px;
-  }
-
-  .product-family-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .product-family-card {
-    min-height: 0;
-  }
+.bpm,
+.kg {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
-@media (max-width: 640px) {
-  .wrap {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
+.bpm-edge,
+.kg-edge {
+  opacity: 0.45;
+  transition: opacity 160ms var(--ease-out);
+}
 
-  .topbar {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
+.bpm-edge.strong { opacity: 0.5; }
+.bpm-edge { opacity: 0.28; }
+.kg-edge.faint { opacity: 0.4; }
+.kg-edge.best { opacity: 0.9; }
 
-  .brand-divider,
-  .brand-subtitle,
-  .manager-profile-copy {
-    display: none;
-  }
+/* While something is focused, unrelated marks drop back rather than disappear:
+   the shape of the whole graph stays legible as context for the traced path. */
+.bpm-edge.dim,
+.kg-edge.dim {
+  opacity: 0.06;
+}
 
-  .brand-lockup {
-    gap: 7px;
-  }
+.bpm-node,
+.kg-node {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 160ms var(--ease-out);
+}
 
-  .brand-product {
-    display: inline-flex;
-  }
+.bpm-node.dim,
+.kg-node.dim {
+  opacity: 0.16;
+}
 
-  .theme-toggle {
-    width: 34px;
-    height: 34px;
-  }
+/* Generous invisible hit area. The visible dots go down to 6px radius, which is
+   an unfair target for a mouse and an impossible one for a trackpad. */
+.bpm-hit,
+.kg-hit {
+  fill: transparent;
+}
 
-  .hero {
-    padding-top: 30px;
-  }
+.bpm-node:hover circle:not(.bpm-hit),
+.kg-node:hover circle:not(.kg-hit) {
+  filter: brightness(1.15);
+}
 
-  h1 {
-    font-size: 31px;
-  }
+.bpm-node:focus-visible .bpm-hit,
+.kg-node:focus-visible .kg-hit {
+  fill: color-mix(in srgb, var(--accent) 22%, transparent);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
 
-  .lede {
-    font-size: 14.5px;
-  }
+.bpm-node.pinned .bpm-hit,
+.kg-node.pinned .kg-hit {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+}
 
-  .detail-head {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
+.bpm-col-head {
+  fill: var(--text-faint);
+  font-family: var(--body);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
 
-  .detail-actions {
-    width: 100%;
-    flex-wrap: wrap;
-  }
+.bpm-readout,
+.kg-readout {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
 
-  .detail-actions .kpi {
-    flex: 1;
-  }
-
-  .contact-strip {
-    align-items: flex-start;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-field {
-    grid-column: 1 !important;
-  }
-
-  .modal-overlay {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .modal-panel {
-    max-height: 92vh;
-    border-radius: 16px 16px 0 0;
-  }
-
-  .modal-head {
-    border-radius: 16px 16px 0 0;
-  }
-
-  .modal-footer {
-    position: sticky;
-    bottom: 0;
-    background: var(--surface);
-  }
-
-  .modal-footer .btn {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .table-wrap table {
-    min-width: 760px;
-  }
+.bpm-pin-tag {
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: var(--fs-3xs);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
 }

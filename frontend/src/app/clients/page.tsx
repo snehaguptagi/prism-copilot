@@ -68,8 +68,7 @@ export default function ClientsPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero">
-          <p className="eyebrow">Portfolio manager workspace</p>
-          <h1>Your clients</h1>
+          <h1>Your <span className="em-brand">clients</span></h1>
           <p className="lede">
             Manage each relationship from onboarding through portfolio review. Open a client to
             see mandate fit, allocation, holdings, performance, and next actions in one place.
@@ -150,7 +149,7 @@ export default function ClientsPage() {
                 ))}
               </select>
             </div>
-            <span style={{ fontSize: 12.5, color: "var(--text-faint)" }}>
+            <span style={{ fontSize: "var(--fs-sm)", color: "var(--text-faint)" }}>
               {filtered.length} of {clients.length}
             </span>
             <button className="btn" onClick={() => setShowAddClient(true)}>

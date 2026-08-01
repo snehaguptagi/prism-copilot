@@ -560,6 +560,31 @@ TALKING_POINTS_TOOL = {
 }
 
 
+_DASH_RANGE_RE = re.compile(r"(?<=\d)\s*[–—]\s*(?=\d)")
+_DASH_CLAUSE_RE = re.compile(r"\s*[–—]\s*")
+
+
+def clean_llm_text(s):
+    """Single output-boundary sanitizer for every string the model writes back.
+
+    The system prompts already ask for no em dashes, but a prompt is not an
+    enforcement mechanism, so this is where it is actually guaranteed. Also
+    strips stray markdown and leading bullet glyphs the tool schema does not
+    prevent. Numeric ranges become "to"; every other dash becomes a comma,
+    which is how the desk wants briefing copy to read.
+    """
+    if not s:
+        return ""
+    s = s.replace("**", "").replace("*", "")
+    s = _DASH_RANGE_RE.sub(" to ", s)
+    s = _DASH_CLAUSE_RE.sub(", ", s)
+    s = s.lstrip("-•").strip()
+    s = re.sub(r"\s+([,.;:])", r"\1", s)
+    s = re.sub(r",\s*,", ",", s)
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    return s.strip().strip(",").strip()
+
+
 def generate_talking_points(client, portfolio_name, mandate, sector, narrative, impact_entry, factor_entry):
     """LLM narrates, never computes: takes the client persona plus numbers
     already produced by compute_portfolio_impact / attach_reference_comparison
@@ -597,14 +622,7 @@ def generate_talking_points(client, portfolio_name, mandate, sector, narrative, 
         tool_choice={"type": "tool", "name": "record_talking_points"},
     )
     def _clean(items):
-        # belt-and-suspenders: strip any stray markdown the model slips in
-        out = []
-        for s in items or []:
-            s = s.replace("**", "").replace("*", "").replace("—", ", ").strip()
-            s = s.lstrip("-•").strip()
-            if s:
-                out.append(s)
-        return out
+        return [s for s in (clean_llm_text(s) for s in items or []) if s]
 
     for block in response.content:
         if getattr(block, "type", None) == "tool_use" and block.name == "record_talking_points":
@@ -722,11 +740,15 @@ def generate_news_briefing(category, narrative, affected_clients):
         if getattr(block, "type", None) == "tool_use" and block.name == "record_briefing":
             data = block.input
             points = {
-                cp["portfolio_id"]: cp["talking_point"]
+                cp["portfolio_id"]: clean_llm_text(cp["talking_point"])
                 for cp in data.get("client_points", [])
                 if cp["portfolio_id"] != "__none__"
             }
-            return {"tldr": data.get("tldr", ""), "key_points": data.get("key_points", []), "points": points}
+            return {
+                "tldr": clean_llm_text(data.get("tldr", "")),
+                "key_points": [p for p in (clean_llm_text(k) for k in data.get("key_points", [])) if p],
+                "points": {k: v for k, v in points.items() if v},
+            }
     return {"tldr": "", "key_points": [], "points": {}}
 
 

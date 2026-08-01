@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { GraphViewEdge, GraphViewNode } from "@/lib/types";
 import { assetClassColor } from "@/lib/colors";
 
@@ -24,6 +27,32 @@ function initialsOf(name: string): string {
 }
 
 export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[]; edges: GraphViewEdge[] }) {
+  // Same interaction contract as the whole-book map: hover or focus traces a
+  // node's connections and dims the rest, click or Enter pins that trace,
+  // Escape releases. Native <title> tooltips alone made the viewer interrogate
+  // one dot at a time, which is the wrong shape of work for a graph.
+  const [hover, setHover] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
+  const active = pinned ?? hover;
+
+  const lit = useMemo(() => {
+    if (!active) return null;
+    const litNodes = new Set<string>([active]);
+    const litEdges = new Set<number>();
+    edges.forEach((e, i) => {
+      if (e.source === active || e.target === active) {
+        litEdges.add(i);
+        litNodes.add(e.source);
+        litNodes.add(e.target);
+      }
+    });
+    return { litNodes, litEdges };
+  }, [active, edges]);
+
+  const dimNode = (id: string) => (lit ? !lit.litNodes.has(id) : false);
+  const dimEdge = (i: number) => (lit ? !lit.litEdges.has(i) : false);
+  const select = (id: string) => setPinned((cur) => (cur === id ? null : id));
+
   const classNodes = nodes.filter((n) => n.type === "asset_class");
   const otherNodes = nodes.filter((n) => n.type !== "client" && n.type !== "asset_class");
   const clientNode = nodes.find((n) => n.type === "client");
@@ -101,8 +130,20 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
     return "var(--accent)"; // suggests
   }
 
+  const activeNode = active ? nodes.find((n) => n.id === active) : null;
+  const readout = activeNode
+    ? [activeNode.label, activeNode.sub, activeNode.rationale].filter(Boolean).join(". ")
+    : "Hover or tab to any node to trace what it connects to. Click to pin.";
+
   return (
-    <svg viewBox={viewBox} className="kg-svg" role="img">
+    <div className="kg" onMouseLeave={() => setHover(null)}>
+    <svg
+      viewBox={viewBox}
+      className={`kg-svg${lit ? " has-focus" : ""}`}
+      role="application"
+      aria-label="Product fit graph: this client, the asset classes they hold, and held and suggested products."
+      onKeyDown={(e) => e.key === "Escape" && (setPinned(null), setHover(null))}
+    >
       {edges.map((e, i) => {
         const s = positions[e.source];
         const t = positions[e.target];
@@ -119,7 +160,7 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
             stroke={isBest ? "var(--sev-elevated)" : edgeStroke(e)}
             strokeWidth={isBest ? 2.5 : e.kind === "in_class" ? 1 : 1.5}
             strokeDasharray={e.kind === "in_class" ? "3 3" : e.kind === "suggests" ? "5 3" : undefined}
-            opacity={e.kind === "in_class" ? 0.4 : isBest ? 0.9 : 0.55}
+            className={`kg-edge${e.kind === "in_class" ? " faint" : isBest ? " best" : ""}${dimEdge(i) ? " dim" : ""}`}
           />
         );
       })}
@@ -128,10 +169,20 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
         const pos = positions[n.id];
         if (!pos) return null;
         return (
-          <g key={n.id}>
-            <circle cx={pos.x} cy={pos.y} r={nodeRadius(n)} fill={nodeFill(n)} stroke="var(--surface)" strokeWidth={2}>
-              <title>{n.label}</title>
-            </circle>
+          <g
+            key={n.id}
+            className={`kg-node${dimNode(n.id) ? " dim" : ""}${pinned === n.id ? " pinned" : ""}`}
+            tabIndex={0}
+            role="button"
+            aria-label={`Asset class ${n.label}`}
+            onMouseEnter={() => setHover(n.id)}
+            onFocus={() => setHover(n.id)}
+            onBlur={() => setHover(null)}
+            onClick={() => select(n.id)}
+            onKeyDown={(e) => e.key === "Enter" && select(n.id)}
+          >
+            <circle cx={pos.x} cy={pos.y} r={nodeRadius(n) + 8} className="kg-hit" />
+            <circle cx={pos.x} cy={pos.y} r={nodeRadius(n)} fill={nodeFill(n)} stroke="var(--surface)" strokeWidth={2} />
             <text
               x={pos.x}
               y={pos.y - nodeRadius(n) - 7}
@@ -149,9 +200,22 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
         const pos = positions[n.id];
         if (!pos) return null;
         const r = nodeRadius(n);
-        const tooltip = [n.label, n.sub, n.rationale].filter(Boolean).join(" – ");
         return (
-          <g key={n.id} className={n.best ? "kg-best-node" : undefined}>
+          <g
+            key={n.id}
+            className={`kg-node${n.best ? " kg-best-node" : ""}${dimNode(n.id) ? " dim" : ""}${
+              pinned === n.id ? " pinned" : ""
+            }`}
+            tabIndex={0}
+            role="button"
+            aria-label={[n.label, n.sub, n.rationale].filter(Boolean).join(". ")}
+            onMouseEnter={() => setHover(n.id)}
+            onFocus={() => setHover(n.id)}
+            onBlur={() => setHover(null)}
+            onClick={() => select(n.id)}
+            onKeyDown={(e) => e.key === "Enter" && select(n.id)}
+          >
+            <circle cx={pos.x} cy={pos.y} r={r + 9} className="kg-hit" />
             {n.best && (
               <circle cx={pos.x} cy={pos.y} r={r + 7} fill="none" stroke="var(--sev-elevated)" strokeWidth={2} className="kg-pulse" />
             )}
@@ -163,18 +227,25 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
               stroke={n.type === "held" ? "var(--surface)" : "var(--sev-elevated)"}
               strokeWidth={n.best ? 2.5 : n.type === "suggested" ? 1.5 : 2}
               opacity={n.type === "held" ? 0.85 : 1}
-            >
-              <title>{tooltip}</title>
-            </circle>
+            />
           </g>
         );
       })}
 
       {clientNode && (
-        <g>
-          <circle cx={CX} cy={CY} r={nodeRadius(clientNode)} fill={nodeFill(clientNode)} stroke="var(--surface)" strokeWidth={3}>
-            <title>{clientNode.label}{clientNode.sub ? ` – ${clientNode.sub} mandate` : ""}</title>
-          </circle>
+        <g
+          className={`kg-node${dimNode(clientNode.id) ? " dim" : ""}${pinned === clientNode.id ? " pinned" : ""}`}
+          tabIndex={0}
+          role="button"
+          aria-label={`${clientNode.label}${clientNode.sub ? `, ${clientNode.sub} mandate` : ""}`}
+          onMouseEnter={() => setHover(clientNode.id)}
+          onFocus={() => setHover(clientNode.id)}
+          onBlur={() => setHover(null)}
+          onClick={() => select(clientNode.id)}
+          onKeyDown={(e) => e.key === "Enter" && select(clientNode.id)}
+        >
+          <circle cx={CX} cy={CY} r={nodeRadius(clientNode) + 6} className="kg-hit" />
+          <circle cx={CX} cy={CY} r={nodeRadius(clientNode)} fill={nodeFill(clientNode)} stroke="var(--surface)" strokeWidth={3} />
           <text x={CX} y={CY + 4} textAnchor="middle" className="kg-client-initials" fill="#ffffff">
             {initialsOf(clientNode.label)}
           </text>
@@ -184,5 +255,11 @@ export default function KnowledgeGraph({ nodes, edges }: { nodes: GraphViewNode[
         </g>
       )}
     </svg>
+
+      <div className="kg-readout" aria-live="polite">
+        {pinned && <span className="bpm-pin-tag">Pinned</span>}
+        {readout}
+      </div>
+    </div>
   );
 }

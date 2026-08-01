@@ -139,8 +139,7 @@ export default function AnalysisPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero">
-          <p className="eyebrow">Portfolio-first market analysis</p>
-          <h1>Analyze a client&apos;s book</h1>
+          <h1>Analyze a <span className="em-brand">client&apos;s book</span></h1>
           <p className="lede">
             Pick a portfolio, run live market analysis on what it&apos;s most exposed to, and get
             ready-to-use conversation points, grounded in real news and computed against the actual book.
@@ -216,7 +215,7 @@ export default function AnalysisPage() {
                   {initials(selected.client.name)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="detail-name" style={{ fontSize: 17 }}>{selected.client.name}</div>
+                  <div className="detail-name" style={{ fontSize: "var(--fs-md)" }}>{selected.client.name}</div>
                   <div className="detail-sub">
                     {selected.portfolio_name} · {selected.risk_tier} risk
                   </div>
@@ -327,7 +326,7 @@ export default function AnalysisPage() {
                       {result.impact ? (
                         <ComparisonBar impact={result.impact} />
                       ) : (
-                        <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.55 }}>
+                        <p style={{ fontSize: "var(--fs-sm)", color: "var(--text-secondary)", lineHeight: "var(--lh-normal)" }}>
                           No individual company in this book was named in today&apos;s research. That is
                           expected for a cash and short-term-debt book, its exposure comes through interest
                           rates, shown in the factor read, not single stocks.
@@ -337,7 +336,7 @@ export default function AnalysisPage() {
                     <div className="panel">
                       <div className="panel-title">Tailwind vs. headwind</div>
                       {tw === 0 && hw === 0 ? (
-                        <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>No material macro-factor effect on this book today.</p>
+                        <p style={{ fontSize: "var(--fs-sm)", color: "var(--text-secondary)" }}>No material macro-factor effect on this book today.</p>
                       ) : (
                         <>
                           <div className="tw-hw-bar">

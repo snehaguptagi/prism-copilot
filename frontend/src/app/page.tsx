@@ -9,6 +9,8 @@ import { inr, crValue } from "@/lib/format";
 import Topbar from "@/components/Topbar";
 import Donut from "@/components/Donut";
 import PerfHorizons from "@/components/PerfHorizons";
+import RiskSplit from "@/components/RiskSplit";
+import Concentration from "@/components/Concentration";
 import NumberFlow from "@number-flow/react";
 
 export default function OverviewPage() {
@@ -22,7 +24,6 @@ export default function OverviewPage() {
       .catch((e) => setError(String(e)));
   }, []);
 
-  const maxTierAum = data ? Math.max(...data.risk_distribution.map((d) => d.aum), 1) : 1;
   const maxHolding = data ? Math.max(...data.top_holdings.map((h) => h.pct_of_book), 1) : 1;
 
   return (
@@ -30,8 +31,7 @@ export default function OverviewPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Portfolio manager dashboard</p>
-          <h1>Your client book, clearly organised</h1>
+          <h1>Your <span className="em-brand">entire book</span>, clearly organised</h1>
           <p className="lede">
             A live, firm-wide view of every portfolio you manage, bringing performance, allocation,
             risk, and upcoming client actions into one decision-ready workspace.
@@ -46,37 +46,55 @@ export default function OverviewPage() {
 
         {data && (
           <div className="fade-in">
-            {/* KPI row */}
-            <div className="kpi-row stagger">
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={crValue(data.kpis.total_aum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
+            {/* Five figures side by side gave the page no entry point: everything
+                was equally important, so nothing was. Total AUM is the number the
+                desk is actually judged on, so it takes the tile and the rest sit
+                in a plane beside it. */}
+            <div className="hero-band">
+              <div className="stat-hero">
+                <div>
+                  <div className="l">Total assets under management</div>
+                  <div className="v">
+                    <NumberFlow value={crValue(data.kpis.total_aum)} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 1 }} />
+                  </div>
                 </div>
-                <div className="kpi-l">Total assets under management</div>
+                <div className="hero-sub">
+                  <div className="hero-sub-item">
+                    <div className="v">
+                      <NumberFlow value={data.kpis.blended_fee_pct} suffix="%" />
+                    </div>
+                    <div className="l">Blended fee rate</div>
+                  </div>
+                  <div className="hero-sub-item">
+                    <div className="v">
+                      <NumberFlow value={data.kpis.holdings_count} />
+                    </div>
+                    <div className="l">Open positions</div>
+                  </div>
+                </div>
               </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.client_count} />
+
+              <div className="kpi-plane">
+                <div className="kpi-row stagger">
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.annual_fee_revenue / 1e7} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 2 }} />
+                    </div>
+                    <div className="kpi-l">Annual fee revenue</div>
+                  </div>
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.client_count} />
+                    </div>
+                    <div className="kpi-l">Client accounts</div>
+                  </div>
+                  <div className="kpi">
+                    <div className="kpi-v">
+                      <NumberFlow value={data.kpis.distinct_securities} />
+                    </div>
+                    <div className="kpi-l">Distinct securities held</div>
+                  </div>
                 </div>
-                <div className="kpi-l">Client accounts</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.annual_fee_revenue / 1e7} prefix="₹" suffix=" Cr" format={{ maximumFractionDigits: 2 }} />
-                </div>
-                <div className="kpi-l">Annual fee revenue</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.blended_fee_pct} suffix="%" />
-                </div>
-                <div className="kpi-l">Blended fee rate</div>
-              </div>
-              <div className="kpi">
-                <div className="kpi-v">
-                  <NumberFlow value={data.kpis.distinct_securities} />
-                </div>
-                <div className="kpi-l">Distinct securities held</div>
               </div>
             </div>
 
@@ -190,29 +208,25 @@ export default function OverviewPage() {
                 </div>
               </div>
 
-              {/* Risk distribution */}
+              {/* Risk distribution: money against accounts, on one share scale */}
               <div className="panel">
-                <div className="panel-title">AUM by risk tier</div>
-                <div className="risk-rows">
-                  {data.risk_distribution.map((d) => (
-                    <div key={d.tier} className="risk-row">
-                      <span className="risk-row-label" style={{ color: severityColor(d.tier) }}>
-                        {d.tier}
-                      </span>
-                      <span className="risk-row-track">
-                        <span
-                          className="risk-row-fill"
-                          style={{ width: `${(d.aum / maxTierAum) * 100}%`, background: severityColor(d.tier) }}
-                        />
-                      </span>
-                      <span className="risk-row-val">
-                        {inr(d.aum)}
-                        <span className="risk-row-count"> · {d.count}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <div className="panel-title">Risk tier: where the money sits</div>
+                <p className="panel-note">
+                  Share of AUM against share of accounts. Where the two diverge, a few large
+                  portfolios are setting the book&apos;s risk.
+                </p>
+                <RiskSplit
+                  rows={data.risk_distribution}
+                  totalAum={data.kpis.total_aum}
+                  totalClients={data.kpis.client_count}
+                />
               </div>
+            </div>
+
+            {/* Relationship concentration */}
+            <div className="panel">
+              <div className="panel-title">Concentration across the book</div>
+              <Concentration clients={data.largest_clients} totalAum={data.kpis.total_aum} />
             </div>
 
             {/* Sector allocation */}

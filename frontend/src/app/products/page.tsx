@@ -56,8 +56,7 @@ export default function ProductsPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Approved product shelf</p>
-          <h1>Focused products for client portfolios</h1>
+          <h1><span className="em-brand">Focused products</span> for client portfolios</h1>
           <p className="lede">
             PRISM is intentionally focused on three product lines: Gold, Commodities, and Mutual
             Funds. Review mandate fit and current client adoption before starting a conversation.
@@ -213,7 +212,7 @@ export default function ProductsPage() {
                               <span className="holding-tkr">{i.ticker}</span>
                             </div>
                           </td>
-                          <td><span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{i.instrument_type}</span></td>
+                          <td><span style={{ fontSize: "var(--fs-xs)", color: "var(--text-secondary)" }}>{i.instrument_type}</span></td>
                           <td>
                             <span className="sector-chip" style={{ padding: "3px 8px" }}>
                               <span className="sector-chip-dot" style={{ background: sectorColor(i.sector) }} />

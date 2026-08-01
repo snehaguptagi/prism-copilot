@@ -155,8 +155,8 @@ export default function ClientDetailPage() {
         {tab === "Profile" && !psy && (
           <div className="panel fade-in">
             <div className="panel-title">Who they are</div>
-            <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6 }}>{c.persona}</p>
-            <p style={{ color: "var(--text-faint)", fontSize: 12.5, marginTop: 10 }}>
+            <p style={{ color: "var(--text-secondary)", fontSize: "var(--fs-base)", lineHeight: "var(--lh-relaxed)" }}>{c.persona}</p>
+            <p style={{ color: "var(--text-faint)", fontSize: "var(--fs-sm)", marginTop: 10 }}>
               No behavioral profile yet. Add goals, communication preferences, and relationship notes as you learn
               more about this client.
             </p>
@@ -167,7 +167,7 @@ export default function ClientDetailPage() {
           <div className="stagger">
             <div className="panel">
               <div className="panel-title">Who they are</div>
-              <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 1.6 }}>{c.persona}</p>
+              <p style={{ color: "var(--text-secondary)", fontSize: "var(--fs-base)", lineHeight: "var(--lh-relaxed)" }}>{c.persona}</p>
             </div>
 
             <div className="panel">
@@ -342,7 +342,7 @@ export default function ClientDetailPage() {
                   <div className="big-fact-v">{ins.top_position_pct}%</div>
                   <div className="big-fact-l">{ins.top_position_name}</div>
                 </div>
-                <p style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 8 }}>
+                <p style={{ fontSize: "var(--fs-xs)", color: "var(--text-faint)", marginTop: 8 }}>
                   Largest sector: {ins.largest_sector} at {ins.largest_sector_pct}% of the book.
                 </p>
               </div>
@@ -350,7 +350,7 @@ export default function ClientDetailPage() {
               <div className="panel">
                 <div className="panel-title">Macro-factor sensitivity</div>
                 {ins.factor_exposures.length === 0 ? (
-                  <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>No material macro-factor exposure detected.</p>
+                  <p style={{ fontSize: "var(--fs-sm)", color: "var(--text-secondary)" }}>No material macro-factor exposure detected.</p>
                 ) : (
                   <div className="factor-rows">
                     {ins.factor_exposures.map((f) => (
@@ -369,7 +369,7 @@ export default function ClientDetailPage() {
 
             <div className="panel">
               <div className="panel-title">Mandate</div>
-              <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.55 }}>{account.mandate}</p>
+              <p style={{ fontSize: "var(--fs-sm)", color: "var(--text-secondary)", lineHeight: "var(--lh-normal)" }}>{account.mandate}</p>
             </div>
 
             {account.product_suggestions && account.product_suggestions.length > 0 && (
@@ -484,7 +484,7 @@ export default function ClientDetailPage() {
             <div className="panel-title" style={{ margin: "18px 0 10px" }}>Recent interactions</div>
             {(!c.communications || c.communications.length === 0) && !c.next_action && (
               <div className="panel">
-                <p style={{ color: "var(--text-faint)", fontSize: 12.5 }}>
+                <p style={{ color: "var(--text-faint)", fontSize: "var(--fs-sm)" }}>
                   No interactions logged yet for this client.
                 </p>
               </div>

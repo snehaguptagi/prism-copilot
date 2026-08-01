@@ -117,59 +117,68 @@ export default function NewsFeedPage() {
       <Topbar />
       <div className="wrap">
         <header className="hero hero-tight">
-          <p className="eyebrow">Daily briefing</p>
-          <h1>What today&apos;s news means for your clients</h1>
+          <h1>What <span className="em-brand">today&apos;s news</span> means for your clients</h1>
           <p className="lede">
             One read of the market, then straight to which clients it touches and what to tell them.
           </p>
         </header>
 
-        <div className="news-toolbar">
-          <div className="news-tabs">
+        {/* Three columns: categories on the left, the market read in the middle,
+            client impact on the right. Categories were horizontal tabs, which
+            capped how many could be shown and pushed the briefing below the fold
+            on every switch. A rail holds all seven at once and keeps the reading
+            column at a fixed width instead of full-bleed. */}
+        <div className="news-shell">
+          <aside className="news-rail">
+            <div className="news-rail-head">Categories</div>
             {categories.map((cat) => (
               <button
                 key={cat}
-                className={`news-tab${category === cat ? " active" : ""}`}
+                className={`news-rail-item${category === cat ? " active" : ""}`}
                 onClick={() => loadCategory(cat)}
               >
                 <CategoryIcon category={cat} size={14} />
                 <span>{cat}</span>
+                {cache[cat] && <span className="news-rail-dot" title="Cached on this device" />}
               </button>
             ))}
-          </div>
-          <button
-            className="reload-btn"
-            onClick={() => loadCategory(category, true)}
-            disabled={loading || refreshing || !category}
-            title="Fetch the latest news for this category"
-          >
-            <span className={`refresh-icon${loading || refreshing ? " spinning" : ""}`}>↻</span>
-            {loading || refreshing ? "Reloading" : "Reload"}
-          </button>
-        </div>
+          </aside>
 
-        {result && !loading && (
-          <div className="news-fresh-line">
-            {refreshing
-              ? "Refreshing with the latest..."
-              : `Last fetched ${formatUpdatedAt(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
-          </div>
-        )}
+          <div>
+            <div className="news-toolbar">
+              <button
+                className="reload-btn"
+                onClick={() => loadCategory(category, true)}
+                disabled={loading || refreshing || !category}
+                title="Fetch the latest news for this category"
+              >
+                <span className={`refresh-icon${loading || refreshing ? " spinning" : ""}`}>↻</span>
+                {loading || refreshing ? "Reloading" : "Reload"}
+              </button>
+            </div>
 
-        {error && (
-          <div className="panel" style={{ borderLeft: "3px solid var(--negative)" }}>
-            <p style={{ color: "var(--negative)" }}>{error}</p>
-          </div>
-        )}
+            {result && !loading && (
+              <div className="news-fresh-line">
+                {refreshing
+                  ? "Refreshing with the latest..."
+                  : `Last fetched ${formatUpdatedAt(fetchedAt[category])}. Cached on this device; auto-refreshes when older than 12 hours, or hit Reload.`}
+              </div>
+            )}
 
-        {loading && (
-          <div className="news-loading">
-            <span className="spinner" style={{ borderTopColor: "var(--accent)", borderColor: "var(--accent-soft)", borderTopWidth: 2 }} />
-            Reading the latest {category} developments and mapping them to your book...
-          </div>
-        )}
+            {error && (
+              <div className="panel" style={{ borderLeft: "3px solid var(--negative)" }}>
+                <p style={{ color: "var(--negative)" }}>{error}</p>
+              </div>
+            )}
 
-        {result && !loading && (
+            {loading && (
+              <div className="news-loading">
+                <span className="spinner" style={{ borderTopColor: "var(--accent)", borderColor: "var(--accent-soft)", borderTopWidth: 2 }} />
+                Reading the latest {category} developments and mapping them to your book...
+              </div>
+            )}
+
+            {result && !loading && (
           <div className="fade-in">
             {/* TL;DR + key-stat infographics */}
             <div className="tldr-card">
@@ -202,44 +211,6 @@ export default function NewsFeedPage() {
               </>
             )}
 
-            {/* per-client talking points */}
-            <div className="shead">
-              What to tell your clients
-              {result.affected_clients.length > 0 && (
-                <span className="shead-count">{result.affected_clients.length} affected</span>
-              )}
-            </div>
-
-            {result.affected_clients.length === 0 ? (
-              <div className="panel">
-                <p>None of your clients are materially affected by today&apos;s {category} news.</p>
-              </div>
-            ) : (
-              <div className="tp-grid stagger">
-                {result.affected_clients.map((c) => (
-                  <div
-                    className="tp-card"
-                    key={c.portfolio_id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => router.push(`/clients/${c.portfolio_id}`)}
-                    onKeyDown={(e) => e.key === "Enter" && router.push(`/clients/${c.portfolio_id}`)}
-                  >
-                    <div className="tp-card-head">
-                      <div className="avatar" style={{ background: avatarColor(c.client_name) }}>
-                        {initials(c.client_name)}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div className="tp-card-name">{c.client_name}</div>
-                        <div className="tp-card-how">{c.how_affected}</div>
-                      </div>
-                    </div>
-                    <p className="tp-card-point">{c.talking_point}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* progressive disclosure: sources only (the key points ARE the briefing) */}
             <button className="disclose-btn" onClick={() => setShowDetail((v) => !v)}>
               <span className={`disclose-caret${showDetail ? " open" : ""}`}>›</span>
@@ -265,7 +236,54 @@ export default function NewsFeedPage() {
               </div>
             )}
           </div>
-        )}
+            )}
+          </div>
+
+          {/* Client impact rides alongside the briefing rather than under it, so
+              the market read and who it touches are visible at the same time. */}
+          <aside className="news-side">
+            {result && !loading && (
+              <div className="fade-in">
+                <div className="news-side-head">
+                  What to tell your clients
+                  {result.affected_clients.length > 0 && (
+                    <span className="shead-count">{result.affected_clients.length} affected</span>
+                  )}
+                </div>
+
+                {result.affected_clients.length === 0 ? (
+                  <div className="panel" style={{ marginTop: 12 }}>
+                    <p>None of your clients are materially affected by today&apos;s {category} news.</p>
+                  </div>
+                ) : (
+                  <div className="tp-grid stagger" style={{ marginTop: 12 }}>
+                    {result.affected_clients.map((c) => (
+                      <div
+                        className="tp-card"
+                        key={c.portfolio_id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => router.push(`/clients/${c.portfolio_id}`)}
+                        onKeyDown={(e) => e.key === "Enter" && router.push(`/clients/${c.portfolio_id}`)}
+                      >
+                        <div className="tp-card-head">
+                          <div className="avatar" style={{ background: avatarColor(c.client_name) }}>
+                            {initials(c.client_name)}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <div className="tp-card-name">{c.client_name}</div>
+                            <div className="tp-card-how">{c.how_affected}</div>
+                          </div>
+                        </div>
+                        <p className="tp-card-point">{c.talking_point}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </aside>
+        </div>
 
         <footer>
           Decision-support tool. Not investment advice, not a trading system. Talking points are
