@@ -35,7 +35,8 @@ crypto anywhere.
 | **Clients** | A roster of 16 distinct personas, each with a full profile: behavioral psychographics, relationship insights, holdings, performance vs the Nifty, a suitability check, and a communication log with the next action due. |
 | **Analysis** | Pick a client's book, run live grounded research on its dominant exposure, and get exposure vs a normal book plus tailored talking points. |
 | **News Feed** | Categorized live market news reduced to a one-line TL;DR, clean key-point bullets, and, for each affected client, a specific "what to tell them" talking point. |
-| **Products** | The investable universe the desk can offer, grouped by asset class. |
+| **Products** | The approved shelf the desk can offer (Gold, Commodities, Mutual Funds), with mandate fit and current client adoption. |
+| **Product Fit** | Which product suits which client, and why, per client or across the whole book, as an interactive map that traces the reasoning rather than just asserting a match. |
 
 ## 2. Problem and context
 
@@ -109,14 +110,24 @@ family gold wealth, a passive index investor, a small business owner, and the UH
 
 ## 5. Feature scope
 
-All five surfaces below are built and working.
+All six surfaces below are built and working.
 
 #### Overview (firm-wide dashboard)
 
-Total AUM, client count, annual fee revenue, blended fee rate, distinct securities, book return
-vs the Nifty 50 with best and worst performer, "what needs attention" action items sorted by due
-date, asset-class allocation, AUM by risk tier, sector exposure, largest positions, and largest
-clients. Every figure is computed from current holdings, nothing estimated.
+Total AUM leads as a single hero figure, with blended fee rate and open positions beside it and
+annual fee revenue, client count and distinct securities in a plane alongside. Then book return vs
+the Nifty 50 with best and worst performer, "what needs attention" action items sorted by due
+date, asset-class allocation, sector exposure, largest positions, and largest clients. Every
+figure is computed from current holdings, nothing estimated.
+
+Two panels answer questions the earlier flat figures did not:
+
+- **Risk tier: where the money sits.** Share of AUM against share of accounts on one scale. The
+  divergence is the point: most accounts sit in one tier while most of the money sits in another,
+  which a ranked bar chart of AUM alone hides.
+- **Concentration across the book.** A cumulative share curve over the largest clients. A ranked
+  list answers "who is biggest"; this answers "how exposed am I if one leaves", which is the
+  question concentration actually poses.
 
 #### Clients (roster + client detail)
 
@@ -143,7 +154,23 @@ button.
 
 #### Products (investable universe)
 
-The full security master the desk can offer, grouped by asset class, with usage counts.
+The approved shelf the desk can offer, focused on three product lines (Gold, Commodities, Mutual
+Funds), grouped by line, with mandate fit and current client adoption.
+
+#### Product Fit (which product suits which client)
+
+Two views over the same recommendation engine. **Per client** shows one client at the centre with
+their holdings, the asset classes they prefer, and the products worth raising, ranked, with the
+strongest match highlighted. **Whole book** maps every client through asset class to their
+best-fit product in one diagram, alongside a ranked cross-sell list.
+
+Both are interactive: hovering or tabbing to any node traces its connections and dims the rest,
+clicking pins that trace, Escape releases it. A readout states the current selection in prose, so
+the answer is readable rather than something to be inferred from the picture.
+
+Each suggestion is labelled by where it came from: preference match (rules), similar-client match
+(knowledge graph), or confirmed match (both agree). The graph layer is optional and the page
+degrades to preference matching alone when it is unavailable.
 
 ## 6. Functional requirements
 

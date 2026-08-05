@@ -81,6 +81,45 @@ and roll-up stages.
 | Research pipeline | `backend/insight_lens.py` | Everything that touches Claude: grounded search, citation extraction, entity linking, factor detection, and the structured narration calls. Also runs standalone as a CLI. |
 | Dataset generator | `backend/build_dataset.py` | Builds the synthetic India dataset (securities master, 16 client portfolios plus a reference benchmark, psychographics, communications, performance) and writes `prism_data.json`. |
 | Frontend | `frontend/src/` | Next.js App Router pages, a typed API client (`lib/api.ts`), shared types (`lib/types.ts`), and an adaptive currency formatter (`lib/format.ts`). |
+| Charts | `frontend/src/components/` | Hand-rolled SVG, no charting library, so every mark is inspectable and themable: `Donut`, `PerfHorizons`, `RiskSplit`, `Concentration`, `KnowledgeGraph`, `BookProductMap`. |
+
+### Design system
+
+Colour, type and spacing come from CSS custom properties in `frontend/src/app/globals.css`.
+Dark is the default and light is a token override of the same rules rather than a second skin, so
+component CSS is written once. `colorScheme` tracks the theme so native scrollbars, form widgets
+and autofill match.
+
+Typography runs on four fixed scales. Ad-hoc values are the thing these exist to prevent: before
+they were introduced the stylesheet used 27 font sizes (many on half-pixels), 8 weights, 15
+line-heights and 14 letter-spacings, which is why the type read as inconsistent even where each
+individual rule looked reasonable. The worst case was figures set at weight 300 in some panels and
+600 in others, so the same kind of number looked like two different designs depending on the card
+it landed in.
+
+| Scale | Steps | Notes |
+|---|---|---|
+| Size | `--fs-3xs` 10px to `--fs-4xl` 56px | Dense end is 1px apart because tables and chips need it; display end opens up. |
+| Weight | `--weight-regular` 400, `--weight-medium` 500, `--weight-figure` 600, `--weight-display` 700 | Every figure takes `--weight-figure`, every heading `--weight-display`. |
+| Leading | `--lh-flat` 1 to `--lh-relaxed` 1.6 | Five steps, picked by the job the text does. |
+| Tracking | `--ls-display` -0.028em to `--ls-kicker` 0.08em | `--ls-display` is the headline value the design was set at. |
+
+Display sizes (`--display-1..3`) are fixed rungs off the size scale, not fluid `clamp()`. A clamp
+with a `vw` middle stop resolves to whatever the viewport makes it (22px became 21.76px at 1280px
+wide), which silently reintroduces the arbitrary values the scale exists to remove. Narrow screens
+step down one rung at a breakpoint instead.
+
+Two deliberate exemptions, both commented in place: the PwC wordmark (`.pwc-word`) is a brand
+reproduction sized against the mark beside it, and the PRISM wordmark (`.brand-word`) is set as a
+mark rather than a heading, small and wide-tracked, because at heading size, weight and colour it
+was visually indistinguishable from an `h1`.
+
+Chart colour follows `frontend/src/lib/colors.ts`, which is validated rather than chosen by eye.
+The asset-class palette passes lightness-band, chroma-floor, CVD-separation, normal-vision and
+contrast checks against both surfaces. The risk-tier ramp deliberately does **not**: Elevated and
+High sit 7.1 ΔE apart to normal vision, so it fails as a categorical palette and every risk row
+carries a text label, never colour alone. Sector bars take the accent rather than a hue each,
+because the row label already carries identity.
 
 ## 4. Data model
 
@@ -195,6 +234,30 @@ with the graph configured, just empty. The rule-based recommender in layer 1 is 
 unaffected either way. `GET /graph/status` reports `{enabled, connected}` so the frontend can
 decide whether to render the graph-powered section at all; it does not error or block on it.
 
+**Known issue.** Graph recommendations are filtered against the approved shelf by
+`_normalise_graph_suggestions` in `api.py`, which drops anything whose product family is not Gold,
+Commodities or Mutual Funds. The graph currently holds an older catalogue built when the shelf
+still carried single stocks, so every suggestion it returns is filtered out and the similar-client
+layer contributes nothing in practice. Product Fit therefore falls back to preference matching
+alone, and `test_graph_recommends_when_configured` fails. Re-running `python build_graph.py`
+against the current dataset resyncs it.
+
+### Graph interaction
+
+Both graphs are hand-rolled SVG and share one interaction contract, because they answer the same
+kind of question and should not behave differently:
+
+- Hover or keyboard focus traces a node's connections and dims everything else. Unrelated marks
+  drop to low opacity rather than disappearing, so the shape of the whole graph stays as context.
+- Click or Enter pins the trace so it survives the pointer leaving; Escape releases it.
+- Every node is tab-reachable with an `aria-label`, and a live readout under each graph states the
+  current selection in prose.
+- Hit areas are drawn well outside the visible marks, which go down to 6px radius.
+
+`BookProductMap` also orders both outer columns by the asset class they connect to. Drawn in API
+order, nearly every edge crossed every other and the middle of the diagram was unreadable;
+ordering bundles them into bands without changing the data or the column positions.
+
 ## 7. HTTP API surface
 
 `backend/api.py`, all JSON, no auth (single-RM demo).
@@ -240,13 +303,19 @@ repeat visit is instant while a manual control always forces a fresh live pull.
   view.
 - **Frontend**: Next.js 16 (App Router, Turbopack), React 19, TypeScript 5, `@number-flow/react`
   for animated stats. Runs as a production build (`next build` + `next start`) for stability.
+  Typography is Helvetica Neue first, falling back to Inter (loaded as a variable font via
+  `next/font`), with IBM Plex Mono for tickers and ids. Helvetica Neue is licensed and cannot be
+  served, so the stack asks for a locally installed copy and Inter carries it everywhere else.
 - **Config**: `ANTHROPIC_API_KEY` plus an optional `PM_NAME`, and optionally `NEO4J_URI` /
   `NEO4J_USERNAME` / `NEO4J_PASSWORD` for the knowledge graph, all from `backend/.env`. `.env` is
-  gitignored; the public repo ships only `.env.example` with placeholders.
-- **Tests**: 95 pytest tests across the dataset, entity linker, extraction, impact engines, and
+  gitignored; the public repo ships only `.env.example` with placeholders. The frontend reads
+  `NEXT_PUBLIC_API_BASE` and falls back to `http://localhost:8000`, so any deployed build without
+  it set renders the full UI with no data.
+- **Tests**: 112 pytest tests across the dataset, entity linker, extraction, impact engines, and
   the API, including the graph endpoints' graceful-degradation path with no Neo4j configured. The
-  deterministic core is fully covered; live LLM calls and a real Neo4j connection are exercised by
-  manual runs rather than mocked.
+  deterministic core is fully covered; live LLM calls are exercised by manual runs rather than
+  mocked. One test currently fails, `test_graph_recommends_when_configured`, for the catalogue
+  mismatch described in section 6.
 
 ### Running locally
 
